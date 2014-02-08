@@ -48,49 +48,104 @@ public class ModelFox extends ModelBase {
         Body = new ModelRenderer(this, 32, 10);
         Body.addBox(-2F, -2F, -2F, 4, 4, 5);
         Body.setRotationPoint(0F, 19F, 0F);
-        tailTip = new ModelRenderer(this, 24, 10);
-        tailTip.addBox(-1F, -1F, 0F, 2, 2, 2);
-        tailTip.setRotationPoint(0F, 15.5F, 7F);
-        setRotation(tailTip, 1.029744F, 0F, 0F);
-        tailMid = new ModelRenderer(this, 0, 10);
-        tailMid.addBox(-1.5F, -1.5F, 0F, 3, 3, 4);
-        tailMid.setRotationPoint(0F, 17.3F, 4F);
-        setRotation(tailMid, 0.5934119F, 0F, 0F);
+        chest = new ModelRenderer(this, 0, 17);
+        chest.addBox(-3F, -1.5F, 0.5F, 6, 6, 8);
+        chest.setRotationPoint(0F, 19F, -2F);
+
         tailBase = new ModelRenderer(this, 14, 10);
         tailBase.addBox(-1F, -1F, 0F, 2, 2, 3);
         tailBase.setRotationPoint(0F, 18F, 2F);
         setRotation(tailBase, 0.3316126F, 0F, 0F);
-        chest = new ModelRenderer(this, 0, 17);
-        chest.addBox(-3F, -1.5F, 0.5F, 6, 6, 8);
-        chest.setRotationPoint(0F, 19F, -2F);
+        tailMid = new ModelRenderer(this, 0, 10);
+        tailMid.addBox(-1.5F, -1F, 2F, 3, 3, 4);
+        tailMid.setRotationPoint(0F, 18F, 2F);
+        setRotation(tailMid, 0.5934119F, 0F, 0F);
+        tailTip = new ModelRenderer(this, 24, 10);
+        tailTip.addBox(-1F, 2F, 4.5F, 2, 2, 2);
+        tailTip.setRotationPoint(0F, 18F, 2F);
+        setRotation(tailTip, 1.029744F, 0F, 0F);
     }
 
     public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
         super.render(entity, f, f1, f2, f3, f4, f5);
         setRotationAngles(f, f1, f2, f3, f4, f5, entity);
-        LBLeg.render(f5);
-        head.renderWithRotation(f5);
-        tailMid.render(f5);
-        RBLeg.render(f5);
-        RFLeg.render(f5);
-        LFLeg.render(f5);
-        Body.render(f5);
-        tailTip.render(f5);
-        tailBase.render(f5);
-        GL11.glPushMatrix();
-        GL11.glScalef(1f, 0.5f, 0.5f);
-        GL11.glTranslatef(0.0f, 18F * f5,  f5 - 0.15f);
-        chest.render(f5);
-        GL11.glPopMatrix();
+        EntityFox entityFox = (EntityFox)entity;
+        if (entityFox.isSitting()) {
+            GL11.glPushMatrix();
+            GL11.glTranslatef(0.0f, f5 + 0.06f, 0f);
+            LBLeg.render(f5);
+            head.renderWithRotation(f5);
+            tailMid.render(f5);
+            RBLeg.render(f5);
+            RFLeg.render(f5);
+            LFLeg.render(f5);
+            Body.render(f5);
+            tailTip.render(f5);
+            tailBase.render(f5);
+            GL11.glPushMatrix();
+            GL11.glScalef(1f, 0.5f, 0.5f);
+            GL11.glTranslatef(0.0f, 16F * f5,  f5 - 0.3f);
+            chest.render(f5);
+            GL11.glPopMatrix();
+            GL11.glPopMatrix();
+        }
+        else {
+            LBLeg.render(f5);
+            head.renderWithRotation(f5);
+            tailMid.render(f5);
+            RBLeg.render(f5);
+            RFLeg.render(f5);
+            LFLeg.render(f5);
+            Body.render(f5);
+            tailTip.render(f5);
+            tailBase.render(f5);
+            GL11.glPushMatrix();
+            GL11.glScalef(1f, 0.5f, 0.5f);
+            GL11.glTranslatef(0.0f, 18F * f5,  f5 - 0.15f);
+            chest.render(f5);
+            GL11.glPopMatrix();
+        }
+    }
+
+    private void setTailRotationPoints(float x, float y, float z) {
+        this.tailBase.setRotationPoint(x, y, z);
+        this.tailMid.setRotationPoint(x, y, z);
+        this.tailTip.setRotationPoint(x, y, z);
     }
 
     public void setLivingAnimations(EntityLivingBase entityLivingBase, float par2, float par3, float par4) {
         EntityFox entityFox = (EntityFox)entityLivingBase;
 
-        this.LFLeg.rotateAngleX = MathHelper.cos(par2 * 1.5F) * 1.4F * par3;
-        this.RFLeg.rotateAngleX = MathHelper.cos(par2 * 1.5F + (float)Math.PI) * 1.4F * par3;
-        this.LBLeg.rotateAngleX = MathHelper.cos(par2 * 1.5F + (float)Math.PI) * 1.4F * par3;
-        this.RBLeg.rotateAngleX = MathHelper.cos(par2 * 1.5F) * 1.4F * par3;
+        if (entityFox.isSitting()) {
+            this.Body.setRotationPoint(0F, 19F, -1F);
+            this.Body.rotateAngleX = -(float)Math.PI / 5F;
+            this.chest.setRotationPoint(0F, 19F, -1F);
+            this.chest.rotateAngleX = -(float)Math.PI / 5F;
+            this.LFLeg.setRotationPoint(1.5F, 20F, -2F);
+            this.RFLeg.setRotationPoint(-1.5F, 20F, -2F);
+            this.LBLeg.setRotationPoint(1.5F, 21F, 1.5F);
+            this.RBLeg.setRotationPoint(-1.5F, 21F, 1.5F);
+            this.LFLeg.rotateAngleX = -1F;
+            this.RFLeg.rotateAngleX = -1F;
+            this.LBLeg.rotateAngleX = -1.5F;
+            this.RBLeg.rotateAngleX = -1.5F;
+            this.setTailRotationPoints(0F, 19F, 1.5F);
+        }
+        else {
+            this.Body.setRotationPoint(0F, 19F, 0F);
+            this.Body.rotateAngleX = 0;
+            this.chest.setRotationPoint(0F, 19F, -2F);
+            this.chest.rotateAngleX = 0;
+            this.LFLeg.setRotationPoint(1.5F, 21F, -1.5F);
+            this.RFLeg.setRotationPoint(-1.5F, 21F, -1.5F);
+            this.LBLeg.setRotationPoint(1.5F, 21F, 2.5F);
+            this.RBLeg.setRotationPoint(-1.5F, 21F, 2.5F);
+            this.LFLeg.rotateAngleX = MathHelper.cos(par2 * 1.5F) * 1.4F * par3;
+            this.RFLeg.rotateAngleX = MathHelper.cos(par2 * 1.5F + (float)Math.PI) * 1.4F * par3;
+            this.LBLeg.rotateAngleX = MathHelper.cos(par2 * 1.5F + (float)Math.PI) * 1.4F * par3;
+            this.RBLeg.rotateAngleX = MathHelper.cos(par2 * 1.5F) * 1.4F * par3;
+            this.setTailRotationPoints(0F, 18F, 2F);
+        }
     }
 
     private void setRotation(ModelRenderer model, float x, float y, float z) {
