@@ -16,6 +16,7 @@ import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 
 public class EntityFox extends EntityTameable {
@@ -124,6 +125,17 @@ public class EntityFox extends EntityTameable {
             return true;
         }
         return super.interact(player);
+    }
+
+    public void onDeath(DamageSource par1DamageSource) {
+        super.onDeath(par1DamageSource);
+
+        if (!this.worldObj.isRemote && hasChest()) {
+            for (int i = 0; i < inventory.getSizeInventory(); ++i) {
+                ItemStack itemstack = inventory.getStackInSlot(i);
+                if (itemstack != null) this.entityDropItem(itemstack, 0.0F);
+            }
+        }
     }
 
     @Override
