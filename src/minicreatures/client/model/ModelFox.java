@@ -6,6 +6,7 @@ import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.MathHelper;
+import org.lwjgl.opengl.GL11;
 
 public class ModelFox extends ModelBase {
 
@@ -18,6 +19,7 @@ public class ModelFox extends ModelBase {
     ModelRenderer Body;
     ModelRenderer tailTip;
     ModelRenderer tailBase;
+    ModelRenderer chest;
 
     public ModelFox() {
         textureWidth = 64;
@@ -58,6 +60,9 @@ public class ModelFox extends ModelBase {
         tailBase.addBox(-1F, -1F, 0F, 2, 2, 3);
         tailBase.setRotationPoint(0F, 18F, 2F);
         setRotation(tailBase, 0.3316126F, 0F, 0F);
+        chest = new ModelRenderer(this, 0, 17);
+        chest.addBox(-3F, -1.5F, 0.5F, 6, 6, 8);
+        chest.setRotationPoint(0F, 19F, -2F);
     }
 
     public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
@@ -72,6 +77,11 @@ public class ModelFox extends ModelBase {
         Body.render(f5);
         tailTip.render(f5);
         tailBase.render(f5);
+        GL11.glPushMatrix();
+        GL11.glScalef(1f, 0.5f, 0.5f);
+        GL11.glTranslatef(0.0f, 18F * f5,  f5 - 0.15f);
+        chest.render(f5);
+        GL11.glPopMatrix();
     }
 
     public void setLivingAnimations(EntityLivingBase entityLivingBase, float par2, float par3, float par4) {
