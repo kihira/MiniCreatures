@@ -82,11 +82,13 @@ public class ModelFox extends ModelBase {
             Body.render(f5);
             tailTip.render(f5);
             tailBase.render(f5);
-            GL11.glPushMatrix();
-            GL11.glScalef(1f, 0.5f, 0.5f);
-            GL11.glTranslatef(0.0f, 16F * f5,  f5 - 0.3f);
-            chest.render(f5);
-            GL11.glPopMatrix();
+            if (entityFox.hasChest()) {
+                GL11.glPushMatrix();
+                GL11.glScalef(1f, 0.5f, 0.5f);
+                GL11.glTranslatef(0.0f, 16F * f5,  f5 - 0.3f);
+                chest.render(f5);
+                GL11.glPopMatrix();
+            }
             GL11.glPopMatrix();
         }
         else {
@@ -99,11 +101,13 @@ public class ModelFox extends ModelBase {
             Body.render(f5);
             tailTip.render(f5);
             tailBase.render(f5);
-            GL11.glPushMatrix();
-            GL11.glScalef(1f, 0.5f, 0.5f);
-            GL11.glTranslatef(0.0f, 18F * f5,  f5 - 0.15f);
-            chest.render(f5);
-            GL11.glPopMatrix();
+            if (entityFox.hasChest()) {
+                GL11.glPushMatrix();
+                GL11.glScalef(1f, 0.5f, 0.5f);
+                GL11.glTranslatef(0.0f, 18F * f5,  f5 - 0.15f);
+                chest.render(f5);
+                GL11.glPopMatrix();
+            }
         }
     }
 

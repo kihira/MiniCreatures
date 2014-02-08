@@ -1,17 +1,26 @@
 package minicreatures.common.entity;
 
+import minicreatures.MiniCreatures;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockChest;
 import net.minecraft.entity.EntityAgeable;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.*;
 import net.minecraft.entity.passive.EntityChicken;
 import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.InventoryBasic;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.world.World;
 
 public class EntityFox extends EntityTameable {
+
+    private final IInventory inventory = new InventoryBasic(this.getEntityName(), false, 9);
 
     public EntityFox(World par1World) {
         super(par1World);
@@ -25,7 +34,20 @@ public class EntityFox extends EntityTameable {
         this.tasks.addTask(5, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
         this.tasks.addTask(5, new EntityAILookIdle(this));
         this.targetTasks.addTask(1, new EntityAITargetNonTamed(this, EntityChicken.class, 200, false));
+        this.dataWatcher.addObject(18, 0);
         this.setTamed(false);
+    }
+
+    public IInventory getInventory() {
+        return inventory;
+    }
+
+    public boolean hasChest() {
+        return this.dataWatcher.getWatchableObjectInt(18) == 1;
+    }
+
+    public void setHasChest(boolean hasChest) {
+        this.dataWatcher.updateObject(18, hasChest ? 1 : 0);
     }
 
     @Override
@@ -40,18 +62,22 @@ public class EntityFox extends EntityTameable {
     }
 
     @Override
-    public boolean interact(EntityPlayer par1EntityPlayer) {
-        ItemStack itemstack = par1EntityPlayer.inventory.getCurrentItem();
+    public boolean interact(EntityPlayer player) {
+        ItemStack itemstack = player.inventory.getCurrentItem();
         if (this.isTamed()) {
             if (itemstack != null) {
                 if (itemstack.getItem() instanceof ItemFood) {
                     ItemFood itemfood = (ItemFood)itemstack.getItem();
                     if (itemfood.isWolfsFavoriteMeat() && this.getMaxHealth() < 20.0F) {
-                        if (!par1EntityPlayer.capabilities.isCreativeMode) --itemstack.stackSize;
                         this.heal((float)itemfood.getHealAmount());
-                        if (itemstack.stackSize <= 0) par1EntityPlayer.inventory.setInventorySlotContents(par1EntityPlayer.inventory.currentItem, null);
+                        if (!player.capabilities.isCreativeMode && --itemstack.stackSize <= 0) player.inventory.setInventorySlotContents(player.inventory.currentItem, null);
                         return true;
                     }
+                }
+                else if (itemstack.getItem().itemID == Block.chest.blockID && !this.hasChest()) {
+                    this.setHasChest(true);
+                    this.playSound("mob.chickenplop", 1.0F, (this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F + 1.0F);
+                    if (!player.capabilities.isCreativeMode && --itemstack.stackSize <= 0) player.inventory.setInventorySlotContents(player.inventory.currentItem, null);
                 }
                 /* TODO Add in collars
                 else if (itemstack.itemID == Item.dyePowder.itemID) {
@@ -64,7 +90,11 @@ public class EntityFox extends EntityTameable {
                 }
                 */
             }
-            if (par1EntityPlayer.getCommandSenderName().equalsIgnoreCase(this.getOwnerName()) && !this.worldObj.isRemote && !this.isBreedingItem(itemstack)) {
+            if (!player.isSneaking() && this.hasChest()) {
+                //Send Entity ID as x coord. Inspired by OpenBlocks
+                player.openGui(MiniCreatures.instance, 0, player.worldObj, entityId, 0, 0);
+            }
+            else if (player.getCommandSenderName().equalsIgnoreCase(this.getOwnerName()) && !this.worldObj.isRemote && !this.isBreedingItem(itemstack)) {
                 this.aiSit.setSitting(!this.isSitting());
                 this.isJumping = false;
                 this.setPathToEntity(null);
@@ -73,8 +103,8 @@ public class EntityFox extends EntityTameable {
             }
         }
         else if (itemstack != null && itemstack.itemID == Item.bone.itemID) {
-            if (!par1EntityPlayer.capabilities.isCreativeMode) --itemstack.stackSize;
-            if (itemstack.stackSize <= 0) par1EntityPlayer.inventory.setInventorySlotContents(par1EntityPlayer.inventory.currentItem, null);
+            if (!player.capabilities.isCreativeMode) --itemstack.stackSize;
+            if (itemstack.stackSize <= 0) player.inventory.setInventorySlotContents(player.inventory.currentItem, null);
             if (!this.worldObj.isRemote) {
                 if (this.rand.nextInt(3) == 0) {
                     this.setTamed(true);
@@ -82,7 +112,7 @@ public class EntityFox extends EntityTameable {
                     this.setAttackTarget(null);
                     this.aiSit.setSitting(true);
                     this.setHealth(20.0F);
-                    this.setOwner(par1EntityPlayer.getCommandSenderName());
+                    this.setOwner(player.getCommandSenderName());
                     this.playTameEffect(true);
                     this.worldObj.setEntityState(this, (byte)7);
                 }
@@ -93,7 +123,41 @@ public class EntityFox extends EntityTameable {
             }
             return true;
         }
-        return super.interact(par1EntityPlayer);
+        return super.interact(player);
+    }
+
+    @Override
+    public void writeEntityToNBT(NBTTagCompound tag) {
+        super.writeEntityToNBT(tag);
+        tag.setBoolean("HasChest", this.hasChest());
+
+        if (this.hasChest()) {
+            NBTTagList nbttaglist = new NBTTagList();
+            for (int i = 0; i < inventory.getSizeInventory(); i++) {
+                if (inventory.getStackInSlot(i) != null) {
+                    NBTTagCompound stacktag = new NBTTagCompound();
+                    stacktag.setByte("Slot", (byte)i);
+                    inventory.getStackInSlot(i).writeToNBT(stacktag);
+                    nbttaglist.appendTag(stacktag);
+                }
+            }
+            tag.setTag("Items", nbttaglist);
+        }
+    }
+
+    @Override
+    public void readEntityFromNBT(NBTTagCompound tag) {
+        super.readEntityFromNBT(tag);
+        this.setHasChest(tag.getBoolean("HasChest"));
+
+        if (this.hasChest()) {
+            NBTTagList nbttaglist = tag.getTagList("Items");
+            for (int i = 0; i < nbttaglist.tagCount(); i++) {
+                NBTTagCompound stacktag = (NBTTagCompound)nbttaglist.tagAt(i);
+                int j = stacktag.getByte("Slot");
+                if (j >= 0 && j < inventory.getSizeInventory()) inventory.setInventorySlotContents(j, ItemStack.loadItemStackFromNBT(stacktag));
+            }
+        }
     }
 
     @Override
