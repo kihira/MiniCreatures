@@ -46,7 +46,7 @@ public class EntityFox extends EntityTameable {
             if (itemstack != null) {
                 if (itemstack.getItem() instanceof ItemFood) {
                     ItemFood itemfood = (ItemFood)itemstack.getItem();
-                    if (itemfood.isWolfsFavoriteMeat() && this.dataWatcher.getWatchableObjectFloat(18) < 20.0F) {
+                    if (itemfood.isWolfsFavoriteMeat() && this.getMaxHealth() < 20.0F) {
                         if (!par1EntityPlayer.capabilities.isCreativeMode) --itemstack.stackSize;
                         this.heal((float)itemfood.getHealAmount());
                         if (itemstack.stackSize <= 0) par1EntityPlayer.inventory.setInventorySlotContents(par1EntityPlayer.inventory.currentItem, null);
