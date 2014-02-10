@@ -25,7 +25,7 @@ public class EntityFox extends EntityTameable {
 
     public EntityFox(World par1World) {
         super(par1World);
-        this.setSize(0.6f, 0.6f);
+        this.setSize(0.5f, 0.25f);
         this.getNavigator().setAvoidsWater(true);
         this.getNavigator().setCanSwim(true);
         this.tasks.addTask(1, new EntityAISwimming(this));
@@ -90,6 +90,13 @@ public class EntityFox extends EntityTameable {
                     }
                 }
                 */
+            }
+            else if (this.riddenByEntity == null && !this.isRiding() && !worldObj.isRemote) {
+                EntityMiniPlayer miniPlayer = new EntityMiniPlayer(player.worldObj);
+                miniPlayer.setCustomNameTag(player.getCommandSenderName());
+                miniPlayer.setPosition(posX, posY, posZ);
+                player.worldObj.spawnEntityInWorld(miniPlayer);
+                miniPlayer.mountEntity(this);
             }
             if (!player.isSneaking() && this.hasChest()) {
                 //Send Entity ID as x coord. Inspired by OpenBlocks

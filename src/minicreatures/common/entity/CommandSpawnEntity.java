@@ -26,6 +26,7 @@ public class CommandSpawnEntity extends CommandBase {
                 Entity entity = null;
                 if (astring[0].equals("fox")) entity = new EntityFox(player.worldObj);
                 else if (astring[0].equals("trex")) entity = new EntityTRex(player.worldObj);
+                else if (astring[0].equals("player")) entity = new EntityMiniPlayer(player.worldObj);
                 if (entity != null) {
                     entity.setPosition(player.posX, player.posY, player.posZ);
                     player.worldObj.spawnEntityInWorld(entity);
