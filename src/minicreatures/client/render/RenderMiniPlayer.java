@@ -10,6 +10,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemBlock;
+import net.minecraft.item.ItemBow;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.IItemRenderer;
@@ -41,6 +42,7 @@ public class RenderMiniPlayer extends RenderBiped {
             else {
                 GL11.glTranslatef(0F, 0.725F, -0.025F);
                 GL11.glScalef(0.5F, 0.5F, 0.5F);
+                if (entityMiniPlayer.getHeldItem().getItem() instanceof ItemBow) ((ModelMiniPlayer)this.mainModel).aimedBow = entityMiniPlayer.isAiming;
                 super.renderEquippedItems(entityMiniPlayer, par2);
             }
         }

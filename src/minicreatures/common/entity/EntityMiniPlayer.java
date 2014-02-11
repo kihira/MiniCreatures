@@ -21,6 +21,8 @@ import net.minecraft.world.World;
 public class EntityMiniPlayer extends EntityTameable implements ICreatureInventory {
 
     private final InventoryBasic inventory = new InventoryBasic(this.getEntityName(), false, 18);
+    //True if aiming with bow. Not currently in use.
+    public boolean isAiming = false;
 
     public EntityMiniPlayer(World par1World) {
         super(par1World);
