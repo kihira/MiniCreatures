@@ -119,7 +119,6 @@ public class ModelMiniPlayer extends ModelBiped {
 
     public void setRotationAngles(float par1, float par2, float par3, float par4, float par5, float par6, Entity par7Entity) {
 
-        if (this.aimedBow || this.heldItemLeft != 0 || this.heldItemRight != 0 || this.onGround > -9990F) super.setRotationAngles(par1, par2, par3, par4, par5, par6, par7Entity);
         this.bipedHead.rotateAngleY = par4 / (180F / (float)Math.PI);
         this.bipedHead.rotateAngleX = par5 / (180F / (float)Math.PI);
         this.bipedHeadwear.rotateAngleY = this.bipedHead.rotateAngleY;
@@ -175,13 +174,13 @@ public class ModelMiniPlayer extends ModelBiped {
         this.bipedRightArm.rotateAngleX += MathHelper.sin(par3 * 0.067F) * 0.05F;
         this.bipedLeftArm.rotateAngleX -= MathHelper.sin(par3 * 0.067F) * 0.05F;
 
-        if (this.isCarrying) {
+        if (this.aimedBow || this.heldItemLeft != 0 || this.heldItemRight != 0 || this.onGround > -9990F) super.setRotationAngles(par1, par2, par3, par4, par5, par6, par7Entity);
+
+        if (this.heldItemRight != 0 && (((EntityMiniPlayer)par7Entity).getCarrying().getItem() instanceof ItemBlock)) {
+            this.bipedLeftArm.rotateAngleX = -0.8F;
+            this.bipedLeftArm.rotateAngleZ = -0.05F;
             this.bipedRightArm.rotateAngleX = -0.8F;
             this.bipedRightArm.rotateAngleZ = 0.05F;
-            if ((((EntityMiniPlayer)par7Entity).getCarrying().getItem() instanceof ItemBlock)) {
-                this.bipedLeftArm.rotateAngleX = -0.8F;
-                this.bipedLeftArm.rotateAngleZ = -0.05F;
-            }
         }
     }
 

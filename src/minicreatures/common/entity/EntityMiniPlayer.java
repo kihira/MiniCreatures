@@ -43,6 +43,7 @@ public class EntityMiniPlayer extends EntityTameable implements ICreatureInvento
         this.getEntityAttribute(SharedMonsterAttributes.movementSpeed).setAttribute(0.30000001192092896D);
     }
 
+    @Override
     public boolean isAIEnabled() {
         return true;
     }

@@ -4,7 +4,6 @@ import minicreatures.client.model.ModelMiniPlayer;
 import minicreatures.common.entity.EntityMiniPlayer;
 import net.minecraft.block.Block;
 import net.minecraft.client.entity.AbstractClientPlayer;
-import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.entity.RenderBiped;
 import net.minecraft.entity.Entity;
@@ -40,8 +39,7 @@ public class RenderMiniPlayer extends RenderBiped {
                 this.renderManager.itemRenderer.renderItem(entityMiniPlayer, itemstack, 0);
             }
             else {
-                GL11.glTranslatef(0F, 0.625F, -0.125F);
-                GL11.glRotatef(-20.0F, -1.0F, 0.0F, 0.0F);
+                GL11.glTranslatef(0F, 0.725F, -0.025F);
                 GL11.glScalef(0.5F, 0.5F, 0.5F);
                 super.renderEquippedItems(entityMiniPlayer, par2);
             }
@@ -73,7 +71,6 @@ public class RenderMiniPlayer extends RenderBiped {
     @Override
     public void doRender(Entity par1Entity, double par2, double par4, double par6, float par8, float par9) {
         EntityMiniPlayer miniPlayer = (EntityMiniPlayer)par1Entity;
-        ((ModelMiniPlayer)this.mainModel).isCarrying = miniPlayer.getCarrying() != null;
         ((ModelMiniPlayer)this.mainModel).bipedHeadwear.showModel = miniPlayer.getCurrentItemOrArmor(4) == null;
         super.doRenderLiving((EntityLiving) par1Entity, par2, par4, par6, par8, par9);
     }
