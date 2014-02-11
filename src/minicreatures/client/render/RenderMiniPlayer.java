@@ -14,6 +14,7 @@ import net.minecraft.entity.monster.EntityEnderman;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
+import sun.net.www.content.text.plain;
 
 public class RenderMiniPlayer extends RenderBiped {
 
@@ -21,19 +22,14 @@ public class RenderMiniPlayer extends RenderBiped {
         super(new ModelMiniPlayer(), 0.5F);
     }
 
-    /**
-     * Render the block an enderman is carrying
-     */
     protected void renderCarrying(EntityMiniPlayer miniPlayer, float par2) {
         super.renderEquippedItems(miniPlayer, par2);
         if (miniPlayer.getCarrying() > 0) {
             GL11.glEnable(GL12.GL_RESCALE_NORMAL);
             GL11.glPushMatrix();
             float f1 = 0.3F;
-            //GL11.glTranslatef(0.0F, 0.6875F, -0.75F);
             GL11.glTranslatef(0.0F, 0.8875F, -0.3F);
-            f1 *= 1.0F;
-            //GL11.glRotatef(20.0F, 1.0F, 0.0F, 0.0F);
+            //f1 *= 1.0F;
             GL11.glRotatef(-90F, 0.0F, 1.0F, 0.0F);
             GL11.glScalef(-f1, -f1, f1);
             int i = miniPlayer.getBrightnessForRender(par2);
