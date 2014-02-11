@@ -24,7 +24,7 @@ public class RenderMiniPlayer extends RenderBiped {
 
     protected void renderCarrying(EntityMiniPlayer miniPlayer, float par2) {
         super.renderEquippedItems(miniPlayer, par2);
-        if (miniPlayer.getCarrying() > 0) {
+        if (miniPlayer.getCarrying() != null) {
             GL11.glEnable(GL12.GL_RESCALE_NORMAL);
             GL11.glPushMatrix();
             float f1 = 0.3F;
@@ -39,7 +39,7 @@ public class RenderMiniPlayer extends RenderBiped {
             GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
             GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
             this.bindTexture(TextureMap.locationBlocksTexture);
-            this.renderBlocks.renderBlockAsItem(Block.blocksList[miniPlayer.getCarrying()], miniPlayer.getCarrying(), 1.0F);
+            this.renderBlocks.renderBlockAsItem(Block.blocksList[miniPlayer.getCarrying().itemID], miniPlayer.getCarrying().itemID, 1.0F);
             GL11.glPopMatrix();
             GL11.glDisable(GL12.GL_RESCALE_NORMAL);
         }
@@ -64,7 +64,7 @@ public class RenderMiniPlayer extends RenderBiped {
     @Override
     public void doRender(Entity par1Entity, double par2, double par4, double par6, float par8, float par9) {
         EntityMiniPlayer miniPlayer = (EntityMiniPlayer)par1Entity;
-        ((ModelMiniPlayer)this.mainModel).isCarrying = miniPlayer.getCarrying() > 0;
+        ((ModelMiniPlayer)this.mainModel).isCarrying = miniPlayer.getCarrying() != null;
         super.doRenderLiving((EntityLiving) par1Entity, par2, par4, par6, par8, par9);
     }
 }

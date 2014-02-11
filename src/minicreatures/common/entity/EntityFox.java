@@ -19,9 +19,9 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 
-public class EntityFox extends EntityTameable {
+public class EntityFox extends EntityTameable implements ICreatureInventory {
 
-    private final IInventory inventory = new InventoryBasic(this.getEntityName(), false, 9);
+    private final IInventory inventory = new InventoryBasic(this.getEntityName(), false, 18);
 
     public EntityFox(World par1World) {
         super(par1World);
@@ -37,10 +37,6 @@ public class EntityFox extends EntityTameable {
         this.targetTasks.addTask(1, new EntityAITargetNonTamed(this, EntityChicken.class, 200, false));
         this.dataWatcher.addObject(18, 0);
         this.setTamed(false);
-    }
-
-    public IInventory getInventory() {
-        return inventory;
     }
 
     public boolean hasChest() {
@@ -222,5 +218,10 @@ public class EntityFox extends EntityTameable {
     @Override
     public EntityAgeable createChild(EntityAgeable entityageable) {
         return null;
+    }
+
+    @Override
+    public IInventory getInventory() {
+        return inventory;
     }
 }
