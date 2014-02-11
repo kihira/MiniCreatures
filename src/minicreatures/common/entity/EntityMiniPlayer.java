@@ -24,7 +24,7 @@ public class EntityMiniPlayer extends EntityTameable implements ICreatureInvento
 
     public EntityMiniPlayer(World par1World) {
         super(par1World);
-        this.setSize(0.5f, 1.2f);
+        this.setSize(0.5F, 1F);
         this.getNavigator().setAvoidsWater(true);
         this.getNavigator().setCanSwim(true);
         this.tasks.addTask(1, new EntityAISwimming(this));
