@@ -4,6 +4,7 @@ import minicreatures.client.model.ModelMiniPlayer;
 import minicreatures.common.entity.EntityMiniPlayer;
 import net.minecraft.block.Block;
 import net.minecraft.client.entity.AbstractClientPlayer;
+import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.entity.RenderBiped;
 import net.minecraft.entity.Entity;
@@ -22,7 +23,7 @@ import static net.minecraftforge.client.IItemRenderer.ItemRendererHelper.BLOCK_3
 public class RenderMiniPlayer extends RenderBiped {
 
     public RenderMiniPlayer() {
-        super(new ModelMiniPlayer(), 0.5F);
+        super(new ModelMiniPlayer(), 0.3F);
     }
 
     //Copied from RenderPlayer.renderSpecials
@@ -47,6 +48,11 @@ public class RenderMiniPlayer extends RenderBiped {
         }
         GL11.glPopMatrix();
     }
+    @Override
+    protected void func_82421_b() {
+        this.field_82423_g = new ModelMiniPlayer();
+        this.field_82425_h = new ModelMiniPlayer();
+    }
 
     @Override
     protected void renderEquippedItems(EntityLivingBase par1EntityLivingBase, float par2) {
@@ -68,6 +74,7 @@ public class RenderMiniPlayer extends RenderBiped {
     public void doRender(Entity par1Entity, double par2, double par4, double par6, float par8, float par9) {
         EntityMiniPlayer miniPlayer = (EntityMiniPlayer)par1Entity;
         ((ModelMiniPlayer)this.mainModel).isCarrying = miniPlayer.getCarrying() != null;
+        ((ModelMiniPlayer)this.mainModel).bipedHeadwear.showModel = miniPlayer.getCurrentItemOrArmor(4) == null;
         super.doRenderLiving((EntityLiving) par1Entity, par2, par4, par6, par8, par9);
     }
 }

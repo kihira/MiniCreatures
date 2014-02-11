@@ -3,6 +3,7 @@ package minicreatures.common.entity;
 import minicreatures.MiniCreatures;
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityAgeable;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.*;
 import net.minecraft.entity.item.EntityItem;
@@ -12,6 +13,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.InventoryBasic;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
@@ -32,8 +34,6 @@ public class EntityMiniPlayer extends EntityTameable implements ICreatureInvento
         this.tasks.addTask(5, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
         this.tasks.addTask(5, new EntityAILookIdle(this));
         this.setTamed(false);
-        //ItemStack of carried
-        this.dataWatcher.addObjectByDataType(18, 5);
     }
 
     @Override
@@ -56,28 +56,48 @@ public class EntityMiniPlayer extends EntityTameable implements ICreatureInvento
                 this.setOwner(player.getCommandSenderName());
             }
             else if (this.isTamed()) {
-                if (itemstack != null && this.getCarrying() == null) {
-                    this.setCarrying(itemstack);
-                    player.playSound("mob.chickenplop", 1.0F, (this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F + 1.0F);
-                    if (!player.capabilities.isCreativeMode && --itemstack.stackSize <= 0) player.inventory.setInventorySlotContents(player.inventory.currentItem, null);
-                }
-                else if (itemstack != null && this.getCarrying() != null && itemstack.itemID == Item.stick.itemID) {
-                    EntityItem entityItem = new EntityItem(player.worldObj, this.posX, this.posY, this.posZ, this.getCarrying().copy());
-                    player.worldObj.spawnEntityInWorld(entityItem);
-                    this.setCarrying(null);
-                    for (int i = 0; i < inventory.getSizeInventory(); i++) {
-                        ItemStack itemStackToDrop = inventory.getStackInSlot(i);
-                        if (itemStackToDrop != null) {
-                            entityItem = new EntityItem(player.worldObj, this.posX, this.posY, this.posZ, itemStackToDrop);
-                            player.worldObj.spawnEntityInWorld(entityItem);
+                if (itemstack != null) {
+                    if (this.getCarrying() == null) {
+                        if (itemstack.getItem() instanceof ItemArmor) {
+                            int i = EntityLiving.getArmorPosition(itemstack) - 1;
+                            if (this.getCurrentItemOrArmor(i + 1) == null) {
+                                this.setCurrentItemOrArmor(i + 1, itemstack.copy());
+                                if (!player.capabilities.isCreativeMode && --itemstack.stackSize <= 0) player.inventory.setInventorySlotContents(player.inventory.currentItem, null);
+                            }
+                            else {
+                                EntityItem entityItem = new EntityItem(this.worldObj, this.posX, this.posY, this.posZ, this.getCurrentItemOrArmor(i + 1));
+                                this.worldObj.spawnEntityInWorld(entityItem);
+                                this.setCurrentItemOrArmor(i + 1, null);
+                            }
                         }
-                        inventory.setInventorySlotContents(i, null);
+                        else {
+                            ItemStack newItemStack = itemstack.copy();
+                            newItemStack.stackSize = 1;
+                            this.setCarrying(newItemStack);
+                            player.playSound("mob.chickenplop", 1.0F, (this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F + 1.0F);
+                            if (!player.capabilities.isCreativeMode && --itemstack.stackSize <= 0) player.inventory.setInventorySlotContents(player.inventory.currentItem, null);
+                        }
+                    }
+                    else if (this.getCarrying() != null && itemstack.itemID == Item.stick.itemID) {
+                        EntityItem entityItem = new EntityItem(player.worldObj, this.posX, this.posY, this.posZ, this.getCarrying().copy());
+                        player.worldObj.spawnEntityInWorld(entityItem);
+                        this.setCarrying(null);
+                        for (int i = 0; i < inventory.getSizeInventory(); i++) {
+                            ItemStack itemStackToDrop = inventory.getStackInSlot(i);
+                            if (itemStackToDrop != null) {
+                                entityItem = new EntityItem(player.worldObj, this.posX, this.posY, this.posZ, itemStackToDrop);
+                                player.worldObj.spawnEntityInWorld(entityItem);
+                            }
+                            inventory.setInventorySlotContents(i, null);
+                        }
                     }
                 }
-                else if (!player.isSneaking() && this.getCarrying() != null) {
-                    switch (this.getCarrying().itemID) {
-                        case 54: player.openGui(MiniCreatures.instance, 0, player.worldObj, entityId, 0, 0);
-                        default: break;
+                else {
+                    if (!player.isSneaking() && this.getCarrying() != null) {
+                        switch (this.getCarrying().itemID) {
+                            case 54: player.openGui(MiniCreatures.instance, 0, player.worldObj, entityId, 0, 0);
+                            default: break;
+                        }
                     }
                 }
             /*
