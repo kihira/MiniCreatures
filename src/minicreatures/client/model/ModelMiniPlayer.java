@@ -5,6 +5,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.entity.Entity;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
@@ -38,26 +39,18 @@ public class ModelMiniPlayer extends ModelBiped {
         tailBase = new ModelRenderer(this, 0, 0);
         tailBase.addBox(-1.5F, 8.8F, 3.25F, 3, 3, 2);
         tailBase.setRotationPoint(0F, 0F, 0F);
-        //tailBase.setTextureSize(64, 32);
-        //tailBase.mirror = true;
         tailBase.rotateAngleX = -0.1570796F;
         tailPart1 = new ModelRenderer(this, 0, 5);
         tailPart1.addBox(-1F, 6.75F, 8F, 2, 2, 3);
         tailPart1.setRotationPoint(0F, 0F, 0F);
-        //tailPart1.setTextureSize(64, 32);
-        //tailPart1.mirror = true;
         tailPart1.rotateAngleX = -0.5235988F;
         tailPart2 = new ModelRenderer(this, 0, 10);
         tailPart2.addBox(-1F, -0.7F, 12.9F, 2, 2, 4);
         tailPart2.setRotationPoint(0F, 0F, 0F);
-        //tailPart2.setTextureSize(64, 32);
-        //tailPart2.mirror = true;
         tailPart2.rotateAngleX = -1.134464F;
         tailTip = new ModelRenderer(this, 0, 16);
         tailTip.addBox(-0.5F, 14.8F, -7.7F, 1, 4, 1);
         tailTip.setRotationPoint(0F, 0F, 0F);
-        //tailTip.setTextureSize(64, 32);
-        //tailTip.mirror = true;
         tailTip.rotateAngleX = 0.8726646F;
 
         hornLeftBase = new ModelRenderer(this, 12, 0);
@@ -184,9 +177,11 @@ public class ModelMiniPlayer extends ModelBiped {
 
         if (this.isCarrying) {
             this.bipedRightArm.rotateAngleX = -0.8F;
-            this.bipedLeftArm.rotateAngleX = -0.8F;
             this.bipedRightArm.rotateAngleZ = 0.05F;
-            this.bipedLeftArm.rotateAngleZ = -0.05F;
+            if ((((EntityMiniPlayer)par7Entity).getCarrying().getItem() instanceof ItemBlock)) {
+                this.bipedLeftArm.rotateAngleX = -0.8F;
+                this.bipedLeftArm.rotateAngleZ = -0.05F;
+            }
         }
     }
 

@@ -95,13 +95,11 @@ public class EntityMiniPlayer extends EntityTameable implements ICreatureInvento
     }
 
     public void setCarrying(ItemStack itemStack) {
-        if (itemStack == null) this.dataWatcher.addObjectByDataType(18, 5);
-        else this.dataWatcher.updateObject(18, itemStack);
-        this.dataWatcher.setObjectWatched(18);
+        this.setCurrentItemOrArmor(0, itemStack);
     }
 
     public ItemStack getCarrying() {
-        return this.dataWatcher.getWatchableObjectItemStack(18);
+        return this.getCurrentItemOrArmor(0);
     }
 
     @Override

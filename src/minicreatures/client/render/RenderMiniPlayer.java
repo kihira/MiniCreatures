@@ -4,17 +4,20 @@ import minicreatures.client.model.ModelMiniPlayer;
 import minicreatures.common.entity.EntityMiniPlayer;
 import net.minecraft.block.Block;
 import net.minecraft.client.entity.AbstractClientPlayer;
-import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.entity.RenderBiped;
-import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.monster.EntityEnderman;
+import net.minecraft.item.ItemBlock;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.client.IItemRenderer;
+import net.minecraftforge.client.MinecraftForgeClient;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
-import sun.net.www.content.text.plain;
+
+import static net.minecraftforge.client.IItemRenderer.ItemRenderType.EQUIPPED;
+import static net.minecraftforge.client.IItemRenderer.ItemRendererHelper.BLOCK_3D;
 
 public class RenderMiniPlayer extends RenderBiped {
 
@@ -22,32 +25,32 @@ public class RenderMiniPlayer extends RenderBiped {
         super(new ModelMiniPlayer(), 0.5F);
     }
 
-    protected void renderCarrying(EntityMiniPlayer miniPlayer, float par2) {
-        super.renderEquippedItems(miniPlayer, par2);
-        if (miniPlayer.getCarrying() != null) {
-            GL11.glEnable(GL12.GL_RESCALE_NORMAL);
-            GL11.glPushMatrix();
-            float f1 = 0.3F;
-            GL11.glTranslatef(0.0F, 0.8875F, -0.3F);
-            //f1 *= 1.0F;
-            GL11.glRotatef(-90F, 0.0F, 1.0F, 0.0F);
-            GL11.glScalef(-f1, -f1, f1);
-            int i = miniPlayer.getBrightnessForRender(par2);
-            int j = i % 65536;
-            int k = i / 65536;
-            OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float) j / 1.0F, (float) k / 1.0F);
-            GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-            GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-            this.bindTexture(TextureMap.locationBlocksTexture);
-            this.renderBlocks.renderBlockAsItem(Block.blocksList[miniPlayer.getCarrying().itemID], miniPlayer.getCarrying().itemID, 1.0F);
-            GL11.glPopMatrix();
-            GL11.glDisable(GL12.GL_RESCALE_NORMAL);
+    //Copied from RenderPlayer.renderSpecials
+    private void renderCarrying(EntityMiniPlayer entityMiniPlayer, float par2) {
+        GL11.glPushMatrix();
+        ItemStack itemstack = entityMiniPlayer.getHeldItem();
+        if (itemstack != null) {
+            IItemRenderer customRenderer = MinecraftForgeClient.getItemRenderer(itemstack, EQUIPPED);
+            boolean is3D = (customRenderer != null && customRenderer.shouldUseRenderHelper(EQUIPPED, itemstack, BLOCK_3D));
+            if (itemstack.getItem() instanceof ItemBlock && (is3D || RenderBlocks.renderItemIn3d(Block.blocksList[itemstack.itemID].getRenderType()))) {
+                GL11.glTranslatef(0.0F, 0.8875F, -0.3F);
+                GL11.glRotatef(-90.0F, 0.0F, 1.0F, 0.0F);
+                GL11.glScalef(-0.3F, -0.3F, -0.3F);
+                this.renderManager.itemRenderer.renderItem(entityMiniPlayer, itemstack, 0);
+            }
+            else {
+                GL11.glTranslatef(0F, 0.625F, -0.125F);
+                GL11.glRotatef(-20.0F, -1.0F, 0.0F, 0.0F);
+                GL11.glScalef(0.5F, 0.5F, 0.5F);
+                super.renderEquippedItems(entityMiniPlayer, par2);
+            }
         }
+        GL11.glPopMatrix();
     }
 
     @Override
     protected void renderEquippedItems(EntityLivingBase par1EntityLivingBase, float par2) {
-        this.renderCarrying((EntityMiniPlayer)par1EntityLivingBase, par2);
+        this.renderCarrying((EntityMiniPlayer) par1EntityLivingBase, par2);
     }
 
     @Override
