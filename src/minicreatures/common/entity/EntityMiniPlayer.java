@@ -58,26 +58,25 @@ public class EntityMiniPlayer extends EntityTameable implements ICreatureInvento
             }
             else if (this.isTamed()) {
                 if (itemstack != null) {
-                    if (this.getCarrying() == null) {
-                        if (itemstack.getItem() instanceof ItemArmor) {
-                            int i = EntityLiving.getArmorPosition(itemstack) - 1;
-                            if (this.getCurrentItemOrArmor(i + 1) == null) {
-                                this.setCurrentItemOrArmor(i + 1, itemstack.copy());
-                                if (!player.capabilities.isCreativeMode && --itemstack.stackSize <= 0) player.inventory.setInventorySlotContents(player.inventory.currentItem, null);
-                            }
-                            else {
-                                EntityItem entityItem = new EntityItem(this.worldObj, this.posX, this.posY, this.posZ, this.getCurrentItemOrArmor(i + 1));
-                                this.worldObj.spawnEntityInWorld(entityItem);
-                                this.setCurrentItemOrArmor(i + 1, null);
-                            }
-                        }
-                        else {
-                            ItemStack newItemStack = itemstack.copy();
-                            newItemStack.stackSize = 1;
-                            this.setCarrying(newItemStack);
-                            player.playSound("mob.chickenplop", 1.0F, (this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F + 1.0F);
+                    if (itemstack.getItem() instanceof ItemArmor) {
+                        int i = EntityLiving.getArmorPosition(itemstack) - 1;
+                        if (this.getCurrentItemOrArmor(i + 1) == null) {
+                            this.setCurrentItemOrArmor(i + 1, itemstack.copy());
                             if (!player.capabilities.isCreativeMode && --itemstack.stackSize <= 0) player.inventory.setInventorySlotContents(player.inventory.currentItem, null);
                         }
+                        else {
+                            EntityItem entityItem = new EntityItem(this.worldObj, this.posX, this.posY, this.posZ, this.getCurrentItemOrArmor(i + 1));
+                            this.worldObj.spawnEntityInWorld(entityItem);
+                            this.setCurrentItemOrArmor(i + 1, null);
+                        }
+                        return true;
+                    }
+                    if (this.getCarrying() == null) {
+                        ItemStack newItemStack = itemstack.copy();
+                        newItemStack.stackSize = 1;
+                        this.setCarrying(newItemStack);
+                        player.playSound("mob.chickenplop", 1.0F, (this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F + 1.0F);
+                        if (!player.capabilities.isCreativeMode && --itemstack.stackSize <= 0) player.inventory.setInventorySlotContents(player.inventory.currentItem, null);
                     }
                     else if (this.getCarrying() != null && itemstack.itemID == Item.stick.itemID) {
                         EntityItem entityItem = new EntityItem(player.worldObj, this.posX, this.posY, this.posZ, this.getCarrying().copy());
@@ -93,12 +92,10 @@ public class EntityMiniPlayer extends EntityTameable implements ICreatureInvento
                         }
                     }
                 }
-                else {
-                    if (!player.isSneaking() && this.getCarrying() != null) {
-                        switch (this.getCarrying().itemID) {
-                            case 54: player.openGui(MiniCreatures.instance, 0, player.worldObj, entityId, 0, 0);
-                            default: break;
-                        }
+                if (!player.isSneaking() && this.getCarrying() != null) {
+                    switch (this.getCarrying().itemID) {
+                        case 54: player.openGui(MiniCreatures.instance, 0, player.worldObj, entityId, 0, 0);
+                        default: break;
                     }
                 }
             /*
