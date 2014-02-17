@@ -1,0 +1,16 @@
+[
+{
+  "modid": "minicreatures",
+  "name": "Mini Creatures",
+  "description": "What is this, Minecraft for foxes!?",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "http://kihirakreations.co.uk",
+  "updateUrl": "",
+  "authors": ["Kihira"],
+  "credits": "Mr Hazard for providing the Fox and T-Rex models and textures",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
