@@ -1,4 +1,4 @@
-package minicreatures.client.model;
+package kihira.minicreatures.client.model;
 
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;

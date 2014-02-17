@@ -1,4 +1,4 @@
-package minicreatures.common.entity;
+package kihira.minicreatures.common.entity;
 
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;

@@ -1,4 +1,4 @@
-package minicreatures;
+package kihira.minicreatures;
 
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.SidedProxy;
@@ -7,22 +7,22 @@ import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.EntityRegistry;
 import cpw.mods.fml.common.registry.LanguageRegistry;
-import minicreatures.common.GuiHandler;
-import minicreatures.common.entity.CommandSpawnEntity;
-import minicreatures.common.entity.EntityFox;
-import minicreatures.common.entity.EntityMiniPlayer;
-import minicreatures.common.entity.EntityTRex;
-import minicreatures.proxy.CommonProxy;
+import kihira.minicreatures.common.GuiHandler;
+import kihira.minicreatures.common.entity.CommandSpawnEntity;
+import kihira.minicreatures.common.entity.EntityFox;
+import kihira.minicreatures.common.entity.EntityMiniPlayer;
+import kihira.minicreatures.common.entity.EntityTRex;
+import kihira.minicreatures.proxy.CommonProxy;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.world.biome.BiomeGenBase;
 
-@Mod(modid = "minicreatures", name = "Mini Creatures", version = "0.0.1")
+@Mod(modid = "kihira/minicreatures", name = "Mini Creatures", version = "0.0.1")
 public class MiniCreatures {
 
     @SidedProxy(clientSide = "minicreatures.proxy.ClientProxy", serverSide = "minicreatures.proxy.CommonProxy")
     public static CommonProxy proxy;
 
-    @Mod.Instance(value = "minicreatures")
+    @Mod.Instance(value = "kihira/minicreatures")
     public static MiniCreatures instance;
 
     @Mod.EventHandler

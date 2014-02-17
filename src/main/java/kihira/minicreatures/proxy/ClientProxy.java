@@ -1,12 +1,12 @@
-package minicreatures.proxy;
+package kihira.minicreatures.proxy;
 
 import cpw.mods.fml.client.registry.RenderingRegistry;
-import minicreatures.client.render.RenderFox;
-import minicreatures.client.render.RenderMiniPlayer;
-import minicreatures.client.render.RenderTRex;
-import minicreatures.common.entity.EntityFox;
-import minicreatures.common.entity.EntityMiniPlayer;
-import minicreatures.common.entity.EntityTRex;
+import kihira.minicreatures.client.render.RenderFox;
+import kihira.minicreatures.client.render.RenderMiniPlayer;
+import kihira.minicreatures.client.render.RenderTRex;
+import kihira.minicreatures.common.entity.EntityFox;
+import kihira.minicreatures.common.entity.EntityMiniPlayer;
+import kihira.minicreatures.common.entity.EntityTRex;
 
 public class ClientProxy extends CommonProxy {
 

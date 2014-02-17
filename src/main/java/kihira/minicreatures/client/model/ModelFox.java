@@ -1,6 +1,6 @@
-package minicreatures.client.model;
+package kihira.minicreatures.client.model;
 
-import minicreatures.common.entity.EntityFox;
+import kihira.minicreatures.common.entity.EntityFox;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.entity.Entity;

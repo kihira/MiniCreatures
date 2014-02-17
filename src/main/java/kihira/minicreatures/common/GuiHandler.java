@@ -1,8 +1,7 @@
-package minicreatures.common;
+package kihira.minicreatures.common;
 
 import cpw.mods.fml.common.network.IGuiHandler;
-import minicreatures.common.entity.EntityFox;
-import minicreatures.common.entity.ICreatureInventory;
+import kihira.minicreatures.common.entity.ICreatureInventory;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.ContainerChest;

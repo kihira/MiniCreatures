@@ -1,7 +1,7 @@
-package minicreatures.client.render;
+package kihira.minicreatures.client.render;
 
-import minicreatures.client.model.ModelMiniPlayer;
-import minicreatures.common.entity.EntityMiniPlayer;
+import kihira.minicreatures.client.model.ModelMiniPlayer;
+import kihira.minicreatures.common.entity.EntityMiniPlayer;
 import net.minecraft.block.Block;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.renderer.RenderBlocks;

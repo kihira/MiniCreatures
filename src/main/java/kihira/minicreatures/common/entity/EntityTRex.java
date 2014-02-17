@@ -1,4 +1,4 @@
-package minicreatures.common.entity;
+package kihira.minicreatures.common.entity;
 
 import net.minecraft.entity.EntityAgeable;
 import net.minecraft.entity.SharedMonsterAttributes;

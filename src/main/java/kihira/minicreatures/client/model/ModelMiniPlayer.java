@@ -1,6 +1,6 @@
-package minicreatures.client.model;
+package kihira.minicreatures.client.model;
 
-import minicreatures.common.entity.EntityMiniPlayer;
+import kihira.minicreatures.common.entity.EntityMiniPlayer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.model.ModelRenderer;
@@ -12,7 +12,7 @@ import org.lwjgl.opengl.GL11;
 
 public class ModelMiniPlayer extends ModelBiped {
 
-    private final ResourceLocation specialTextures = new ResourceLocation("minicreatures", "textures/model/specials.png");
+    private final ResourceLocation specialTextures = new ResourceLocation("kihira/minicreatures", "textures/model/specials.png");
 
     public boolean isCarrying;
 

@@ -1,6 +1,4 @@
-package minicreatures.proxy;
-
-import net.minecraft.client.model.ModelBiped;
+package kihira.minicreatures.proxy;
 
 public class CommonProxy {
 
