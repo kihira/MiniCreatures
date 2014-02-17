@@ -7,20 +7,19 @@ import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.*;
 import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.passive.EntityChicken;
 import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.InventoryBasic;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
-import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 
 public class EntityMiniPlayer extends EntityTameable implements ICreatureInventory {
 
-    private final InventoryBasic inventory = new InventoryBasic(this.getEntityName(), false, 18);
+    private final InventoryBasic inventory = new InventoryBasic(this.getCommandSenderName(), false, 18);
     //True if aiming with bow. Not currently in use.
     public boolean isAiming = false;
 
@@ -41,8 +40,8 @@ public class EntityMiniPlayer extends EntityTameable implements ICreatureInvento
     @Override
     protected void applyEntityAttributes() {
         super.applyEntityAttributes();
-        this.getEntityAttribute(SharedMonsterAttributes.maxHealth).setAttribute(10.0D);
-        this.getEntityAttribute(SharedMonsterAttributes.movementSpeed).setAttribute(0.30000001192092896D);
+        this.getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(10.0D);
+        this.getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(0.30000001192092896D);
     }
 
     @Override
@@ -62,12 +61,12 @@ public class EntityMiniPlayer extends EntityTameable implements ICreatureInvento
                 if (itemstack != null) {
                     if (itemstack.getItem() instanceof ItemArmor) {
                         int i = EntityLiving.getArmorPosition(itemstack) - 1;
-                        if (this.getCurrentItemOrArmor(i + 1) == null) {
+                        if (this.getEquipmentInSlot(i + 1) == null) {
                             this.setCurrentItemOrArmor(i + 1, itemstack.copy());
                             if (!player.capabilities.isCreativeMode && --itemstack.stackSize <= 0) player.inventory.setInventorySlotContents(player.inventory.currentItem, null);
                         }
                         else {
-                            EntityItem entityItem = new EntityItem(this.worldObj, this.posX, this.posY, this.posZ, this.getCurrentItemOrArmor(i + 1));
+                            EntityItem entityItem = new EntityItem(this.worldObj, this.posX, this.posY, this.posZ, this.getEquipmentInSlot(i + 1));
                             this.worldObj.spawnEntityInWorld(entityItem);
                             this.setCurrentItemOrArmor(i + 1, null);
                         }
@@ -80,7 +79,7 @@ public class EntityMiniPlayer extends EntityTameable implements ICreatureInvento
                         player.playSound("mob.chickenplop", 1.0F, (this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F + 1.0F);
                         if (!player.capabilities.isCreativeMode && --itemstack.stackSize <= 0) player.inventory.setInventorySlotContents(player.inventory.currentItem, null);
                     }
-                    else if (this.getCarrying() != null && itemstack.itemID == Item.stick.itemID) {
+                    else if (this.getCarrying() != null && itemstack.getItem() == Items.stick) {
                         EntityItem entityItem = new EntityItem(player.worldObj, this.posX, this.posY, this.posZ, this.getCarrying().copy());
                         player.worldObj.spawnEntityInWorld(entityItem);
                         this.setCarrying(null);
@@ -95,10 +94,7 @@ public class EntityMiniPlayer extends EntityTameable implements ICreatureInvento
                     }
                 }
                 if (!player.isSneaking() && this.getCarrying() != null) {
-                    switch (this.getCarrying().itemID) {
-                        case 54: player.openGui(MiniCreatures.instance, 0, player.worldObj, entityId, 0, 0);
-                        default: break;
-                    }
+                    if (Block.getBlockFromItem(this.getCarrying().getItem()) == Blocks.chest) player.openGui(MiniCreatures.instance, 0, player.worldObj, this.getEntityId(), 0, 0);
                 }
             /*
             else if (player.getCommandSenderName().equalsIgnoreCase(this.getOwnerName()) && !this.worldObj.isRemote && !this.isBreedingItem(itemstack)) {
@@ -119,7 +115,7 @@ public class EntityMiniPlayer extends EntityTameable implements ICreatureInvento
     }
 
     public ItemStack getCarrying() {
-        return this.getCurrentItemOrArmor(0);
+        return this.getHeldItem();
     }
 
     @Override

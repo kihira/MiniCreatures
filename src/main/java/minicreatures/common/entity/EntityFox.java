@@ -2,16 +2,16 @@ package minicreatures.common.entity;
 
 import minicreatures.MiniCreatures;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockChest;
 import net.minecraft.entity.EntityAgeable;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.*;
 import net.minecraft.entity.passive.EntityChicken;
 import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.InventoryBasic;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -21,7 +21,7 @@ import net.minecraft.world.World;
 
 public class EntityFox extends EntityTameable implements ICreatureInventory {
 
-    private final IInventory inventory = new InventoryBasic(this.getEntityName(), false, 18);
+    private final IInventory inventory = new InventoryBasic(this.getCommandSenderName(), false, 18);
 
     public EntityFox(World par1World) {
         super(par1World);
@@ -50,8 +50,8 @@ public class EntityFox extends EntityTameable implements ICreatureInventory {
     @Override
     protected void applyEntityAttributes() {
         super.applyEntityAttributes();
-        this.getEntityAttribute(SharedMonsterAttributes.maxHealth).setAttribute(10.0D);
-        this.getEntityAttribute(SharedMonsterAttributes.movementSpeed).setAttribute(0.30000001192092896D);
+        this.getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(10.0D);
+        this.getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(0.30000001192092896D);
     }
 
     public boolean isAIEnabled() {
@@ -66,12 +66,12 @@ public class EntityFox extends EntityTameable implements ICreatureInventory {
                 if (itemstack.getItem() instanceof ItemFood) {
                     ItemFood itemfood = (ItemFood)itemstack.getItem();
                     if (itemfood.isWolfsFavoriteMeat() && this.getMaxHealth() < 20.0F) {
-                        this.heal((float)itemfood.getHealAmount());
+                        this.heal((float)itemfood.func_150905_g(itemstack));
                         if (!player.capabilities.isCreativeMode && --itemstack.stackSize <= 0) player.inventory.setInventorySlotContents(player.inventory.currentItem, null);
                         return true;
                     }
                 }
-                else if (itemstack.getItem().itemID == Block.chest.blockID && !this.hasChest()) {
+                else if (Block.getBlockFromItem(itemstack.getItem()) == Blocks.chest && !this.hasChest()) {
                     this.setHasChest(true);
                     this.playSound("mob.chickenplop", 1.0F, (this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F + 1.0F);
                     if (!player.capabilities.isCreativeMode && --itemstack.stackSize <= 0) player.inventory.setInventorySlotContents(player.inventory.currentItem, null);
@@ -96,7 +96,7 @@ public class EntityFox extends EntityTameable implements ICreatureInventory {
             }
             if (!player.isSneaking() && this.hasChest()) {
                 //Send Entity ID as x coord. Inspired by OpenBlocks
-                player.openGui(MiniCreatures.instance, 0, player.worldObj, entityId, 0, 0);
+                player.openGui(MiniCreatures.instance, 0, player.worldObj, this.getEntityId(), 0, 0);
             }
             else if (player.getCommandSenderName().equalsIgnoreCase(this.getOwnerName()) && !this.worldObj.isRemote && !this.isBreedingItem(itemstack)) {
                 this.aiSit.setSitting(!this.isSitting());
@@ -106,7 +106,7 @@ public class EntityFox extends EntityTameable implements ICreatureInventory {
                 this.setAttackTarget(null);
             }
         }
-        else if (itemstack != null && itemstack.itemID == Item.bone.itemID) {
+        else if (itemstack != null && itemstack.getItem() == Items.bone) {
             if (!player.capabilities.isCreativeMode) --itemstack.stackSize;
             if (itemstack.stackSize <= 0) player.inventory.setInventorySlotContents(player.inventory.currentItem, null);
             if (!this.worldObj.isRemote) {
@@ -166,9 +166,9 @@ public class EntityFox extends EntityTameable implements ICreatureInventory {
         this.setHasChest(tag.getBoolean("HasChest"));
 
         if (this.hasChest()) {
-            NBTTagList nbttaglist = tag.getTagList("Items");
+            NBTTagList nbttaglist = tag.getTagList("Items", 0);
             for (int i = 0; i < nbttaglist.tagCount(); i++) {
-                NBTTagCompound stacktag = (NBTTagCompound)nbttaglist.tagAt(i);
+                NBTTagCompound stacktag = nbttaglist.getCompoundTagAt(i);
                 int j = stacktag.getByte("Slot");
                 if (j >= 0 && j < inventory.getSizeInventory()) inventory.setInventorySlotContents(j, ItemStack.loadItemStackFromNBT(stacktag));
             }
@@ -186,12 +186,7 @@ public class EntityFox extends EntityTameable implements ICreatureInventory {
     }
 
     @Override
-    protected int getDropItemId() {
-        return -1;
-    }
-
-    @Override
-    protected void playStepSound(int par1, int par2, int par3, int par4) {
+    protected void func_145780_a(int par1, int par2, int par3, Block par4) {
         this.playSound("mob.wolf.step", 0.15F, 1.0F);
     }
 

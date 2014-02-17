@@ -33,7 +33,7 @@ public class RenderMiniPlayer extends RenderBiped {
         if (itemstack != null) {
             IItemRenderer customRenderer = MinecraftForgeClient.getItemRenderer(itemstack, EQUIPPED);
             boolean is3D = (customRenderer != null && customRenderer.shouldUseRenderHelper(EQUIPPED, itemstack, BLOCK_3D));
-            if (itemstack.getItem() instanceof ItemBlock && (is3D || RenderBlocks.renderItemIn3d(Block.blocksList[itemstack.itemID].getRenderType()))) {
+            if (itemstack.getItem() instanceof ItemBlock && (is3D || RenderBlocks.renderItemIn3d(Block.getBlockFromItem(itemstack.getItem()).getRenderType()))) {
                 GL11.glTranslatef(0.0F, 0.8875F, -0.3F);
                 GL11.glRotatef(-90.0F, 0.0F, 1.0F, 0.0F);
                 GL11.glScalef(-0.3F, -0.3F, -0.3F);
@@ -73,7 +73,7 @@ public class RenderMiniPlayer extends RenderBiped {
     @Override
     public void doRender(Entity par1Entity, double par2, double par4, double par6, float par8, float par9) {
         EntityMiniPlayer miniPlayer = (EntityMiniPlayer)par1Entity;
-        ((ModelMiniPlayer)this.mainModel).bipedHeadwear.showModel = miniPlayer.getCurrentItemOrArmor(4) == null;
-        super.doRenderLiving((EntityLiving) par1Entity, par2, par4, par6, par8, par9);
+        ((ModelMiniPlayer)this.mainModel).bipedHeadwear.showModel = miniPlayer.getEquipmentInSlot(4) == null;
+        super.doRender((EntityLiving) par1Entity, par2, par4, par6, par8, par9);
     }
 }
