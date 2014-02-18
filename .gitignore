@@ -2,8 +2,6 @@
 /.gradle
 /build
 /eclipse
-/gradle
-/gradlew.bat
 
 ##ForgeGradle
 /run
