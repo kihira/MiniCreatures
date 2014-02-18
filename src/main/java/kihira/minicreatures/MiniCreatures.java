@@ -16,13 +16,13 @@ import kihira.minicreatures.proxy.CommonProxy;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.world.biome.BiomeGenBase;
 
-@Mod(modid = "kihira/minicreatures", name = "Mini Creatures", version = "0.0.1")
+@Mod(modid = "kihira.minicreatures", name = "Mini Creatures", version = "0.0.1")
 public class MiniCreatures {
 
-    @SidedProxy(clientSide = "minicreatures.proxy.ClientProxy", serverSide = "minicreatures.proxy.CommonProxy")
+    @SidedProxy(clientSide = "kihira.minicreatures.proxy.ClientProxy", serverSide = "kihira.minicreatures.proxy.CommonProxy")
     public static CommonProxy proxy;
 
-    @Mod.Instance(value = "kihira/minicreatures")
+    @Mod.Instance(value = "kihira.minicreatures")
     public static MiniCreatures instance;
 
     @Mod.EventHandler
