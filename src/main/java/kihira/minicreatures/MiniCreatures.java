@@ -5,7 +5,6 @@ import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.EntityRegistry;
-import cpw.mods.fml.common.registry.LanguageRegistry;
 import kihira.minicreatures.common.GuiHandler;
 import kihira.minicreatures.common.entity.EntityFox;
 import kihira.minicreatures.common.entity.EntityMiniPlayer;
@@ -30,10 +29,6 @@ public class MiniCreatures {
         proxy.registerSounds();
         registerEntities();
         NetworkRegistry.INSTANCE.registerGuiHandler(instance, new GuiHandler());
-
-        LanguageRegistry.instance().addStringLocalization("entity.minicreatures.MiniFox.name", "en_US", "Mini Fox");
-        LanguageRegistry.instance().addStringLocalization("entity.minicreatures.MiniTRex.name", "en_US", "Mini TRex");
-        LanguageRegistry.instance().addStringLocalization("entity.minicreatures.MiniPlayer.name", "en_US", "Mini Player");
     }
 
     public void registerEntities() {
