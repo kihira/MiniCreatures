@@ -42,6 +42,5 @@ processResources {
 jar.doFirst {
     if (System.getenv().BUILD_NUMBER != null) {
         version = version + "-" + "${System.getenv().BUILD_NUMBER}"
-        println version
     }
 }
