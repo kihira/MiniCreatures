@@ -40,7 +40,8 @@ processResources {
 }
 
 jar.doFirst {
+    version = project.minecraft.version + "-" + version;
     if (System.getenv().BUILD_NUMBER != null) {
-        version = version + "-" + "${System.getenv().BUILD_NUMBER}"
+        version += "-" + "${System.getenv().BUILD_NUMBER}"
     }
 }
