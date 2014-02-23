@@ -7,7 +7,7 @@ import net.minecraft.util.ResourceLocation;
 
 public class RenderTRex extends RenderLiving {
 
-    private final ResourceLocation trexTexture = new ResourceLocation("kihira/minicreatures", "textures/entity/trex.png");
+    private final ResourceLocation trexTexture = new ResourceLocation("minicreatures", "textures/entity/trex.png");
 
     public RenderTRex() {
         super(new ModelTRex(), 0.5F);
