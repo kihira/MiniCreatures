@@ -2,6 +2,7 @@ package kihira.minicreatures.common.entity;
 
 import kihira.minicreatures.MiniCreatures;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockColored;
 import net.minecraft.entity.EntityAgeable;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.*;
@@ -35,8 +36,14 @@ public class EntityFox extends EntityTameable implements ICreatureInventory {
         this.tasks.addTask(5, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
         this.tasks.addTask(5, new EntityAILookIdle(this));
         this.targetTasks.addTask(1, new EntityAITargetNonTamed(this, EntityChicken.class, 200, false));
-        this.dataWatcher.addObject(18, 0);
         this.setTamed(false);
+    }
+
+    @Override
+    protected void entityInit() {
+        super.entityInit();
+        this.dataWatcher.addObject(18, 0);
+        this.dataWatcher.addObject(19, (byte) BlockColored.func_150032_b(1));
     }
 
     public boolean hasChest() {
@@ -54,6 +61,7 @@ public class EntityFox extends EntityTameable implements ICreatureInventory {
         this.getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(0.30000001192092896D);
     }
 
+    @Override
     public boolean isAIEnabled() {
         return true;
     }
@@ -75,17 +83,16 @@ public class EntityFox extends EntityTameable implements ICreatureInventory {
                     this.setHasChest(true);
                     this.playSound("mob.chickenplop", 1.0F, (this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F + 1.0F);
                     if (!player.capabilities.isCreativeMode && --itemstack.stackSize <= 0) player.inventory.setInventorySlotContents(player.inventory.currentItem, null);
+                    return true;
                 }
-                /* TODO Add in collars
-                else if (itemstack.itemID == Item.dyePowder.itemID) {
-                    int i = BlockColored.getBlockFromDye(itemstack.getItemDamage());
+                else if (itemstack.getItem() == Items.dye) {
+                    int i = BlockColored.func_150032_b(itemstack.getItemDamage());
                     if (i != this.getCollarColor()) {
                         this.setCollarColor(i);
-                        if (!par1EntityPlayer.capabilities.isCreativeMode && --itemstack.stackSize <= 0) par1EntityPlayer.inventory.setInventorySlotContents(par1EntityPlayer.inventory.currentItem, (ItemStack)null);
+                        if (!player.capabilities.isCreativeMode && --itemstack.stackSize <= 0) player.inventory.setInventorySlotContents(player.inventory.currentItem, null);
                         return true;
                     }
                 }
-                */
             }
             else if (this.riddenByEntity == null && !this.isRiding() && !worldObj.isRemote) {
                 EntityMiniPlayer miniPlayer = new EntityMiniPlayer(player.worldObj);
@@ -208,6 +215,14 @@ public class EntityFox extends EntityTameable implements ICreatureInventory {
     @Override
     protected float getSoundVolume() {
         return 0.4F;
+    }
+
+    public int getCollarColor() {
+        return this.dataWatcher.getWatchableObjectByte(19) & 15;
+    }
+
+    public void setCollarColor(int par1) {
+        this.dataWatcher.updateObject(19, (byte) (par1 & 15));
     }
 
     @Override
