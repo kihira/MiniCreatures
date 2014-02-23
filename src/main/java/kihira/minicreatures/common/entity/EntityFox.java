@@ -70,6 +70,11 @@ public class EntityFox extends EntityTameable implements ICreatureInventory {
     }
 
     @Override
+    public boolean isChild() {
+        return false;
+    }
+
+    @Override
     public boolean interact(EntityPlayer player) {
         ItemStack itemstack = player.inventory.getCurrentItem();
         if (this.isTamed()) {
