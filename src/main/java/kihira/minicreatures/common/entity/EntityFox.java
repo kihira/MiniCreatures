@@ -6,6 +6,7 @@ import net.minecraft.block.BlockColored;
 import net.minecraft.entity.EntityAgeable;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.*;
+import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.passive.EntityChicken;
 import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.player.EntityPlayer;
@@ -33,9 +34,10 @@ public class EntityFox extends EntityTameable implements ICreatureInventory {
         this.tasks.addTask(1, new EntityAISwimming(this));
         this.tasks.addTask(2, this.aiSit);
         this.tasks.addTask(3, new EntityAIFollowOwner(this, 1.0D, 10.0F, 2.0F));
-        this.tasks.addTask(4, new EntityAIWander(this, 1.0D));
-        this.tasks.addTask(5, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
-        this.tasks.addTask(5, new EntityAILookIdle(this));
+        this.tasks.addTask(4, new EntityAIMate(this, 1.0D));
+        this.tasks.addTask(5, new EntityAIWander(this, 1.0D));
+        this.tasks.addTask(6, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
+        this.tasks.addTask(6, new EntityAILookIdle(this));
         this.targetTasks.addTask(1, new EntityAITargetNonTamed(this, EntityChicken.class, 200, false));
         this.setTamed(false);
     }
@@ -218,6 +220,11 @@ public class EntityFox extends EntityTameable implements ICreatureInventory {
     }
 
     @Override
+    protected float getSoundPitch() {
+        return this.rand.nextFloat() - this.rand.nextFloat() * 0.3F + 1.5F;
+    }
+
+    @Override
     protected float getSoundVolume() {
         return 0.4F;
     }
@@ -246,7 +253,23 @@ public class EntityFox extends EntityTameable implements ICreatureInventory {
 
     @Override
     public EntityFox createChild(EntityAgeable entityageable) {
-        return new EntityFox(this.worldObj);
+        EntityFox entityFox = new EntityFox(this.worldObj);
+        String s = this.getOwnerName();
+
+        if (s != null && s.trim().length() > 0) {
+            entityFox.setOwner(s);
+            entityFox.setTamed(true);
+        }
+        return entityFox;
+    }
+
+    @Override
+    public boolean canMateWith(EntityAnimal par1EntityAnimal) {
+        if (par1EntityAnimal == this || !this.isTamed() || !(par1EntityAnimal instanceof EntityFox)) return false;
+        else {
+            EntityFox entityFox = (EntityFox)par1EntityAnimal;
+            return entityFox.isTamed() && (!entityFox.isSitting() && this.isInLove() && entityFox.isInLove());
+        }
     }
 
     @Override
