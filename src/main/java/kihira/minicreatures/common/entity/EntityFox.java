@@ -152,6 +152,7 @@ public class EntityFox extends EntityTameable implements ICreatureInventory {
     public void writeEntityToNBT(NBTTagCompound tag) {
         super.writeEntityToNBT(tag);
         tag.setBoolean("HasChest", this.hasChest());
+        tag.setByte("CollarColor", (byte)this.getCollarColor());
 
         if (this.hasChest()) {
             NBTTagList nbttaglist = new NBTTagList();
@@ -180,6 +181,7 @@ public class EntityFox extends EntityTameable implements ICreatureInventory {
                 if (j >= 0 && j < inventory.getSizeInventory()) inventory.setInventorySlotContents(j, ItemStack.loadItemStackFromNBT(stacktag));
             }
         }
+        if (tag.hasKey("CollarColor", 99)) this.setCollarColor(tag.getByte("CollarColor"));
     }
 
     @Override
