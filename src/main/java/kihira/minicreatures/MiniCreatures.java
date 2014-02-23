@@ -3,8 +3,10 @@ package kihira.minicreatures;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
+import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.EntityRegistry;
+import kihira.minicreatures.common.CommandSpawnEntity;
 import kihira.minicreatures.common.GuiHandler;
 import kihira.minicreatures.common.entity.EntityFox;
 import kihira.minicreatures.common.entity.EntityMiniPlayer;
@@ -24,11 +26,15 @@ public class MiniCreatures {
 
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {
-
         proxy.registerRenderers();
         proxy.registerSounds();
         registerEntities();
         NetworkRegistry.INSTANCE.registerGuiHandler(instance, new GuiHandler());
+    }
+
+    @Mod.EventHandler
+    public void serverStarting(FMLServerStartingEvent e) {
+        e.registerServerCommand(new CommandSpawnEntity());
     }
 
     public void registerEntities() {

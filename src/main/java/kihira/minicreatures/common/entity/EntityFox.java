@@ -13,6 +13,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.InventoryBasic;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -94,6 +95,7 @@ public class EntityFox extends EntityTameable implements ICreatureInventory {
                     }
                 }
             }
+            /*
             else if (this.riddenByEntity == null && !this.isRiding() && !worldObj.isRemote) {
                 EntityMiniPlayer miniPlayer = new EntityMiniPlayer(player.worldObj);
                 miniPlayer.setCustomNameTag(player.getCommandSenderName());
@@ -101,6 +103,7 @@ public class EntityFox extends EntityTameable implements ICreatureInventory {
                 player.worldObj.spawnEntityInWorld(miniPlayer);
                 miniPlayer.mountEntity(this);
             }
+            */
             if (!player.isSneaking() && this.hasChest()) {
                 //Send Entity ID as x coord. Inspired by OpenBlocks
                 player.openGui(MiniCreatures.instance, 0, player.worldObj, this.getEntityId(), 0, 0);
@@ -219,6 +222,20 @@ public class EntityFox extends EntityTameable implements ICreatureInventory {
         return 0.4F;
     }
 
+    @Override
+    protected Item getDropItem() {
+        return Items.leather;
+    }
+
+    @Override
+    protected void dropFewItems(boolean hitByPlayerRecently, int lootingLevel) {
+        int j = this.rand.nextInt(3) + this.rand.nextInt(1 + lootingLevel);
+
+        for (int k = 0; k < j; ++k) {
+            this.dropItem(Items.leather, 1);
+        }
+    }
+
     public int getCollarColor() {
         return this.dataWatcher.getWatchableObjectByte(19) & 15;
     }
@@ -228,8 +245,8 @@ public class EntityFox extends EntityTameable implements ICreatureInventory {
     }
 
     @Override
-    public EntityAgeable createChild(EntityAgeable entityageable) {
-        return null;
+    public EntityFox createChild(EntityAgeable entityageable) {
+        return new EntityFox(this.worldObj);
     }
 
     @Override
