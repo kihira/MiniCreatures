@@ -15,7 +15,7 @@ import kihira.minicreatures.proxy.CommonProxy;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.world.biome.BiomeGenBase;
 
-@Mod(modid = "minicreatures", useMetadata = true)
+@Mod(modid = "minicreatures", useMetadata = true, guiFactory = "kihira.minicreatures.client.gui.ConfigGuiFactory")
 public class MiniCreatures {
 
     @SidedProxy(clientSide = "kihira.minicreatures.proxy.ClientProxy", serverSide = "kihira.minicreatures.proxy.CommonProxy")
