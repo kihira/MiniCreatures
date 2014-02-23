@@ -1,6 +1,7 @@
 package kihira.minicreatures.common;
 
 import net.minecraft.command.CommandBase;
+import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
@@ -37,5 +38,9 @@ public class CommandSpawnEntity extends CommandBase {
     public List addTabCompletionOptions(ICommandSender par1ICommandSender, String[] par2ArrayOfStr) {
         String[] entityNameList = (String[]) EntityList.stringToClassMapping.keySet().toArray(new String[EntityList.stringToClassMapping.size()]);
         return par2ArrayOfStr.length > 0 ? getListOfStringsMatchingLastWord(par2ArrayOfStr, entityNameList) : null;
+    }
+
+    public int compareTo(Object par1Obj) {
+        return this.compareTo((ICommand)par1Obj);
     }
 }
