@@ -6,11 +6,13 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.EntityRegistry;
+import cpw.mods.fml.common.registry.GameRegistry;
 import kihira.minicreatures.common.CommandSpawnEntity;
 import kihira.minicreatures.common.GuiHandler;
 import kihira.minicreatures.common.entity.EntityFox;
 import kihira.minicreatures.common.entity.EntityMiniPlayer;
 import kihira.minicreatures.common.entity.EntityTRex;
+import kihira.minicreatures.common.item.ItemCustomizer;
 import kihira.minicreatures.proxy.CommonProxy;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.world.biome.BiomeGenBase;
@@ -28,6 +30,8 @@ public class MiniCreatures {
     @Mod.Instance(value = "minicreatures")
     public static MiniCreatures instance;
 
+    public static final ItemCustomizer itemCustomizer = new ItemCustomizer();
+
     public static boolean enableMiniFoxes;
     public static boolean enableMiniTRex;
     public static boolean enableMiniPlayers;
@@ -38,6 +42,7 @@ public class MiniCreatures {
         proxy.registerRenderers();
         proxy.registerSounds();
         registerEntities();
+        registerItems();
         NetworkRegistry.INSTANCE.registerGuiHandler(instance, new GuiHandler());
     }
 
@@ -59,6 +64,10 @@ public class MiniCreatures {
         enableMiniPlayers = property.getBoolean(true);
 
         if (configuration.hasChanged()) configuration.save();
+    }
+
+    private void registerItems() {
+        GameRegistry.registerItem(itemCustomizer, "customizer");
     }
 
     private void registerEntities() {
