@@ -12,9 +12,7 @@ import org.lwjgl.opengl.GL11;
 
 public class ModelMiniPlayer extends ModelBiped {
 
-    private final ResourceLocation specialTextures = new ResourceLocation("kihira/minicreatures", "textures/model/specials.png");
-
-    public boolean isCarrying;
+    private final ResourceLocation specialTextures = new ResourceLocation("minicreatures", "textures/model/specials.png");
 
     ModelRenderer tailBase;
     ModelRenderer tailPart1;
@@ -32,6 +30,9 @@ public class ModelMiniPlayer extends ModelBiped {
     ModelRenderer hornRightPart3;
     ModelRenderer hornRightPart4;
     ModelRenderer hornRightPart5;
+    ModelRenderer fairyWingLeft;
+    ModelRenderer fairy;
+    ModelRenderer fairyWingRight;
 
 
     public ModelMiniPlayer() {
@@ -90,6 +91,27 @@ public class ModelMiniPlayer extends ModelBiped {
         hornRightPart5 = new ModelRenderer(this, 12, 24);
         hornRightPart5.addBox(-8F, -5F, -2F, 2, 2, 4);
         hornRightBase.addChild(hornRightPart5);
+
+        fairy = new ModelRenderer(this, 24, 8);
+        fairy.addBox(-13.1F, -9F, 5F, 4, 4, 4);
+        fairy.setRotationPoint(0F, 0F, 0F);
+        setRotation(fairy, -0.1047198F, 0F, 0F);
+        fairyWingLeft = new ModelRenderer(this, 24, -8);
+        fairyWingLeft.addBox(-12F, -9F, 6F, 0, 8, 8);
+        setRotation(fairyWingLeft, -0.0349066F, 0.1745329F, 0.0872665F);
+        fairy.addChild(fairyWingLeft);
+        fairyWingRight = new ModelRenderer(this, 24, -8);
+        fairyWingRight.addBox(-10F, -9.8F, 9F, 0, 8, 8);
+        setRotation(fairyWingRight, 0.0349066F, -0.1745329F, -0.0872665F);
+        fairy.addChild(fairyWingRight);
+
+        this.bipedBody.rotateAngleX = 0.0F;
+        this.bipedRightLeg.rotationPointZ = 0.1F;
+        this.bipedLeftLeg.rotationPointZ = 0.1F;
+        this.bipedRightLeg.rotationPointY = 12.0F;
+        this.bipedLeftLeg.rotationPointY = 12.0F;
+        this.bipedHead.rotationPointY = 0.0F;
+        this.bipedHeadwear.rotationPointY = 0.0F;
     }
 
     public void render(Entity par1Entity, float par2, float par3, float par4, float par5, float par6, float par7) {
@@ -111,10 +133,6 @@ public class ModelMiniPlayer extends ModelBiped {
         this.bipedRightLeg.render(par7);
         this.bipedLeftLeg.render(par7);
         GL11.glPopMatrix();
-        if (miniPlayer.getCustomNameTag().equals("Succubism")) {
-            this.renderTail(par7);
-            this.renderHorns(par7);
-        }
     }
 
     public void setRotationAngles(float par1, float par2, float par3, float par4, float par5, float par6, Entity par7Entity) {
@@ -145,30 +163,6 @@ public class ModelMiniPlayer extends ModelBiped {
             this.bipedLeftLeg.rotateAngleY = -((float)Math.PI / 10F);
         }
 
-        this.bipedRightArm.rotateAngleY = 0.0F;
-        this.bipedLeftArm.rotateAngleY = 0.0F;
-
-        if (this.isSneak) {
-            this.bipedBody.rotateAngleX = 0.5F;
-            this.bipedRightArm.rotateAngleX += 0.4F;
-            this.bipedLeftArm.rotateAngleX += 0.4F;
-            this.bipedRightLeg.rotationPointZ = 4.0F;
-            this.bipedLeftLeg.rotationPointZ = 4.0F;
-            this.bipedRightLeg.rotationPointY = 9.0F;
-            this.bipedLeftLeg.rotationPointY = 9.0F;
-            this.bipedHead.rotationPointY = 1.0F;
-            this.bipedHeadwear.rotationPointY = 1.0F;
-        }
-        else {
-            this.bipedBody.rotateAngleX = 0.0F;
-            this.bipedRightLeg.rotationPointZ = 0.1F;
-            this.bipedLeftLeg.rotationPointZ = 0.1F;
-            this.bipedRightLeg.rotationPointY = 12.0F;
-            this.bipedLeftLeg.rotationPointY = 12.0F;
-            this.bipedHead.rotationPointY = 0.0F;
-            this.bipedHeadwear.rotationPointY = 0.0F;
-        }
-
         this.bipedRightArm.rotateAngleZ += MathHelper.cos(par3 * 0.09F) * 0.05F + 0.05F;
         this.bipedLeftArm.rotateAngleZ -= MathHelper.cos(par3 * 0.09F) * 0.05F + 0.05F;
         this.bipedRightArm.rotateAngleX += MathHelper.sin(par3 * 0.067F) * 0.05F;
@@ -182,6 +176,12 @@ public class ModelMiniPlayer extends ModelBiped {
             this.bipedRightArm.rotateAngleX = -0.8F;
             this.bipedRightArm.rotateAngleZ = 0.05F;
         }
+    }
+
+    private void setRotation(ModelRenderer model, float x, float y, float z) {
+        model.rotateAngleX = x;
+        model.rotateAngleY = y;
+        model.rotateAngleZ = z;
     }
 
     public void renderHorns(float par1) {
@@ -203,6 +203,15 @@ public class ModelMiniPlayer extends ModelBiped {
         this.tailPart1.render(par1);
         this.tailPart2.render(par1);
         this.tailTip.render(par1);
+        GL11.glPopMatrix();
+    }
+
+    public void renderFairy(float par1) {
+        Minecraft.getMinecraft().renderEngine.bindTexture(specialTextures);
+        GL11.glPushMatrix();
+        GL11.glScalef(1.0F / 2F, 1.0F / 2F, 1.0F / 2F);
+        GL11.glTranslatef(0.0F, 24.0F * par1, 0.0F);
+        this.fairy.render(par1);
         GL11.glPopMatrix();
     }
 }
