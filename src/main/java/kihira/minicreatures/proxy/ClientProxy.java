@@ -8,8 +8,11 @@ import kihira.minicreatures.client.render.RenderTRex;
 import kihira.minicreatures.common.entity.EntityFox;
 import kihira.minicreatures.common.entity.EntityMiniPlayer;
 import kihira.minicreatures.common.entity.EntityTRex;
+import net.minecraft.util.ResourceLocation;
 
 public class ClientProxy extends CommonProxy {
+
+    public static final ResourceLocation specialTextures = new ResourceLocation("minicreatures", "textures/model/specials.png");
 
     @Override
     public void registerRenderers() {

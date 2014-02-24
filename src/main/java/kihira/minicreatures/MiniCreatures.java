@@ -7,7 +7,9 @@ import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.EntityRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
+import kihira.minicreatures.client.model.parts.PartModelFairy;
 import kihira.minicreatures.common.CommandSpawnEntity;
+import kihira.minicreatures.common.CustomizerRegistry;
 import kihira.minicreatures.common.GuiHandler;
 import kihira.minicreatures.common.entity.EntityFox;
 import kihira.minicreatures.common.entity.EntityMiniPlayer;
@@ -18,6 +20,8 @@ import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 
@@ -29,6 +33,7 @@ public class MiniCreatures {
 
     @Mod.Instance(value = "minicreatures")
     public static MiniCreatures instance;
+    public static final Logger logger = LogManager.getLogger("MiniCreatues");
 
     public static final ItemCustomizer itemCustomizer = new ItemCustomizer();
 
@@ -44,6 +49,8 @@ public class MiniCreatures {
         registerEntities();
         registerItems();
         NetworkRegistry.INSTANCE.registerGuiHandler(instance, new GuiHandler());
+
+        CustomizerRegistry.registerPart(new PartModelFairy());
     }
 
     @Mod.EventHandler

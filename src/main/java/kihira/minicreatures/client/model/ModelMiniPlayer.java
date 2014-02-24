@@ -1,18 +1,18 @@
 package kihira.minicreatures.client.model;
 
+import kihira.minicreatures.common.CustomizerRegistry;
+import kihira.minicreatures.common.ICustomizerPart;
 import kihira.minicreatures.common.entity.EntityMiniPlayer;
+import kihira.minicreatures.proxy.ClientProxy;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.util.MathHelper;
-import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
 public class ModelMiniPlayer extends ModelBiped {
-
-    private final ResourceLocation specialTextures = new ResourceLocation("minicreatures", "textures/model/specials.png");
 
     ModelRenderer tailBase;
     ModelRenderer tailPart1;
@@ -114,6 +114,7 @@ public class ModelMiniPlayer extends ModelBiped {
         this.bipedHeadwear.rotationPointY = 0.0F;
     }
 
+    @SuppressWarnings("unchecked")
     public void render(Entity par1Entity, float par2, float par3, float par4, float par5, float par6, float par7) {
         EntityMiniPlayer miniPlayer = (EntityMiniPlayer)par1Entity;
         this.setRotationAngles(par2, par3, par4, par5, par6, par7, par1Entity);
@@ -132,11 +133,15 @@ public class ModelMiniPlayer extends ModelBiped {
         this.bipedLeftArm.render(par7);
         this.bipedRightLeg.render(par7);
         this.bipedLeftLeg.render(par7);
+
+        for (ICustomizerPart part:CustomizerRegistry.getPartList()) {
+            part.render(par1Entity, this, par2, par3, par4, par5, par6, par7);
+        }
+
         GL11.glPopMatrix();
     }
 
     public void setRotationAngles(float par1, float par2, float par3, float par4, float par5, float par6, Entity par7Entity) {
-
         this.bipedHead.rotateAngleY = par4 / (180F / (float)Math.PI);
         this.bipedHead.rotateAngleX = par5 / (180F / (float)Math.PI);
         this.bipedHeadwear.rotateAngleY = this.bipedHead.rotateAngleY;
@@ -185,7 +190,7 @@ public class ModelMiniPlayer extends ModelBiped {
     }
 
     public void renderHorns(float par1) {
-        Minecraft.getMinecraft().renderEngine.bindTexture(specialTextures);
+        Minecraft.getMinecraft().renderEngine.bindTexture(ClientProxy.specialTextures);
         GL11.glPushMatrix();
         GL11.glScalef(1.5F / 2F, 1.5F / 2F, 1.5F / 2F);
         GL11.glTranslatef(0.0F, 16.0F * par1, 0.0F);
@@ -195,7 +200,7 @@ public class ModelMiniPlayer extends ModelBiped {
     }
 
     public void renderTail(float par1) {
-        Minecraft.getMinecraft().renderEngine.bindTexture(specialTextures);
+        Minecraft.getMinecraft().renderEngine.bindTexture(ClientProxy.specialTextures);
         GL11.glPushMatrix();
         GL11.glScalef(1.0F / 2F, 1.0F / 2F, 1.0F / 2F);
         GL11.glTranslatef(0.0F, 24.0F * par1, 0.0F);
@@ -203,15 +208,6 @@ public class ModelMiniPlayer extends ModelBiped {
         this.tailPart1.render(par1);
         this.tailPart2.render(par1);
         this.tailTip.render(par1);
-        GL11.glPopMatrix();
-    }
-
-    public void renderFairy(float par1) {
-        Minecraft.getMinecraft().renderEngine.bindTexture(specialTextures);
-        GL11.glPushMatrix();
-        GL11.glScalef(1.0F / 2F, 1.0F / 2F, 1.0F / 2F);
-        GL11.glTranslatef(0.0F, 24.0F * par1, 0.0F);
-        this.fairy.render(par1);
         GL11.glPopMatrix();
     }
 }
