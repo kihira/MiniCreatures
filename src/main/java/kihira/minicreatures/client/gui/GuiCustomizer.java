@@ -1,8 +1,10 @@
 package kihira.minicreatures.client.gui;
 
 import com.google.common.base.Strings;
+import kihira.minicreatures.MiniCreatures;
 import kihira.minicreatures.common.CustomizerRegistry;
 import kihira.minicreatures.common.entity.IMiniCreature;
+import kihira.minicreatures.common.network.MiniCreaturesMessage;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiInventory;
@@ -58,6 +60,7 @@ public class GuiCustomizer extends GuiScreen {
 
         //Always perform this last
         updatePartsList();
+        updateNavButtons();
     }
 
     @Override
@@ -72,11 +75,13 @@ public class GuiCustomizer extends GuiScreen {
         }
         //Nav button
         else if (button.id == 7) this.currentPage--;
-        else if (button.id == 9) this.currentPage++;
-
+        else if (button.id == 8) this.currentPage++;
+        else if (button.id == 9) closeGUI(true);
         //Parts buttons
         if (button.id > 0 && button.id < 7) {
             String partName = this.partsList[button.id - 1];
+            if (this.currentEquippedParts.contains(partName)) this.currentEquippedParts.remove(partName);
+            else this.currentEquippedParts.add(partName);
         }
 
         //Update everything just to be safe
@@ -86,11 +91,12 @@ public class GuiCustomizer extends GuiScreen {
 
     private void updateNavButtons() {
         ((GuiButton) this.buttonList.get(7)).enabled = this.currentPage != 0;
-        ((GuiButton) this.buttonList.get(9)).enabled = !((this.currentPage + 1) * 6 >= this.currentValidParts.size());
+        ((GuiButton) this.buttonList.get(8)).enabled = !((this.currentPage + 1) * 6 >= this.currentValidParts.size());
     }
 
     private void updatePartsList() {
         this.currentValidParts = CustomizerRegistry.getValidParts(this.miniCreature, this.currentCategory);
+        this.partsList = new String[6];
         for (int i = 1; i < 7; i++) {
             int num = (this.currentPage * 6) + i - 1;
             GuiButton button = (GuiButton) this.buttonList.get(i);
@@ -103,6 +109,16 @@ public class GuiCustomizer extends GuiScreen {
                 button.visible = false;
             }
         }
+    }
+
+    private void closeGUI(boolean shouldUpdate) {
+        if (shouldUpdate) {
+            MiniCreatures.packetHandler.sendToServer(new MiniCreaturesMessage.UpdateEntityMessage(this.miniCreature.getEntity().getEntityId(), this.currentEquippedParts));
+        }
+        else {
+            //TODO discard the changes locally
+        }
+        this.mc.currentScreen = null;
     }
 
     @Override
@@ -118,7 +134,7 @@ public class GuiCustomizer extends GuiScreen {
         for (int i = 0; i < 6; i++) {
             if (!Strings.isNullOrEmpty(this.partsList[i])) {
                 if (this.currentEquippedParts.contains(this.partsList[i])) this.drawTexturedModalRect(this.guiLeft + 174, this.guiTop + 10 + ((i + 1) * 20), 0, 168, 20, 20);
-                else this.drawTexturedModalRect(this.guiLeft + 174, this.guiTop + 10 + ((i + 1) * 20), 21, 168, 20, 20);
+                else this.drawTexturedModalRect(this.guiLeft + 174, this.guiTop + 10 + ((i + 1) * 20), 22, 168, 20, 20);
             }
         }
     }

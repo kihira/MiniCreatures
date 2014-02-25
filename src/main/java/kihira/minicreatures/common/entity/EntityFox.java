@@ -30,6 +30,7 @@ import java.util.EnumSet;
 public class EntityFox extends EntityTameable implements IMiniCreature {
 
     private final IInventory inventory = new InventoryBasic(this.getCommandSenderName(), false, 18);
+    private ArrayList<String> parts = new ArrayList<String>();
 
     public EntityFox(World par1World) {
         super(par1World);
@@ -167,7 +168,7 @@ public class EntityFox extends EntityTameable implements IMiniCreature {
     public void writeEntityToNBT(NBTTagCompound tag) {
         super.writeEntityToNBT(tag);
         tag.setBoolean("HasChest", this.hasChest());
-        tag.setByte("CollarColor", (byte)this.getCollarColor());
+        tag.setByte("CollarColor", (byte) this.getCollarColor());
 
         if (this.hasChest()) {
             NBTTagList nbttaglist = new NBTTagList();
@@ -294,7 +295,12 @@ public class EntityFox extends EntityTameable implements IMiniCreature {
 
     @Override
     public ArrayList<String> getCurrentParts() {
-        return null;
+        return this.parts;
+    }
+
+    @Override
+    public void setParts(ArrayList<String> parts) {
+        this.parts = parts;
     }
 
     @Override

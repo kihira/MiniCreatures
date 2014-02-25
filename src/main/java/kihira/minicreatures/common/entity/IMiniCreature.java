@@ -16,4 +16,6 @@ public interface IMiniCreature {
     public EnumSet<CustomizerRegistry.EnumPartCategory> getPartCatergoies();
 
     public ArrayList<String> getCurrentParts();
+
+    public void setParts(ArrayList<String> parts);
 }

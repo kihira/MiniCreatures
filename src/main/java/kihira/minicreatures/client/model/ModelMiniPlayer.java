@@ -3,6 +3,7 @@ package kihira.minicreatures.client.model;
 import kihira.minicreatures.common.CustomizerRegistry;
 import kihira.minicreatures.common.ICustomizerPart;
 import kihira.minicreatures.common.entity.EntityMiniPlayer;
+import kihira.minicreatures.common.entity.IMiniCreature;
 import kihira.minicreatures.proxy.ClientProxy;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBiped;
@@ -116,7 +117,7 @@ public class ModelMiniPlayer extends ModelBiped {
 
     @SuppressWarnings("unchecked")
     public void render(Entity par1Entity, float par2, float par3, float par4, float par5, float par6, float par7) {
-        EntityMiniPlayer miniPlayer = (EntityMiniPlayer)par1Entity;
+        IMiniCreature miniPlayer = (IMiniCreature)par1Entity;
         this.setRotationAngles(par2, par3, par4, par5, par6, par7, par1Entity);
         float f6 = 2.0F;
         GL11.glPushMatrix();
@@ -134,8 +135,9 @@ public class ModelMiniPlayer extends ModelBiped {
         this.bipedRightLeg.render(par7);
         this.bipedLeftLeg.render(par7);
 
-        for (ICustomizerPart part:CustomizerRegistry.getPartList().values()) {
-            part.render(par1Entity, this, par2, par3, par4, par5, par6, par7);
+        for (String partName : miniPlayer.getCurrentParts()) {
+            ICustomizerPart part = CustomizerRegistry.getPart(partName);
+            if (part != null) part.render(par1Entity, this, par2, par3, par4, par5, par6, par7);
         }
 
         GL11.glPopMatrix();

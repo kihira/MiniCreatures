@@ -11,6 +11,8 @@ import kihira.minicreatures.MiniCreatures;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.NetHandlerPlayServer;
 
+import java.util.ArrayList;
+
 public abstract class MiniCreaturesMessage implements IMessage {
     public abstract IMessage onMessage(MiniCreaturesMessage message, ChannelHandlerContext ctx, Side side);
 
@@ -19,6 +21,12 @@ public abstract class MiniCreaturesMessage implements IMessage {
         private String partsList;
 
         public UpdateEntityMessage() {}
+        public UpdateEntityMessage(int entityID, ArrayList<String> partsList) {
+            this.entityID = entityID;
+            for (String part : partsList) {
+                this.partsList += part + "|";
+            }
+        }
         public UpdateEntityMessage(int entityID, String ... partsList) {
             this.entityID = entityID;
             for (String part : partsList) {

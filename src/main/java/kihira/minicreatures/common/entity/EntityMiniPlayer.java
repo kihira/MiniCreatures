@@ -16,6 +16,9 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.InventoryBasic;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.NBTTagString;
 import net.minecraft.world.World;
 
 import java.util.ArrayList;
@@ -24,6 +27,7 @@ import java.util.EnumSet;
 public class EntityMiniPlayer extends EntityTameable implements IMiniCreature {
 
     private final InventoryBasic inventory = new InventoryBasic(this.getCommandSenderName(), false, 18);
+    private ArrayList<String> parts = new ArrayList<String>();
     //True if aiming with bow. Not currently in use.
     public boolean isAiming = false;
 
@@ -46,6 +50,28 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature {
         super.applyEntityAttributes();
         this.getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(10.0D);
         this.getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(0.30000001192092896D);
+    }
+
+    @Override
+    public void writeEntityToNBT(NBTTagCompound par1NBTTagCompound) {
+        super.writeEntityToNBT(par1NBTTagCompound);
+
+        NBTTagList nbttaglist = new NBTTagList();
+        for (String part : this.parts) {
+            if (part != null) nbttaglist.appendTag(new NBTTagString(part));
+        }
+        par1NBTTagCompound.setTag("Parts", nbttaglist);
+    }
+
+    @Override
+    public void readEntityFromNBT(NBTTagCompound par1NBTTagCompound) {
+        super.readEntityFromNBT(par1NBTTagCompound);
+
+        NBTTagList tagList = par1NBTTagCompound.getTagList("Parts", 0);
+        this.parts = new ArrayList<String>(tagList.tagCount());
+        for (int i = 0; i < tagList.tagCount(); i++) {
+            this.parts.add(tagList.getStringTagAt(i));
+        }
     }
 
     @Override
@@ -146,9 +172,12 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature {
 
     @Override
     public ArrayList<String> getCurrentParts() {
-        ArrayList<String> arrayList = new ArrayList<String>();
-        arrayList.add("fairy");
-        return arrayList;
+        return this.parts;
+    }
+
+    @Override
+    public void setParts(ArrayList<String> parts) {
+        this.parts = parts;
     }
 
     @Override

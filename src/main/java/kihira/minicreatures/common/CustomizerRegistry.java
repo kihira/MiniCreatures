@@ -36,6 +36,10 @@ public class CustomizerRegistry {
         return validPartsList;
     }
 
+    public static ICustomizerPart getPart(String name) {
+        return partList.get(name);
+    }
+
     public static HashMap<String, ICustomizerPart> getPartList() {
         return partList;
     }
