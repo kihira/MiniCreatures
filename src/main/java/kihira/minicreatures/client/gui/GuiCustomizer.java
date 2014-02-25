@@ -1,5 +1,6 @@
 package kihira.minicreatures.client.gui;
 
+import com.google.common.base.Strings;
 import kihira.minicreatures.common.CustomizerRegistry;
 import kihira.minicreatures.common.entity.IMiniCreature;
 import net.minecraft.client.gui.GuiButton;
@@ -17,13 +18,14 @@ public class GuiCustomizer extends GuiScreen {
     private final ResourceLocation guiTextures = new ResourceLocation("minicreatures", "textures/gui/customizer.png");
     private int guiLeft;
     private int guiTop;
-    private int xSize = 180;
+    private int xSize = 205;
     private int ySize = 170;
     private int currentPage = 0;
     private GuiButton categoryButton;
     private CustomizerRegistry.EnumPartCategory currentCategory = CustomizerRegistry.EnumPartCategory.ALL;
     private String[] partsList = new String[6];
     private ArrayList<String> currentValidParts;
+    private ArrayList<String> currentEquippedParts;
 
     public GuiCustomizer(IMiniCreature entity) {
         this.miniCreature = entity;
@@ -38,19 +40,24 @@ public class GuiCustomizer extends GuiScreen {
         this.guiTop = (this.height - this.ySize) / 2;
 
         //Add in category button
-        this.categoryButton = new GuiButton(0, this.guiLeft + 82, this.guiTop + 7, 92, 20, StatCollector.translateToLocal("category." + this.currentCategory.name() + ".part"));
+        this.categoryButton = new GuiButton(0, this.guiLeft + 82, this.guiTop + 7, 112, 20, StatCollector.translateToLocal("category." + this.currentCategory.name() + ".part"));
         this.buttonList.add(0, this.categoryButton);
 
         //Add in parts buttons
         for (int i = 1; i < 7; i++) {
             this.buttonList.add(i, new GuiButton(i, this.guiLeft + 82, this.guiTop + 10 + (i * 20), 92, 20, ""));
         }
-        updatePartsList();
 
         //Add in navigation buttons
         this.buttonList.add(7, new GuiButton(7, this.guiLeft + 82, this.height / 2 + 54, 20, 20, "<"));
         this.buttonList.add(8, new GuiButton(8, this.guiLeft + 154, this.height / 2 + 54, 20, 20, ">"));
         this.buttonList.add(9, new GuiButton(9, this.guiLeft + 104, this.height / 2 + 54, 48, 20, StatCollector.translateToLocal("gui.done")));
+
+        //Load current part data
+        this.currentEquippedParts = this.miniCreature.getCurrentParts();
+
+        //Always perform this last
+        updatePartsList();
     }
 
     @Override
@@ -69,7 +76,7 @@ public class GuiCustomizer extends GuiScreen {
 
         //Parts buttons
         if (button.id > 0 && button.id < 7) {
-
+            String partName = this.partsList[button.id - 1];
         }
 
         //Update everything just to be safe
@@ -100,15 +107,23 @@ public class GuiCustomizer extends GuiScreen {
 
     @Override
     public void drawScreen(int par1, int par2, float par3) {
-        drawBackground(par3, par1, par2);
+        drawBackground(par1, par2);
         super.drawScreen(par1, par2, par3);
+        drawForeground(par1, par2);
     }
 
-    protected void drawForeground(int p_146979_1_, int p_146979_2_) {
-        this.fontRendererObj.drawString(this.miniCreature.getEntity().getCommandSenderName(), 8, 6, 4210752);
+    private void drawForeground(int p_146979_1_, int p_146979_2_) {
+        this.mc.getTextureManager().bindTexture(this.guiTextures);
+        //Render checkmarks if part is currently equipped
+        for (int i = 0; i < 6; i++) {
+            if (!Strings.isNullOrEmpty(this.partsList[i])) {
+                if (this.currentEquippedParts.contains(this.partsList[i])) this.drawTexturedModalRect(this.guiLeft + 174, this.guiTop + 10 + ((i + 1) * 20), 0, 168, 20, 20);
+                else this.drawTexturedModalRect(this.guiLeft + 174, this.guiTop + 10 + ((i + 1) * 20), 21, 168, 20, 20);
+            }
+        }
     }
 
-    protected void drawBackground(float p_146976_1_, int p_146976_2_, int p_146976_3_) {
+    private void drawBackground(int p_146976_2_, int p_146976_3_) {
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         this.mc.getTextureManager().bindTexture(this.guiTextures);
         this.drawTexturedModalRect(this.guiLeft, this.guiTop, 0, 0, this.xSize, this.ySize);

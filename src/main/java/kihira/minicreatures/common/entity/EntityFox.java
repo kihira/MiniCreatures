@@ -24,6 +24,7 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 
+import java.util.ArrayList;
 import java.util.EnumSet;
 
 public class EntityFox extends EntityTameable implements IMiniCreature {
@@ -289,6 +290,11 @@ public class EntityFox extends EntityTameable implements IMiniCreature {
     @Override
     public EnumSet<CustomizerRegistry.EnumPartCategory> getPartCatergoies() {
         return EnumSet.allOf(CustomizerRegistry.EnumPartCategory.class);
+    }
+
+    @Override
+    public ArrayList<String> getCurrentParts() {
+        return null;
     }
 
     @Override

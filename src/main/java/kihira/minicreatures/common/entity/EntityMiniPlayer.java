@@ -18,6 +18,7 @@ import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 
+import java.util.ArrayList;
 import java.util.EnumSet;
 
 public class EntityMiniPlayer extends EntityTameable implements IMiniCreature {
@@ -141,6 +142,13 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature {
     @Override
     public EnumSet<CustomizerRegistry.EnumPartCategory> getPartCatergoies() {
         return EnumSet.allOf(CustomizerRegistry.EnumPartCategory.class);
+    }
+
+    @Override
+    public ArrayList<String> getCurrentParts() {
+        ArrayList<String> arrayList = new ArrayList<String>();
+        arrayList.add("fairy");
+        return arrayList;
     }
 
     @Override
