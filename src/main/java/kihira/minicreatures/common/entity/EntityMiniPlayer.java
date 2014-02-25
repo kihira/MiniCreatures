@@ -1,6 +1,7 @@
 package kihira.minicreatures.common.entity;
 
 import kihira.minicreatures.MiniCreatures;
+import kihira.minicreatures.common.CustomizerRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityAgeable;
 import net.minecraft.entity.EntityLiving;
@@ -17,7 +18,9 @@ import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 
-public class EntityMiniPlayer extends EntityTameable implements ICreatureInventory {
+import java.util.EnumSet;
+
+public class EntityMiniPlayer extends EntityTameable implements IMiniCreature {
 
     private final InventoryBasic inventory = new InventoryBasic(this.getCommandSenderName(), false, 18);
     //True if aiming with bow. Not currently in use.
@@ -133,5 +136,15 @@ public class EntityMiniPlayer extends EntityTameable implements ICreatureInvento
     @Override
     public IInventory getInventory() {
         return this.inventory;
+    }
+
+    @Override
+    public EnumSet<CustomizerRegistry.EnumPartCategory> getPartCatergoies() {
+        return EnumSet.allOf(CustomizerRegistry.EnumPartCategory.class);
+    }
+
+    @Override
+    public EntityLiving getEntity() {
+        return this;
     }
 }

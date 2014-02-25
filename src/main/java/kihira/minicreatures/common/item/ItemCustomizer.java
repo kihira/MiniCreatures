@@ -1,6 +1,7 @@
 package kihira.minicreatures.common.item;
 
-import kihira.minicreatures.common.entity.EntityMiniPlayer;
+import kihira.minicreatures.MiniCreatures;
+import kihira.minicreatures.common.entity.IMiniCreature;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -16,11 +17,9 @@ public class ItemCustomizer extends Item {
     }
 
     public boolean onLeftClickEntity(ItemStack stack, EntityPlayer player, Entity entity) {
-        if (entity instanceof EntityMiniPlayer) {
-            EntityMiniPlayer miniPlayer = (EntityMiniPlayer) entity;
-            if (miniPlayer.isTamed() && miniPlayer.getOwner() == player) {
-                return true;
-            }
+        if (entity instanceof IMiniCreature) {
+            player.openGui(MiniCreatures.instance, 2, player.worldObj, entity.getEntityId(), 0, 0);
+            return true;
         }
         return false;
     }

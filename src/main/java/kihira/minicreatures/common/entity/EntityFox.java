@@ -1,9 +1,11 @@
 package kihira.minicreatures.common.entity;
 
 import kihira.minicreatures.MiniCreatures;
+import kihira.minicreatures.common.CustomizerRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockColored;
 import net.minecraft.entity.EntityAgeable;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.*;
 import net.minecraft.entity.passive.EntityAnimal;
@@ -22,7 +24,9 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 
-public class EntityFox extends EntityTameable implements ICreatureInventory {
+import java.util.EnumSet;
+
+public class EntityFox extends EntityTameable implements IMiniCreature {
 
     private final IInventory inventory = new InventoryBasic(this.getCommandSenderName(), false, 18);
 
@@ -280,5 +284,15 @@ public class EntityFox extends EntityTameable implements ICreatureInventory {
     @Override
     public IInventory getInventory() {
         return inventory;
+    }
+
+    @Override
+    public EnumSet<CustomizerRegistry.EnumPartCategory> getPartCatergoies() {
+        return EnumSet.allOf(CustomizerRegistry.EnumPartCategory.class);
+    }
+
+    @Override
+    public EntityLiving getEntity() {
+        return this;
     }
 }

@@ -50,7 +50,7 @@ public class MiniCreatures {
         registerItems();
         NetworkRegistry.INSTANCE.registerGuiHandler(instance, new GuiHandler());
 
-        CustomizerRegistry.registerPart(new PartModelFairy());
+        CustomizerRegistry.registerPart("fairy", new PartModelFairy());
     }
 
     @Mod.EventHandler

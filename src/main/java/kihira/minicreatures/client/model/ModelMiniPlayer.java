@@ -134,7 +134,7 @@ public class ModelMiniPlayer extends ModelBiped {
         this.bipedRightLeg.render(par7);
         this.bipedLeftLeg.render(par7);
 
-        for (ICustomizerPart part:CustomizerRegistry.getPartList()) {
+        for (ICustomizerPart part:CustomizerRegistry.getPartList().values()) {
             part.render(par1Entity, this, par2, par3, par4, par5, par6, par7);
         }
 
