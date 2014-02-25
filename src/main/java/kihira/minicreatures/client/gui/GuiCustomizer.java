@@ -2,7 +2,8 @@ package kihira.minicreatures.client.gui;
 
 import com.google.common.base.Strings;
 import kihira.minicreatures.MiniCreatures;
-import kihira.minicreatures.common.CustomizerRegistry;
+import kihira.minicreatures.common.customizer.CustomizerRegistry;
+import kihira.minicreatures.common.customizer.EnumPartCategory;
 import kihira.minicreatures.common.entity.IMiniCreature;
 import kihira.minicreatures.common.network.MiniCreaturesMessage;
 import net.minecraft.client.gui.GuiButton;
@@ -24,7 +25,7 @@ public class GuiCustomizer extends GuiScreen {
     private int ySize = 170;
     private int currentPage = 0;
     private GuiButton categoryButton;
-    private CustomizerRegistry.EnumPartCategory currentCategory = CustomizerRegistry.EnumPartCategory.ALL;
+    private EnumPartCategory currentCategory = EnumPartCategory.ALL;
     private String[] partsList = new String[6];
     private ArrayList<String> currentValidParts;
     private ArrayList<String> currentEquippedParts;
@@ -70,8 +71,8 @@ public class GuiCustomizer extends GuiScreen {
     protected void actionPerformed(GuiButton button) {
         //Category button
         if (button.id == 0) {
-            CustomizerRegistry.EnumPartCategory[] partCategories = this.miniCreature.getPartCatergoies().toArray(new CustomizerRegistry.EnumPartCategory[20]);
-            if (this.currentCategory.ordinal() + 1 >= this.miniCreature.getPartCatergoies().size()) this.currentCategory = CustomizerRegistry.EnumPartCategory.ALL;
+            EnumPartCategory[] partCategories = this.miniCreature.getPartCatergoies().toArray(new EnumPartCategory[20]);
+            if (this.currentCategory.ordinal() + 1 >= this.miniCreature.getPartCatergoies().size()) this.currentCategory = EnumPartCategory.ALL;
             else this.currentCategory = partCategories[this.currentCategory.ordinal() + 1];
             this.categoryButton.displayString = StatCollector.translateToLocal("category." + this.currentCategory.name() + ".part");
         }

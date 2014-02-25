@@ -1,8 +1,8 @@
 package kihira.minicreatures.client.model.parts;
 
 import kihira.minicreatures.client.model.ModelMiniPlayer;
-import kihira.minicreatures.common.CustomizerRegistry;
-import kihira.minicreatures.common.ICustomizerPart;
+import kihira.minicreatures.common.customizer.EnumPartCategory;
+import kihira.minicreatures.common.customizer.ICustomizerPart;
 import kihira.minicreatures.common.entity.EntityMiniPlayer;
 import kihira.minicreatures.proxy.ClientProxy;
 import net.minecraft.client.Minecraft;
@@ -67,8 +67,8 @@ public class PartModelHorns extends ModelBase implements ICustomizerPart<ModelMi
     }
 
     @Override
-    public boolean isPartValidForEntity(Entity entity, CustomizerRegistry.EnumPartCategory enumPartCategory) {
-        return (entity instanceof EntityMiniPlayer && enumPartCategory == CustomizerRegistry.EnumPartCategory.HEAD);
+    public boolean isPartValidForEntity(Entity entity, EnumPartCategory enumPartCategory) {
+        return (entity instanceof EntityMiniPlayer && enumPartCategory == EnumPartCategory.HEAD);
     }
 
     @Override

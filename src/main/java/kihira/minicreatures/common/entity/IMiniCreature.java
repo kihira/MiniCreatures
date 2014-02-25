@@ -1,6 +1,6 @@
 package kihira.minicreatures.common.entity;
 
-import kihira.minicreatures.common.CustomizerRegistry;
+import kihira.minicreatures.common.customizer.EnumPartCategory;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.inventory.IInventory;
 
@@ -13,7 +13,7 @@ public interface IMiniCreature {
 
     public EntityLiving getEntity();
 
-    public EnumSet<CustomizerRegistry.EnumPartCategory> getPartCatergoies();
+    public EnumSet<EnumPartCategory> getPartCatergoies();
 
     public ArrayList<String> getCurrentParts();
 

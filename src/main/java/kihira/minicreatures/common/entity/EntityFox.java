@@ -1,7 +1,7 @@
 package kihira.minicreatures.common.entity;
 
 import kihira.minicreatures.MiniCreatures;
-import kihira.minicreatures.common.CustomizerRegistry;
+import kihira.minicreatures.common.customizer.EnumPartCategory;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockColored;
 import net.minecraft.entity.EntityAgeable;
@@ -289,8 +289,8 @@ public class EntityFox extends EntityTameable implements IMiniCreature {
     }
 
     @Override
-    public EnumSet<CustomizerRegistry.EnumPartCategory> getPartCatergoies() {
-        return EnumSet.allOf(CustomizerRegistry.EnumPartCategory.class);
+    public EnumSet<EnumPartCategory> getPartCatergoies() {
+        return EnumSet.allOf(EnumPartCategory.class);
     }
 
     @Override

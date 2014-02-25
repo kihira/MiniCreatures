@@ -1,11 +1,11 @@
-package kihira.minicreatures.common;
+package kihira.minicreatures.common.customizer;
 
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.entity.Entity;
 
 public interface ICustomizerPart<MODEL extends ModelBase> {
 
-    public boolean isPartValidForEntity(Entity entity, CustomizerRegistry.EnumPartCategory enumPartCategory);
+    public boolean isPartValidForEntity(Entity entity, EnumPartCategory enumPartCategory);
 
     /**
      * These are the same parameters that are passed to render in ModelBase with the addition of the model being rendered

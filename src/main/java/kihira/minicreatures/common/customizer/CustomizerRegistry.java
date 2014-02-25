@@ -1,4 +1,4 @@
-package kihira.minicreatures.common;
+package kihira.minicreatures.common.customizer;
 
 import kihira.minicreatures.MiniCreatures;
 import kihira.minicreatures.common.entity.IMiniCreature;
@@ -9,10 +9,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class CustomizerRegistry {
-
-    public enum EnumPartCategory {
-        ALL, BODY, HEAD, LEFTARM, RIGHTARM, LEFTLEG, RIGHTLEG,
-    }
 
     private static final HashMap<String, ICustomizerPart> partList = new HashMap<String, ICustomizerPart>();
 

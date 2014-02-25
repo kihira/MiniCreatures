@@ -1,7 +1,7 @@
 package kihira.minicreatures.client.model;
 
-import kihira.minicreatures.common.CustomizerRegistry;
-import kihira.minicreatures.common.ICustomizerPart;
+import kihira.minicreatures.common.customizer.CustomizerRegistry;
+import kihira.minicreatures.common.customizer.ICustomizerPart;
 import kihira.minicreatures.common.entity.EntityMiniPlayer;
 import kihira.minicreatures.common.entity.IMiniCreature;
 import net.minecraft.client.model.ModelBiped;

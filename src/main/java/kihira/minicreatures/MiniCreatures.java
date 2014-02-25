@@ -11,7 +11,7 @@ import kihira.minicreatures.client.model.parts.PartModelFairy;
 import kihira.minicreatures.client.model.parts.PartModelHorns;
 import kihira.minicreatures.client.model.parts.PartModelTail;
 import kihira.minicreatures.common.CommandSpawnEntity;
-import kihira.minicreatures.common.CustomizerRegistry;
+import kihira.minicreatures.common.customizer.CustomizerRegistry;
 import kihira.minicreatures.common.GuiHandler;
 import kihira.minicreatures.common.entity.EntityFox;
 import kihira.minicreatures.common.entity.EntityMiniPlayer;
@@ -76,6 +76,7 @@ public class MiniCreatures {
         if (configuration.hasChanged()) configuration.save();
     }
 
+    //TODO only register on server join after config has synced with server to allow server disabling
     private void registerCustomizerParts() {
         CustomizerRegistry.registerPart("fairy", new PartModelFairy());
         CustomizerRegistry.registerPart("horns", new PartModelHorns());
