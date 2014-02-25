@@ -1,3 +1,11 @@
 entity.minicreatures.MiniFox.name=Mini Fox
 entity.minicreatures.MiniTRex.name=Mini T-Rex
 entity.minicreatures.MiniPlayer.name=Mini Player
+name.fairy.part=Fairy
+category.ALL.part=All
+category.BODY.part=Body
+category.HEAD.part=Head
+category.LEFTARM.part=Left Arm
+category.RIGHTARM.part=Right Arm
+category.LEFTLEG.part=Left Leg
+category.RIGHTLEG.part=Right Leg

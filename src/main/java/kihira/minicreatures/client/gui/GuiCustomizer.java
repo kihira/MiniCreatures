@@ -43,18 +43,18 @@ public class GuiCustomizer extends GuiScreen {
         this.guiTop = (this.height - this.ySize) / 2;
 
         //Add in category button
-        this.categoryButton = new GuiButton(0, this.guiLeft + 82, this.guiTop + 7, 112, 20, StatCollector.translateToLocal("category." + this.currentCategory.name() + ".part"));
+        this.categoryButton = new GuiButton(0, this.guiLeft + 83, this.guiTop + 7, 112, 20, StatCollector.translateToLocal("category." + this.currentCategory.name() + ".part"));
         this.buttonList.add(0, this.categoryButton);
 
         //Add in parts buttons
         for (int i = 1; i < 7; i++) {
-            this.buttonList.add(i, new GuiButton(i, this.guiLeft + 82, this.guiTop + 10 + (i * 20), 92, 20, ""));
+            this.buttonList.add(i, new GuiButton(i, this.guiLeft + 83, this.guiTop + 10 + (i * 20), 92, 20, ""));
         }
 
         //Add in navigation buttons
-        this.buttonList.add(7, new GuiButton(7, this.guiLeft + 82, this.height / 2 + 54, 20, 20, "<"));
-        this.buttonList.add(8, new GuiButton(8, this.guiLeft + 154, this.height / 2 + 54, 20, 20, ">"));
-        this.buttonList.add(9, new GuiButton(9, this.guiLeft + 104, this.height / 2 + 54, 48, 20, StatCollector.translateToLocal("gui.done")));
+        this.buttonList.add(7, new GuiButton(7, this.guiLeft + 86, this.height / 2 + 54, 20, 20, "<"));
+        this.buttonList.add(8, new GuiButton(8, this.guiLeft + 172, this.height / 2 + 54, 20, 20, ">"));
+        this.buttonList.add(9, new GuiButton(9, this.guiLeft + 115, this.height / 2 + 54, 49, 20, StatCollector.translateToLocal("gui.done")));
 
         //Load current part data.
         this.currentEquippedParts = this.miniCreature.getCurrentParts();
@@ -130,8 +130,8 @@ public class GuiCustomizer extends GuiScreen {
     @Override
     public void drawScreen(int par1, int par2, float par3) {
         drawBackground(par1, par2);
-        super.drawScreen(par1, par2, par3);
         drawForeground(par1, par2);
+        super.drawScreen(par1, par2, par3);
     }
 
     private void drawForeground(int p_146979_1_, int p_146979_2_) {
