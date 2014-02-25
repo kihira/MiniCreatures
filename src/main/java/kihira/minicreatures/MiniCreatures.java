@@ -15,6 +15,7 @@ import kihira.minicreatures.common.entity.EntityFox;
 import kihira.minicreatures.common.entity.EntityMiniPlayer;
 import kihira.minicreatures.common.entity.EntityTRex;
 import kihira.minicreatures.common.item.ItemCustomizer;
+import kihira.minicreatures.common.network.PacketHandler;
 import kihira.minicreatures.proxy.CommonProxy;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.world.biome.BiomeGenBase;
@@ -34,6 +35,7 @@ public class MiniCreatures {
     @Mod.Instance(value = "minicreatures")
     public static MiniCreatures instance;
     public static final Logger logger = LogManager.getLogger("MiniCreatues");
+    public static final PacketHandler packetHandler = new PacketHandler();
 
     public static final ItemCustomizer itemCustomizer = new ItemCustomizer();
 

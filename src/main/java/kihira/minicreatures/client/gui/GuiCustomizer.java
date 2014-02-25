@@ -67,6 +67,11 @@ public class GuiCustomizer extends GuiScreen {
         else if (button.id == 7) this.currentPage--;
         else if (button.id == 9) this.currentPage++;
 
+        //Parts buttons
+        if (button.id > 0 && button.id < 7) {
+
+        }
+
         //Update everything just to be safe
         updatePartsList();
         updateNavButtons();
