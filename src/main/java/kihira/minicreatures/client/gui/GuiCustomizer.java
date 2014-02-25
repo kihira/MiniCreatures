@@ -28,10 +28,11 @@ public class GuiCustomizer extends GuiScreen {
     private String[] partsList = new String[6];
     private ArrayList<String> currentValidParts;
     private ArrayList<String> currentEquippedParts;
+    //This should never be changed except during init
+    private ArrayList<String> originalParts;
 
     public GuiCustomizer(IMiniCreature entity) {
         this.miniCreature = entity;
-        this.allowUserInput = false;
     }
 
     @Override
@@ -55,8 +56,9 @@ public class GuiCustomizer extends GuiScreen {
         this.buttonList.add(8, new GuiButton(8, this.guiLeft + 154, this.height / 2 + 54, 20, 20, ">"));
         this.buttonList.add(9, new GuiButton(9, this.guiLeft + 104, this.height / 2 + 54, 48, 20, StatCollector.translateToLocal("gui.done")));
 
-        //Load current part data
+        //Load current part data.
         this.currentEquippedParts = this.miniCreature.getCurrentParts();
+        this.originalParts = new ArrayList<String>(this.currentEquippedParts);
 
         //Always perform this last
         updatePartsList();
@@ -116,9 +118,13 @@ public class GuiCustomizer extends GuiScreen {
             MiniCreatures.packetHandler.sendToServer(new MiniCreaturesMessage.UpdateEntityMessage(this.miniCreature.getEntity().getEntityId(), this.currentEquippedParts));
         }
         else {
-            //TODO discard the changes locally
+            this.miniCreature.setParts(this.originalParts);
         }
         this.mc.displayGuiScreen(null);
+    }
+
+    protected void keyTyped(char par1, int par2) {
+        if (par2 == 1) closeGUI(false);
     }
 
     @Override
