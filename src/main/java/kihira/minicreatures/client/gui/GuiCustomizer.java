@@ -118,7 +118,7 @@ public class GuiCustomizer extends GuiScreen {
         else {
             //TODO discard the changes locally
         }
-        this.mc.currentScreen = null;
+        this.mc.displayGuiScreen(null);
     }
 
     @Override
