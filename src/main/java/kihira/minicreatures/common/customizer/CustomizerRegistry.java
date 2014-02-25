@@ -17,6 +17,7 @@ public class CustomizerRegistry {
      * @param part The part to register
      */
     public static void registerPart(String name, ICustomizerPart<? extends ModelBase> part) {
+        if (name.contains(",")) throw new IllegalArgumentException("Part names cannot contain the character \",\"");
         if (!partList.containsKey(name)) {
             partList.put(name, part);
             MiniCreatures.logger.info("Registered the customizer part " + name);
