@@ -1,5 +1,6 @@
 package kihira.minicreatures.common.entity;
 
+import com.google.common.base.Strings;
 import kihira.minicreatures.MiniCreatures;
 import kihira.minicreatures.common.customizer.EnumPartCategory;
 import net.minecraft.block.Block;
@@ -27,7 +28,7 @@ import java.util.EnumSet;
 public class EntityMiniPlayer extends EntityTameable implements IMiniCreature {
 
     private final InventoryBasic inventory = new InventoryBasic(this.getCommandSenderName(), false, 18);
-    private ArrayList<String> parts = new ArrayList<String>();
+    //private ArrayList<String> parts = new ArrayList<String>();
     //True if aiming with bow. Not currently in use.
     public boolean isAiming = false;
 
@@ -45,6 +46,11 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature {
         this.setTamed(false);
     }
 
+    protected void entityInit() {
+        super.entityInit();
+        this.dataWatcher.addObject(18, "");
+    }
+
     @Override
     protected void applyEntityAttributes() {
         super.applyEntityAttributes();
@@ -56,8 +62,9 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature {
     public void writeEntityToNBT(NBTTagCompound par1NBTTagCompound) {
         super.writeEntityToNBT(par1NBTTagCompound);
 
+        //Save parts list
         NBTTagList nbttaglist = new NBTTagList();
-        for (String part : this.parts) {
+        for (String part : this.dataWatcher.getWatchableObjectString(18).split(",")) {
             if (part != null) nbttaglist.appendTag(new NBTTagString(part));
         }
         par1NBTTagCompound.setTag("Parts", nbttaglist);
@@ -66,12 +73,15 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature {
     @Override
     public void readEntityFromNBT(NBTTagCompound par1NBTTagCompound) {
         super.readEntityFromNBT(par1NBTTagCompound);
+        MiniCreatures.logger.info("Reading NBT!");
 
-        NBTTagList tagList = par1NBTTagCompound.getTagList("Parts", 0);
-        this.parts = new ArrayList<String>(tagList.tagCount());
+        //Load parts list
+        NBTTagList tagList = par1NBTTagCompound.getTagList("Parts", 8);
+        String s = "";
         for (int i = 0; i < tagList.tagCount(); i++) {
-            this.parts.add(tagList.getStringTagAt(i));
+            s += tagList.getStringTagAt(i) + ",";
         }
+        this.dataWatcher.updateObject(18, s);
     }
 
     @Override
@@ -172,12 +182,21 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature {
 
     @Override
     public ArrayList<String> getCurrentParts() {
-        return this.parts;
+        ArrayList<String> parts = new ArrayList<String>();
+        for (String part : this.dataWatcher.getWatchableObjectString(18).split(",")) {
+            if (!Strings.isNullOrEmpty(part)) parts.add(part);
+        }
+        return parts;
     }
 
     @Override
     public void setParts(ArrayList<String> parts) {
-        this.parts = parts;
+        String s = "";
+        for (String part : parts) {
+            s += part + ",";
+        }
+        System.out.println(s);
+        this.dataWatcher.updateObject(18, s);
     }
 
     @Override

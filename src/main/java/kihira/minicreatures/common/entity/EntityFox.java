@@ -1,5 +1,6 @@
 package kihira.minicreatures.common.entity;
 
+import com.google.common.base.Strings;
 import kihira.minicreatures.MiniCreatures;
 import kihira.minicreatures.common.customizer.EnumPartCategory;
 import net.minecraft.block.Block;
@@ -21,6 +22,7 @@ import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.NBTTagString;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 
@@ -53,6 +55,7 @@ public class EntityFox extends EntityTameable implements IMiniCreature {
         super.entityInit();
         this.dataWatcher.addObject(18, 0);
         this.dataWatcher.addObject(19, (byte) BlockColored.func_150032_b(1));
+        this.dataWatcher.addObject(20, "");
     }
 
     public boolean hasChest() {
@@ -167,9 +170,9 @@ public class EntityFox extends EntityTameable implements IMiniCreature {
     @Override
     public void writeEntityToNBT(NBTTagCompound tag) {
         super.writeEntityToNBT(tag);
+
         tag.setBoolean("HasChest", this.hasChest());
         tag.setByte("CollarColor", (byte) this.getCollarColor());
-
         if (this.hasChest()) {
             NBTTagList nbttaglist = new NBTTagList();
             for (int i = 0; i < inventory.getSizeInventory(); i++) {
@@ -182,6 +185,12 @@ public class EntityFox extends EntityTameable implements IMiniCreature {
             }
             tag.setTag("Items", nbttaglist);
         }
+        //Save parts list
+        NBTTagList nbttaglist = new NBTTagList();
+        for (String part : this.dataWatcher.getWatchableObjectString(18).split(",")) {
+            if (part != null) nbttaglist.appendTag(new NBTTagString(part));
+        }
+        tag.setTag("Parts", nbttaglist);
     }
 
     @Override
@@ -198,6 +207,13 @@ public class EntityFox extends EntityTameable implements IMiniCreature {
             }
         }
         if (tag.hasKey("CollarColor", 99)) this.setCollarColor(tag.getByte("CollarColor"));
+        //Load parts list
+        NBTTagList tagList = tag.getTagList("Parts", 8);
+        String s = "";
+        for (int i = 0; i < tagList.tagCount(); i++) {
+            s += tagList.getStringTagAt(i) + ",";
+        }
+        this.dataWatcher.updateObject(18, s);
     }
 
     @Override
@@ -285,22 +301,31 @@ public class EntityFox extends EntityTameable implements IMiniCreature {
 
     @Override
     public IInventory getInventory() {
-        return inventory;
+        return this.inventory;
     }
 
     @Override
     public EnumSet<EnumPartCategory> getPartCatergoies() {
-        return EnumSet.allOf(EnumPartCategory.class);
+        return EnumSet.of(EnumPartCategory.ALL, EnumPartCategory.HEAD, EnumPartCategory.BODY);
     }
 
     @Override
     public ArrayList<String> getCurrentParts() {
-        return this.parts;
+        ArrayList<String> parts = new ArrayList<String>();
+        for (String part : this.dataWatcher.getWatchableObjectString(20).split(",")) {
+            if (!Strings.isNullOrEmpty(part)) parts.add(part);
+        }
+        return parts;
     }
 
     @Override
     public void setParts(ArrayList<String> parts) {
-        this.parts = parts;
+        String s = "";
+        for (String part : parts) {
+            s += part + ",";
+        }
+        System.out.println(s);
+        this.dataWatcher.updateObject(20, s);
     }
 
     @Override
