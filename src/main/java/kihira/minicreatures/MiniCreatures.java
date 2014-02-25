@@ -8,6 +8,8 @@ import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.EntityRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 import kihira.minicreatures.client.model.parts.PartModelFairy;
+import kihira.minicreatures.client.model.parts.PartModelHorns;
+import kihira.minicreatures.client.model.parts.PartModelTail;
 import kihira.minicreatures.common.CommandSpawnEntity;
 import kihira.minicreatures.common.CustomizerRegistry;
 import kihira.minicreatures.common.GuiHandler;
@@ -50,9 +52,8 @@ public class MiniCreatures {
         proxy.registerSounds();
         registerEntities();
         registerItems();
+        registerCustomizerParts();
         NetworkRegistry.INSTANCE.registerGuiHandler(instance, new GuiHandler());
-
-        CustomizerRegistry.registerPart("fairy", new PartModelFairy());
     }
 
     @Mod.EventHandler
@@ -73,6 +74,12 @@ public class MiniCreatures {
         enableMiniPlayers = property.getBoolean(true);
 
         if (configuration.hasChanged()) configuration.save();
+    }
+
+    private void registerCustomizerParts() {
+        CustomizerRegistry.registerPart("fairy", new PartModelFairy());
+        CustomizerRegistry.registerPart("horns", new PartModelHorns());
+        CustomizerRegistry.registerPart("tail", new PartModelTail());
     }
 
     private void registerItems() {
