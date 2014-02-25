@@ -10,8 +10,6 @@ import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.entity.Entity;
 
-import java.util.EnumSet;
-
 public class PartModelFairy extends ModelBase implements ICustomizerPart<ModelMiniPlayer> {
 
     ModelRenderer fairyWingLeft;
@@ -41,12 +39,7 @@ public class PartModelFairy extends ModelBase implements ICustomizerPart<ModelMi
 
     @Override
     public boolean isPartValidForEntity(Entity entity, CustomizerRegistry.EnumPartCategory partCategory) {
-        return (entity instanceof EntityMiniPlayer) && ((partCategory == CustomizerRegistry.EnumPartCategory.ALL) || (partCategory == CustomizerRegistry.EnumPartCategory.HEAD));
-    }
-
-    @Override
-    public EnumSet<CustomizerRegistry.EnumPartCategory> getAvailablePartCategories() {
-        return EnumSet.of(CustomizerRegistry.EnumPartCategory.BODY);
+        return (entity instanceof EntityMiniPlayer) && ((partCategory == CustomizerRegistry.EnumPartCategory.ALL) || (partCategory == CustomizerRegistry.EnumPartCategory.BODY));
     }
 
     @Override
