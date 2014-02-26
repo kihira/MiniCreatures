@@ -60,7 +60,7 @@ public abstract class MiniCreaturesMessage implements IMessage {
                 for (String part : this.partsList) {
                     if (!Strings.isNullOrEmpty(part)) MiniCreatures.logger.info("Part: " + part);
                 }
-                ((IMiniCreature) entityPlayer.worldObj.getEntityByID(this.entityID)).setParts(this.partsList);
+                ((IMiniCreature) entityPlayer.worldObj.getEntityByID(this.entityID)).setParts(this.partsList, false);
             }
             return null;
         }

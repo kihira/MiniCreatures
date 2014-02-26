@@ -310,7 +310,7 @@ public class EntityFox extends EntityTameable implements IMiniCreature {
     }
 
     @Override
-    public ArrayList<String> getCurrentParts() {
+    public ArrayList<String> getCurrentParts(boolean isPreview) {
         ArrayList<String> parts = new ArrayList<String>();
         for (String part : this.dataWatcher.getWatchableObjectString(20).split(",")) {
             if (!Strings.isNullOrEmpty(part)) parts.add(part);
@@ -319,7 +319,7 @@ public class EntityFox extends EntityTameable implements IMiniCreature {
     }
 
     @Override
-    public void setParts(ArrayList<String> parts) {
+    public void setParts(ArrayList<String> parts, boolean isPreview) {
         String s = "";
         for (String part : parts) {
             s += part + ",";

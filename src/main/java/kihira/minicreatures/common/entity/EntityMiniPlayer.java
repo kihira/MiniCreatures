@@ -1,6 +1,8 @@
 package kihira.minicreatures.common.entity;
 
 import com.google.common.base.Strings;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import kihira.minicreatures.MiniCreatures;
 import kihira.minicreatures.common.customizer.EnumPartCategory;
 import net.minecraft.block.Block;
@@ -28,9 +30,12 @@ import java.util.EnumSet;
 public class EntityMiniPlayer extends EntityTameable implements IMiniCreature {
 
     private final InventoryBasic inventory = new InventoryBasic(this.getCommandSenderName(), false, 18);
-    //private ArrayList<String> parts = new ArrayList<String>();
     //True if aiming with bow. Not currently in use.
     public boolean isAiming = false;
+
+    //Maintain an array list client side for previewing
+    @SideOnly(Side.CLIENT)
+    private ArrayList<String> previewParts = new ArrayList<String>();
 
     public EntityMiniPlayer(World par1World) {
         super(par1World);
@@ -181,16 +186,20 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature {
     }
 
     @Override
-    public ArrayList<String> getCurrentParts() {
-        ArrayList<String> parts = new ArrayList<String>();
-        for (String part : this.dataWatcher.getWatchableObjectString(18).split(",")) {
-            if (!Strings.isNullOrEmpty(part)) parts.add(part);
+    public ArrayList<String> getCurrentParts(boolean isPreview) {
+        if (isPreview) return this.previewParts;
+        else {
+            ArrayList<String> parts = new ArrayList<String>();
+            for (String part : this.dataWatcher.getWatchableObjectString(18).split(",")) {
+                if (!Strings.isNullOrEmpty(part)) parts.add(part);
+            }
+            return parts;
         }
-        return parts;
     }
 
     @Override
-    public void setParts(ArrayList<String> parts) {
+    public void setParts(ArrayList<String> parts, boolean isPreview) {
+        if (isPreview) this.previewParts = parts;
         String s = "";
         for (String part : parts) {
             s += part + ",";

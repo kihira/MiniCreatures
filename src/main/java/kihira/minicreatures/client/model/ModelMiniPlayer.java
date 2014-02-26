@@ -1,9 +1,11 @@
 package kihira.minicreatures.client.model;
 
+import kihira.minicreatures.client.gui.GuiCustomizer;
 import kihira.minicreatures.common.customizer.CustomizerRegistry;
 import kihira.minicreatures.common.customizer.ICustomizerPart;
 import kihira.minicreatures.common.entity.EntityMiniPlayer;
 import kihira.minicreatures.common.entity.IMiniCreature;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemBlock;
@@ -45,7 +47,7 @@ public class ModelMiniPlayer extends ModelBiped {
         this.bipedLeftLeg.render(par7);
         GL11.glPopMatrix();
 
-        for (String partName : miniPlayer.getCurrentParts()) {
+        for (String partName : miniPlayer.getCurrentParts(Minecraft.getMinecraft().currentScreen instanceof GuiCustomizer)) {
             ICustomizerPart part = CustomizerRegistry.getPart(partName);
             if (part != null) part.render(par1Entity, this, par2, par3, par4, par5, par6, par7);
         }

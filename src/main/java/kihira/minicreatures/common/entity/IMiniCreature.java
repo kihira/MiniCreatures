@@ -15,7 +15,7 @@ public interface IMiniCreature {
 
     public EnumSet<EnumPartCategory> getPartCatergoies();
 
-    public ArrayList<String> getCurrentParts();
+    public ArrayList<String> getCurrentParts(boolean isPreview);
 
-    public void setParts(ArrayList<String> parts);
+    public void setParts(ArrayList<String> parts, boolean isPreview);
 }

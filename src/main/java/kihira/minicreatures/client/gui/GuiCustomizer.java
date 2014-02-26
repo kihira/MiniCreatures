@@ -58,7 +58,7 @@ public class GuiCustomizer extends GuiScreen {
         this.buttonList.add(9, new GuiButton(9, this.guiLeft + 115, this.height / 2 + 54, 49, 20, StatCollector.translateToLocal("gui.done")));
 
         //Load current part data.
-        this.currentEquippedParts = this.miniCreature.getCurrentParts();
+        this.currentEquippedParts = this.miniCreature.getCurrentParts(false);
         this.originalParts = new ArrayList<String>(this.currentEquippedParts);
 
         //Always perform this last
@@ -85,6 +85,7 @@ public class GuiCustomizer extends GuiScreen {
             String partName = this.partsList[button.id - 1];
             if (this.currentEquippedParts.contains(partName)) this.currentEquippedParts.remove(partName);
             else this.currentEquippedParts.add(partName);
+            this.miniCreature.setParts(this.currentEquippedParts, true);
         }
 
         //Update everything just to be safe
@@ -119,7 +120,7 @@ public class GuiCustomizer extends GuiScreen {
             MiniCreatures.packetHandler.sendToServer(new MiniCreaturesMessage.UpdateEntityMessage(this.miniCreature.getEntity().getEntityId(), this.currentEquippedParts));
         }
         else {
-            this.miniCreature.setParts(this.originalParts);
+            this.miniCreature.setParts(this.originalParts, false);
         }
         this.mc.displayGuiScreen(null);
     }
