@@ -48,12 +48,12 @@ public class GuiCustomizer extends GuiScreen {
         this.buttonList.add(0, this.categoryButton);
         //Add in parts buttons
         for (int i = 1; i < 7; i++) {
-            this.buttonList.add(i, new GuiButton(i, this.guiLeft + 83, this.guiTop + 10 + (i * 20), 92, 20, ""));
+            this.buttonList.add(i, new GuiButton(i, this.guiLeft + 84, this.guiTop + 9 + (i * 21), 92, 20, ""));
         }
         //Add in navigation buttons
-        this.buttonList.add(7, new GuiButton(7, this.guiLeft + 86, this.height / 2 + 54, 20, 20, "<"));
-        this.buttonList.add(8, new GuiButton(8, this.guiLeft + 172, this.height / 2 + 54, 20, 20, ">"));
-        this.buttonList.add(9, new GuiButton(9, this.guiLeft + 115, this.height / 2 + 54, 49, 20, StatCollector.translateToLocal("gui.done")));
+        this.buttonList.add(7, new GuiButton(7, this.guiLeft + 84, this.height / 2 + 54, 20, 20, "<"));
+        this.buttonList.add(8, new GuiButton(8, this.guiLeft + 156, this.height / 2 + 54, 20, 20, ">"));
+        this.buttonList.add(9, new GuiButton(9, this.guiLeft + 105, this.height / 2 + 54, 50, 20, StatCollector.translateToLocal("gui.done")));
         //Add in reset buttons
         this.buttonList.add(10, new GuiButton(10, this.guiLeft + 8, this.guiTop + 95, 72, 20, StatCollector.translateToLocal("gui.reset")));
         this.buttonList.add(11, new GuiButton(11, this.guiLeft + 8, this.guiTop + 116, 72, 20, StatCollector.translateToLocal("gui.clear")));
@@ -153,7 +153,7 @@ public class GuiCustomizer extends GuiScreen {
         for (int i = 0; i < 6; i++) {
             if (!Strings.isNullOrEmpty(this.partsList[i])) {
                 if (this.currentEquippedParts.contains(this.partsList[i])) this.drawTexturedModalRect(this.guiLeft + 174, this.guiTop + 10 + ((i + 1) * 20), 0, 168, 20, 20);
-                else this.drawTexturedModalRect(this.guiLeft + 174, this.guiTop + 10 + ((i + 1) * 20), 22, 168, 20, 20);
+                else this.drawTexturedModalRect(this.guiLeft + 174, this.guiTop + 9 + ((i + 1) * 21), 22, 168, 20, 20);
             }
         }
     }
