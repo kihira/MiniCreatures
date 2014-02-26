@@ -11,3 +11,5 @@ category.LEFTARM.part=Left Arm
 category.RIGHTARM.part=Right Arm
 category.LEFTLEG.part=Left Leg
 category.RIGHTLEG.part=Right Leg
+gui.reset=Reset
+gui.clear=Clear All

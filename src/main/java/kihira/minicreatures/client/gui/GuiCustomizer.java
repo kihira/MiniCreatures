@@ -46,16 +46,17 @@ public class GuiCustomizer extends GuiScreen {
         //Add in category button
         this.categoryButton = new GuiButton(0, this.guiLeft + 83, this.guiTop + 7, 112, 20, StatCollector.translateToLocal("category." + this.currentCategory.name() + ".part"));
         this.buttonList.add(0, this.categoryButton);
-
         //Add in parts buttons
         for (int i = 1; i < 7; i++) {
             this.buttonList.add(i, new GuiButton(i, this.guiLeft + 83, this.guiTop + 10 + (i * 20), 92, 20, ""));
         }
-
         //Add in navigation buttons
         this.buttonList.add(7, new GuiButton(7, this.guiLeft + 86, this.height / 2 + 54, 20, 20, "<"));
         this.buttonList.add(8, new GuiButton(8, this.guiLeft + 172, this.height / 2 + 54, 20, 20, ">"));
         this.buttonList.add(9, new GuiButton(9, this.guiLeft + 115, this.height / 2 + 54, 49, 20, StatCollector.translateToLocal("gui.done")));
+        //Add in reset buttons
+        this.buttonList.add(10, new GuiButton(10, this.guiLeft + 8, this.guiTop + 95, 72, 20, StatCollector.translateToLocal("gui.reset")));
+        this.buttonList.add(11, new GuiButton(11, this.guiLeft + 8, this.guiTop + 116, 72, 20, StatCollector.translateToLocal("gui.clear")));
 
         //Load current part data.
         this.currentEquippedParts = this.miniCreature.getCurrentParts(false);
@@ -86,6 +87,16 @@ public class GuiCustomizer extends GuiScreen {
             if (this.currentEquippedParts.contains(partName)) this.currentEquippedParts.remove(partName);
             else this.currentEquippedParts.add(partName);
             this.miniCreature.setParts(this.currentEquippedParts, true);
+        }
+        //Reset button
+        if (button.id == 10) {
+            this.miniCreature.setParts(this.originalParts, true);
+            this.currentEquippedParts = new ArrayList<String>(this.originalParts);
+        }
+        //Clear button
+        if (button.id == 11) {
+            this.miniCreature.setParts(new ArrayList<String>(), true);
+            this.currentEquippedParts = new ArrayList<String>();
         }
 
         //Update everything just to be safe
