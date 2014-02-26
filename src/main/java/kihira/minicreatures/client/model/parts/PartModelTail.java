@@ -39,7 +39,7 @@ public class PartModelTail extends ModelBase implements ICustomizerPart<ModelMin
 
     @Override
     public boolean isPartValidForEntity(Entity entity, EnumPartCategory enumPartCategory) {
-        return (entity instanceof EntityMiniPlayer && enumPartCategory == EnumPartCategory.BODY);
+        return (entity instanceof EntityMiniPlayer && enumPartCategory == EnumPartCategory.ALL || enumPartCategory == EnumPartCategory.BODY);
     }
 
     @Override

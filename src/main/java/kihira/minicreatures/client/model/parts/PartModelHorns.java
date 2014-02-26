@@ -66,9 +66,10 @@ public class PartModelHorns extends ModelBase implements ICustomizerPart<ModelMi
         hornRightBase.addChild(hornRightPart5);
     }
 
+    //TODO Make it so they show up in ALL category regardless
     @Override
     public boolean isPartValidForEntity(Entity entity, EnumPartCategory enumPartCategory) {
-        return (entity instanceof EntityMiniPlayer && enumPartCategory == EnumPartCategory.HEAD);
+        return (entity instanceof EntityMiniPlayer && enumPartCategory == EnumPartCategory.ALL || enumPartCategory == EnumPartCategory.HEAD);
     }
 
     @Override
