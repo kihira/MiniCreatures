@@ -1,6 +1,7 @@
 package kihira.minicreatures.common.entity;
 
 import com.google.common.base.Strings;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import kihira.minicreatures.MiniCreatures;
@@ -35,7 +36,7 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature {
 
     //Maintain an array list client side for previewing
     @SideOnly(Side.CLIENT)
-    private ArrayList<String> previewParts = new ArrayList<String>();
+    private ArrayList<String> previewParts;
 
     public EntityMiniPlayer(World par1World) {
         super(par1World);
@@ -199,12 +200,14 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature {
 
     @Override
     public void setParts(ArrayList<String> parts, boolean isPreview) {
-        if (isPreview) this.previewParts = parts;
+        if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) {
+            if (isPreview) this.previewParts = parts;
+            else this.previewParts = new ArrayList<String>();
+        }
         String s = "";
         for (String part : parts) {
             s += part + ",";
         }
-        System.out.println(s);
         this.dataWatcher.updateObject(18, s);
     }
 

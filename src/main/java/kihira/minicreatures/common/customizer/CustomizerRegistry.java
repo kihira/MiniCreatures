@@ -4,7 +4,6 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 import kihira.minicreatures.MiniCreatures;
 import kihira.minicreatures.common.entity.IMiniCreature;
-import net.minecraft.client.model.ModelBase;
 
 import java.util.*;
 
@@ -18,7 +17,8 @@ public class CustomizerRegistry {
      * @param name A unique name for the part
      * @param part The part to register
      */
-    public static void registerPart(String name, ICustomizerPart<? extends ModelBase> part) {
+    //TODO Don't pass an instance with ModelBase in. Create ICustomizerPartClient that extends ICustomizerPart
+    public static void registerPart(String name, ICustomizerPart part) {
         if (name.contains(",")) throw new IllegalArgumentException("Part names cannot contain the character \",\"");
         if (!partList.containsKey(name)) {
             partList.put(name, part);

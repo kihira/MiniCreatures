@@ -2,7 +2,7 @@ package kihira.minicreatures.client.model.parts;
 
 import kihira.minicreatures.client.model.ModelMiniPlayer;
 import kihira.minicreatures.common.customizer.EnumPartCategory;
-import kihira.minicreatures.common.customizer.ICustomizerPart;
+import kihira.minicreatures.common.customizer.ICustomizerPartClient;
 import kihira.minicreatures.common.entity.EntityMiniPlayer;
 import kihira.minicreatures.proxy.ClientProxy;
 import net.minecraft.client.Minecraft;
@@ -11,7 +11,7 @@ import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.entity.Entity;
 import org.lwjgl.opengl.GL11;
 
-public class PartModelHorns extends ModelBase implements ICustomizerPart<ModelMiniPlayer> {
+public class PartModelHorns extends ModelBase implements ICustomizerPartClient {
 
     ModelRenderer hornLeftBase;
     ModelRenderer hornLeftPart1;
@@ -73,13 +73,14 @@ public class PartModelHorns extends ModelBase implements ICustomizerPart<ModelMi
     }
 
     @Override
-    public void render(Entity entity, ModelMiniPlayer modelBase, float par2, float par3, float par4, float par5, float par6, float par7) {
+    public void render(Entity entity, ModelBase modelBase, float par2, float par3, float par4, float par5, float par6, float par7) {
         Minecraft.getMinecraft().renderEngine.bindTexture(ClientProxy.specialTextures);
+        ModelMiniPlayer modelMiniPlayer = (ModelMiniPlayer) modelBase;
 
-        this.hornLeftBase.rotateAngleY = modelBase.bipedHead.rotateAngleY;
-        this.hornLeftBase.rotateAngleX = modelBase.bipedHead.rotateAngleX;
-        this.hornRightBase.rotateAngleY = modelBase.bipedHead.rotateAngleY;
-        this.hornRightBase.rotateAngleX = modelBase.bipedHead.rotateAngleX;
+        this.hornLeftBase.rotateAngleY = modelMiniPlayer.bipedHead.rotateAngleY;
+        this.hornLeftBase.rotateAngleX = modelMiniPlayer.bipedHead.rotateAngleX;
+        this.hornRightBase.rotateAngleY = modelMiniPlayer.bipedHead.rotateAngleY;
+        this.hornRightBase.rotateAngleX = modelMiniPlayer.bipedHead.rotateAngleX;
 
         GL11.glPushMatrix();
         GL11.glScalef(1.5F / 2F, 1.5F / 2F, 1.5F / 2F);

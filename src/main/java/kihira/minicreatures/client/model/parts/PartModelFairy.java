@@ -1,8 +1,7 @@
 package kihira.minicreatures.client.model.parts;
 
-import kihira.minicreatures.client.model.ModelMiniPlayer;
 import kihira.minicreatures.common.customizer.EnumPartCategory;
-import kihira.minicreatures.common.customizer.ICustomizerPart;
+import kihira.minicreatures.common.customizer.ICustomizerPartClient;
 import kihira.minicreatures.common.entity.EntityMiniPlayer;
 import kihira.minicreatures.proxy.ClientProxy;
 import net.minecraft.client.Minecraft;
@@ -11,7 +10,7 @@ import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.entity.Entity;
 import org.lwjgl.opengl.GL11;
 
-public class PartModelFairy extends ModelBase implements ICustomizerPart<ModelMiniPlayer> {
+public class PartModelFairy extends ModelBase implements ICustomizerPartClient {
 
     ModelRenderer fairyWingLeft;
     ModelRenderer fairy;
@@ -44,7 +43,7 @@ public class PartModelFairy extends ModelBase implements ICustomizerPart<ModelMi
     }
 
     @Override
-    public void render(Entity entity, ModelMiniPlayer modelMiniPlayer, float par2, float par3, float par4, float par5, float par6, float par7) {
+    public void render(Entity entity, ModelBase modelMiniPlayer, float par2, float par3, float par4, float par5, float par6, float par7) {
         Minecraft.getMinecraft().renderEngine.bindTexture(ClientProxy.specialTextures);
 
         GL11.glPushMatrix();

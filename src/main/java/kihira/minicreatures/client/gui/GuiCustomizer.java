@@ -61,6 +61,7 @@ public class GuiCustomizer extends GuiScreen {
         //Load current part data.
         this.currentEquippedParts = this.miniCreature.getCurrentParts(false);
         this.originalParts = new ArrayList<String>(this.currentEquippedParts);
+        this.miniCreature.setParts(this.currentEquippedParts, true);
 
         //Always perform this last
         updatePartsList();
