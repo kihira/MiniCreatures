@@ -118,7 +118,7 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature {
                         }
                         return true;
                     }
-                    if (this.getCarrying() == null) {
+                    else if (this.getCarrying() == null) {
                         ItemStack newItemStack = itemstack.copy();
                         newItemStack.stackSize = 1;
                         this.setCarrying(newItemStack);
@@ -139,19 +139,19 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature {
                         }
                     }
                 }
-                if (!player.isSneaking() && this.getCarrying() != null) {
+                else if (!player.isSneaking() && this.getCarrying() != null) {
                     if (Block.getBlockFromItem(this.getCarrying().getItem()) == Blocks.chest) player.openGui(MiniCreatures.instance, 0, player.worldObj, this.getEntityId(), 0, 0);
                     else if (Block.getBlockFromItem(this.getCarrying().getItem()) == Blocks.anvil) player.openGui(MiniCreatures.instance, 1, player.worldObj, (int) this.posX, (int) this.posY, (int) this.posZ);
                 }
-            /*
-            else if (player.getCommandSenderName().equalsIgnoreCase(this.getOwnerName()) && !this.worldObj.isRemote && !this.isBreedingItem(itemstack)) {
-                this.aiSit.setSitting(!this.isSitting());
-                this.isJumping = false;
-                this.setPathToEntity(null);
-                this.setTarget(null);
-                this.setAttackTarget(null);
-            }
-            */
+                else if (player.getCommandSenderName().equalsIgnoreCase(this.getOwnerName()) && !this.worldObj.isRemote) {
+                    this.aiSit.setSitting(!this.isSitting());
+                    this.setSitting(!this.isSitting());
+                    this.isJumping = false;
+                    this.setPathToEntity(null);
+                    this.setTarget(null);
+                    this.setAttackTarget(null);
+                    System.out.println("Sitting change " + this.isSitting());
+                }
             }
         }
         return super.interact(player);

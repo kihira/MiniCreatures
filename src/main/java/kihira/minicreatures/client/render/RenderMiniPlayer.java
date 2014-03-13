@@ -28,11 +28,12 @@ public class RenderMiniPlayer extends RenderBiped {
 
     //Copied from RenderPlayer.renderSpecials
     private void renderCarrying(EntityMiniPlayer entityMiniPlayer, float par2) {
-        GL11.glPushMatrix();
         ItemStack itemstack = entityMiniPlayer.getHeldItem();
         if (itemstack != null) {
+            GL11.glPushMatrix();
             IItemRenderer customRenderer = MinecraftForgeClient.getItemRenderer(itemstack, EQUIPPED);
             boolean is3D = (customRenderer != null && customRenderer.shouldUseRenderHelper(EQUIPPED, itemstack, BLOCK_3D));
+            if (entityMiniPlayer.isSitting()) GL11.glTranslatef(0F, 0.3F, 0F);
             if (itemstack.getItem() instanceof ItemBlock && (is3D || RenderBlocks.renderItemIn3d(Block.getBlockFromItem(itemstack.getItem()).getRenderType()))) {
                 GL11.glTranslatef(0.0F, 0.8875F, -0.3F);
                 GL11.glRotatef(-90.0F, 0.0F, 1.0F, 0.0F);
@@ -45,8 +46,8 @@ public class RenderMiniPlayer extends RenderBiped {
                 if (entityMiniPlayer.getHeldItem().getItem() instanceof ItemBow) ((ModelMiniPlayer)this.mainModel).aimedBow = entityMiniPlayer.isAiming;
                 super.renderEquippedItems(entityMiniPlayer, par2);
             }
+            GL11.glPopMatrix();
         }
-        GL11.glPopMatrix();
     }
     @Override
     protected void func_82421_b() {

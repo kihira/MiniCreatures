@@ -26,10 +26,10 @@ public class ModelMiniPlayer extends ModelBiped {
         this.bipedHeadwear.rotationPointY = 0.0F;
     }
 
-    @SuppressWarnings("unchecked")
     public void render(Entity par1Entity, float par2, float par3, float par4, float par5, float par6, float par7) {
         IMiniCreature miniPlayer = (IMiniCreature)par1Entity;
-        this.setRotationAngles(par2, par3, par4, par5, par6, par7, par1Entity);
+        GL11.glPushMatrix();
+        this.setRotationAngles(par2, par3, par4, par5, par6, par7, (EntityMiniPlayer)miniPlayer);
         float f6 = 2.0F;
         GL11.glPushMatrix();
         GL11.glScalef(1.5F / f6, 1.5F / f6, 1.5F / f6);
@@ -51,9 +51,10 @@ public class ModelMiniPlayer extends ModelBiped {
             ICustomizerPart part = CustomizerRegistry.getPart(partName);
             if (part != null) part.render(par1Entity, this, par2, par3, par4, par5, par6, par7);
         }
+        GL11.glPopMatrix();
     }
 
-    public void setRotationAngles(float par1, float par2, float par3, float par4, float par5, float par6, Entity par7Entity) {
+    public void setRotationAngles(float par1, float par2, float par3, float par4, float par5, float par6, EntityMiniPlayer miniPlayer) {
         this.bipedHead.rotateAngleY = par4 / (180F / (float)Math.PI);
         this.bipedHead.rotateAngleX = par5 / (180F / (float)Math.PI);
         this.bipedHeadwear.rotateAngleY = this.bipedHead.rotateAngleY;
@@ -67,27 +68,28 @@ public class ModelMiniPlayer extends ModelBiped {
         this.bipedRightLeg.rotateAngleY = 0.0F;
         this.bipedLeftLeg.rotateAngleY = 0.0F;
 
-        if (this.isRiding) {
-            this.bipedRightArm.rotateAngleX += -((float)Math.PI / 5F);
-            this.bipedLeftArm.rotateAngleX += -((float)Math.PI / 5F);
-            this.bipedRightLeg.rotateAngleX = -((float)Math.PI * 2F / 5F);
-            this.bipedLeftLeg.rotateAngleX = -((float)Math.PI * 2F / 5F);
-            this.bipedRightLeg.rotateAngleY = ((float)Math.PI / 10F);
-            this.bipedLeftLeg.rotateAngleY = -((float)Math.PI / 10F);
-        }
-
         this.bipedRightArm.rotateAngleZ += MathHelper.cos(par3 * 0.09F) * 0.05F + 0.05F;
         this.bipedLeftArm.rotateAngleZ -= MathHelper.cos(par3 * 0.09F) * 0.05F + 0.05F;
         this.bipedRightArm.rotateAngleX += MathHelper.sin(par3 * 0.067F) * 0.05F;
         this.bipedLeftArm.rotateAngleX -= MathHelper.sin(par3 * 0.067F) * 0.05F;
 
-        if (this.aimedBow || this.heldItemLeft != 0 || this.heldItemRight != 0 || this.onGround > -9990F) super.setRotationAngles(par1, par2, par3, par4, par5, par6, par7Entity);
+        if (this.aimedBow || this.heldItemLeft != 0 || this.heldItemRight != 0 || this.onGround > -9990F) super.setRotationAngles(par1, par2, par3, par4, par5, par6, miniPlayer);
 
-        if (this.heldItemRight != 0 && (((EntityMiniPlayer)par7Entity).getCarrying().getItem() instanceof ItemBlock)) {
+        if (this.heldItemRight != 0 && (miniPlayer.getCarrying().getItem() instanceof ItemBlock)) {
             this.bipedLeftArm.rotateAngleX = -0.8F;
             this.bipedLeftArm.rotateAngleZ = -0.05F;
             this.bipedRightArm.rotateAngleX = -0.8F;
             this.bipedRightArm.rotateAngleZ = 0.05F;
+        }
+
+        if (miniPlayer.isSitting()) {
+            GL11.glTranslatef(0F, 0.3F, 0F);
+            this.bipedRightArm.rotateAngleX += -((float)Math.PI / 5F);
+            this.bipedLeftArm.rotateAngleX += -((float)Math.PI / 5F);
+            this.bipedRightLeg.rotateAngleX = -((float)Math.PI * 2.5F / 5F);
+            this.bipedLeftLeg.rotateAngleX = -((float)Math.PI * 2.5F / 5F);
+            this.bipedRightLeg.rotateAngleY = ((float)Math.PI / 10F);
+            this.bipedLeftLeg.rotateAngleY = -((float)Math.PI / 10F);
         }
     }
 }
