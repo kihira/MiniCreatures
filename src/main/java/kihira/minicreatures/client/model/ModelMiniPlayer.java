@@ -102,7 +102,7 @@ public class ModelMiniPlayer extends ModelBiped {
 
     public void setLivingAnimations(EntityLivingBase par1EntityLivingBase, float par2, float par3, float par4) {
         EntityMiniPlayer miniPlayer = (EntityMiniPlayer) par1EntityLivingBase;
-        this.aimedBow = !miniPlayer.isSitting() && (miniPlayer.getCarrying().getItem() == Items.bow);
+        this.aimedBow = !miniPlayer.isSitting() && (miniPlayer.getCarrying() != null) && (miniPlayer.getCarrying().getItem() == Items.bow);
         super.setLivingAnimations(par1EntityLivingBase, par2, par3, par4);
     }
 }
