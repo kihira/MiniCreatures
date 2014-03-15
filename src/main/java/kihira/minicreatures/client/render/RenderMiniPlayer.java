@@ -10,7 +10,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemBlock;
-import net.minecraft.item.ItemBow;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.IItemRenderer;
@@ -30,7 +29,6 @@ public class RenderMiniPlayer extends RenderBiped {
     private void renderCarrying(EntityMiniPlayer entityMiniPlayer, float par2) {
         ItemStack itemstack = entityMiniPlayer.getHeldItem();
         if (itemstack != null) {
-            GL11.glPushMatrix();
             IItemRenderer customRenderer = MinecraftForgeClient.getItemRenderer(itemstack, EQUIPPED);
             boolean is3D = (customRenderer != null && customRenderer.shouldUseRenderHelper(EQUIPPED, itemstack, BLOCK_3D));
             if (entityMiniPlayer.isSitting()) GL11.glTranslatef(0F, 0.3F, 0F);
@@ -43,16 +41,16 @@ public class RenderMiniPlayer extends RenderBiped {
             else {
                 GL11.glTranslatef(0F, 0.725F, -0.025F);
                 GL11.glScalef(0.5F, 0.5F, 0.5F);
-                if (entityMiniPlayer.getHeldItem().getItem() instanceof ItemBow) ((ModelMiniPlayer)this.mainModel).aimedBow = entityMiniPlayer.isAiming;
                 super.renderEquippedItems(entityMiniPlayer, par2);
             }
-            GL11.glPopMatrix();
         }
     }
+
     @Override
     protected void func_82421_b() {
-        this.field_82423_g = new ModelMiniPlayer();
-        this.field_82425_h = new ModelMiniPlayer();
+        //We need to set these values so armour renders properly. Not fucking idea why
+        this.field_82423_g = new ModelMiniPlayer(1.0F);
+        this.field_82425_h = new ModelMiniPlayer(0.5F);
     }
 
     @Override

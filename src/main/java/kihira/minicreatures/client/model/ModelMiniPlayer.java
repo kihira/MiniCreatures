@@ -8,6 +8,8 @@ import kihira.minicreatures.common.entity.IMiniCreature;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.util.MathHelper;
 import org.lwjgl.opengl.GL11;
@@ -15,7 +17,11 @@ import org.lwjgl.opengl.GL11;
 public class ModelMiniPlayer extends ModelBiped {
 
     public ModelMiniPlayer() {
-        super();
+        this(0.0F);
+    }
+
+    public ModelMiniPlayer(float par1) {
+        super(par1, 0.0F, 64, 32);
 
         this.bipedBody.rotateAngleX = 0.0F;
         this.bipedRightLeg.rotationPointZ = 0.1F;
@@ -29,7 +35,7 @@ public class ModelMiniPlayer extends ModelBiped {
     public void render(Entity par1Entity, float par2, float par3, float par4, float par5, float par6, float par7) {
         IMiniCreature miniPlayer = (IMiniCreature)par1Entity;
         GL11.glPushMatrix();
-        this.setRotationAngles(par2, par3, par4, par5, par6, par7, (EntityMiniPlayer)miniPlayer);
+        this.setRotationAngles(par2, par3, par4, par5, par6, par7, par1Entity);
         float f6 = 2.0F;
         GL11.glPushMatrix();
         GL11.glScalef(1.5F / f6, 1.5F / f6, 1.5F / f6);
@@ -54,7 +60,8 @@ public class ModelMiniPlayer extends ModelBiped {
         GL11.glPopMatrix();
     }
 
-    public void setRotationAngles(float par1, float par2, float par3, float par4, float par5, float par6, EntityMiniPlayer miniPlayer) {
+    public void setRotationAngles(float par1, float par2, float par3, float par4, float par5, float par6, Entity par7Entity) {
+        EntityMiniPlayer miniPlayer = (EntityMiniPlayer) par7Entity;
         this.bipedHead.rotateAngleY = par4 / (180F / (float)Math.PI);
         this.bipedHead.rotateAngleX = par5 / (180F / (float)Math.PI);
         this.bipedHeadwear.rotateAngleY = this.bipedHead.rotateAngleY;
@@ -91,5 +98,11 @@ public class ModelMiniPlayer extends ModelBiped {
             this.bipedRightLeg.rotateAngleY = ((float)Math.PI / 10F);
             this.bipedLeftLeg.rotateAngleY = -((float)Math.PI / 10F);
         }
+    }
+
+    public void setLivingAnimations(EntityLivingBase par1EntityLivingBase, float par2, float par3, float par4) {
+        EntityMiniPlayer miniPlayer = (EntityMiniPlayer) par1EntityLivingBase;
+        this.aimedBow = !miniPlayer.isSitting() && (miniPlayer.getCarrying().getItem() == Items.bow);
+        super.setLivingAnimations(par1EntityLivingBase, par2, par3, par4);
     }
 }
