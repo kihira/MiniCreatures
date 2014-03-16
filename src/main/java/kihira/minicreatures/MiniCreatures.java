@@ -17,6 +17,7 @@ import kihira.minicreatures.common.entity.EntityFox;
 import kihira.minicreatures.common.entity.EntityMiniPlayer;
 import kihira.minicreatures.common.entity.EntityTRex;
 import kihira.minicreatures.common.item.ItemCustomizer;
+import kihira.minicreatures.common.item.ItemMindControlHelmet;
 import kihira.minicreatures.common.network.PacketHandler;
 import kihira.minicreatures.proxy.CommonProxy;
 import net.minecraft.entity.EnumCreatureType;
@@ -40,7 +41,7 @@ public class MiniCreatures {
     public static final PacketHandler packetHandler = new PacketHandler();
 
     public static final ItemCustomizer itemCustomizer = new ItemCustomizer();
-    //public static final ItemMindControlHelmet itemMindControlHelmet = new ItemMindControlHelmet();
+    public static final ItemMindControlHelmet itemMindControlHelmet = new ItemMindControlHelmet();
 
     public static boolean enableMiniFoxes;
     public static boolean enableMiniTRex;
@@ -86,7 +87,7 @@ public class MiniCreatures {
 
     private void registerItems() {
         GameRegistry.registerItem(itemCustomizer, "customizer");
-       // GameRegistry.registerItem(itemMindControlHelmet, "mindControlHelmet");
+        GameRegistry.registerItem(itemMindControlHelmet, "mindControlHelmet");
     }
 
     private void registerEntities() {

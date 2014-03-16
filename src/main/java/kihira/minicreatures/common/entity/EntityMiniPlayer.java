@@ -52,9 +52,14 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature {
         this.setTamed(false);
     }
 
+    public boolean isChild() {
+        return false;
+    }
+
     protected void entityInit() {
         super.entityInit();
-        this.dataWatcher.addObject(18, "");
+        this.dataWatcher.addObject(18, ""); //Parts list
+        this.dataWatcher.addObject(19, 0); //Has Mind Control device
     }
 
     @Override
@@ -150,7 +155,6 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature {
                     this.setPathToEntity(null);
                     this.setTarget(null);
                     this.setAttackTarget(null);
-                    System.out.println("Sitting change " + this.isSitting());
                 }
             }
         }
@@ -163,6 +167,14 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature {
 
     public ItemStack getCarrying() {
         return this.getHeldItem();
+    }
+
+    public void setMindControlled(boolean mindControlled) {
+        this.dataWatcher.updateObject(19, mindControlled ? 1 : 0);
+    }
+
+    public boolean isMindControlled() {
+        return this.dataWatcher.getWatchableObjectInt(19) == 1;
     }
 
     @Override
