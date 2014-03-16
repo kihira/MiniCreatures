@@ -1,6 +1,7 @@
 package kihira.minicreatures.client.render;
 
 import kihira.minicreatures.client.model.ModelMiniPlayer;
+import kihira.minicreatures.common.entity.EntityFox;
 import kihira.minicreatures.common.entity.EntityMiniPlayer;
 import net.minecraft.block.Block;
 import net.minecraft.client.entity.AbstractClientPlayer;
@@ -31,6 +32,7 @@ public class RenderMiniPlayer extends RenderBiped {
             IItemRenderer customRenderer = MinecraftForgeClient.getItemRenderer(itemstack, EQUIPPED);
             boolean is3D = (customRenderer != null && customRenderer.shouldUseRenderHelper(EQUIPPED, itemstack, BLOCK_3D));
             if (entityMiniPlayer.isSitting()) GL11.glTranslatef(0F, 0.3F, 0F);
+            if (entityMiniPlayer.isRiding() && (entityMiniPlayer.ridingEntity instanceof EntityFox) && (((EntityFox) entityMiniPlayer.ridingEntity).isSitting())) GL11.glTranslatef(0F, 0.04F, 0F);
             if (itemstack.getItem() instanceof ItemBlock && (is3D || RenderBlocks.renderItemIn3d(Block.getBlockFromItem(itemstack.getItem()).getRenderType()))) {
                 GL11.glTranslatef(0.0F, 0.8875F, -0.3F);
                 GL11.glRotatef(-90.0F, 0.0F, 1.0F, 0.0F);

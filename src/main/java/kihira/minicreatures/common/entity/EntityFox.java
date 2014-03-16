@@ -23,11 +23,13 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.List;
 
 public class EntityFox extends EntityTameable implements IMiniCreature {
 
@@ -36,7 +38,7 @@ public class EntityFox extends EntityTameable implements IMiniCreature {
 
     public EntityFox(World par1World) {
         super(par1World);
-        this.setSize(0.5f, 0.25f);
+        this.setSize(0.4f, 0.2f);
         this.getNavigator().setAvoidsWater(true);
         this.getNavigator().setCanSwim(true);
         this.tasks.addTask(1, new EntityAISwimming(this));
@@ -110,16 +112,23 @@ public class EntityFox extends EntityTameable implements IMiniCreature {
                         return true;
                     }
                 }
+                else if (itemstack.getItem() == Items.brick) {
+                    double d0 = 7.0D;
+                    List list = this.worldObj.getEntitiesWithinAABB(EntityMiniPlayer.class, AxisAlignedBB.getAABBPool().getAABB(this.posX - d0, this.posY - d0, this.posZ - d0, this.posX + d0, this.posY + d0, this.posZ + d0));
+
+                    if (list != null) {
+                        for (Object aList : list) {
+                            EntityLiving entityliving = (EntityLiving) aList;
+                            if (entityliving.getLeashed() && entityliving.getLeashedToEntity() == player) {
+                                entityliving.setLeashedToEntity(null, true);
+                                entityliving.mountEntity(this);
+                                break;
+                            }
+                        }
+                    }
+                }
+                else if (itemstack.getItem() == Items.brick) return false;
             }
-            /*
-            else if (this.riddenByEntity == null && !this.isRiding() && !worldObj.isRemote) {
-                EntityMiniPlayer miniPlayer = new EntityMiniPlayer(player.worldObj);
-                miniPlayer.setCustomNameTag(player.getCommandSenderName());
-                miniPlayer.setPosition(posX, posY, posZ);
-                player.worldObj.spawnEntityInWorld(miniPlayer);
-                miniPlayer.mountEntity(this);
-            }
-            */
             if (!player.isSneaking() && this.hasChest()) {
                 //Send Entity ID as x coord. Inspired by OpenBlocks
                 player.openGui(MiniCreatures.instance, 0, player.worldObj, this.getEntityId(), 0, 0);
@@ -187,7 +196,7 @@ public class EntityFox extends EntityTameable implements IMiniCreature {
         }
         //Save parts list
         NBTTagList nbttaglist = new NBTTagList();
-        for (String part : this.dataWatcher.getWatchableObjectString(18).split(",")) {
+        for (String part : this.dataWatcher.getWatchableObjectString(20).split(",")) {
             if (part != null) nbttaglist.appendTag(new NBTTagString(part));
         }
         tag.setTag("Parts", nbttaglist);
@@ -213,7 +222,7 @@ public class EntityFox extends EntityTameable implements IMiniCreature {
         for (int i = 0; i < tagList.tagCount(); i++) {
             s += tagList.getStringTagAt(i) + ",";
         }
-        this.dataWatcher.updateObject(18, s);
+        this.dataWatcher.updateObject(20, s);
     }
 
     @Override

@@ -149,12 +149,23 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature {
                     else if (Block.getBlockFromItem(this.getCarrying().getItem()) == Blocks.anvil) player.openGui(MiniCreatures.instance, 1, player.worldObj, (int) this.posX, (int) this.posY, (int) this.posZ);
                 }
                 else if (player.getCommandSenderName().equalsIgnoreCase(this.getOwnerName()) && !this.worldObj.isRemote) {
-                    this.aiSit.setSitting(!this.isSitting());
-                    this.setSitting(!this.isSitting());
-                    this.isJumping = false;
-                    this.setPathToEntity(null);
-                    this.setTarget(null);
-                    this.setAttackTarget(null);
+                    if (this.isRiding()) {
+                        EntityTameable ridingEntity = (EntityTameable) this.ridingEntity;
+                        ridingEntity.func_70907_r().setSitting(!ridingEntity.isSitting());
+                        ridingEntity.setSitting(!ridingEntity.isSitting());
+                        ridingEntity.setJumping(false);
+                        ridingEntity.setPathToEntity(null);
+                        ridingEntity.setTarget(null);
+                        ridingEntity.setAttackTarget(null);
+                    }
+                    else {
+                        this.aiSit.setSitting(!this.isSitting());
+                        this.setSitting(!this.isSitting());
+                        this.isJumping = false;
+                        this.setPathToEntity(null);
+                        this.setTarget(null);
+                        this.setAttackTarget(null);
+                    }
                 }
             }
         }
