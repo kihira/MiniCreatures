@@ -7,7 +7,6 @@ import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.entity.RenderBiped;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
@@ -67,12 +66,5 @@ public class RenderMiniPlayer extends RenderBiped {
             AbstractClientPlayer.getDownloadImageSkin(resourcelocation, entityMiniPlayer.getCustomNameTag());
         }
         return resourcelocation;
-    }
-
-    @Override
-    public void doRender(Entity par1Entity, double par2, double par4, double par6, float par8, float par9) {
-        EntityMiniPlayer miniPlayer = (EntityMiniPlayer)par1Entity;
-        ((ModelMiniPlayer)this.mainModel).bipedHeadwear.showModel = miniPlayer.getEquipmentInSlot(4) == null;
-        super.doRender((EntityLiving) par1Entity, par2, par4, par6, par8, par9);
     }
 }
