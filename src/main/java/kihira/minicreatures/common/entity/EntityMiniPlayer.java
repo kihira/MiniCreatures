@@ -34,10 +34,8 @@ import java.util.EnumSet;
 public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, IRangedAttackMob {
 
     private final InventoryBasic inventory = new InventoryBasic(this.getCommandSenderName(), false, 18);
-    //True if aiming with bow. Not currently in use.
-    public boolean isAiming = false;
 
-    private EntityAIArrowAttack aiArrowAttack = new EntityAIArrowAttack(this, 1.0D, 20, 60, 15.0F);
+    private EntityAIArrowAttack aiArrowAttack = new EntityAIArrowAttack(this, 1.0D, 20, 50, 15F); //Set par3 and par4 to the same to have a consant firing rate. par5 seems to effect damage output. Higher = more damage falloff
     private EntityAIAttackOnCollide aiAttackOnCollide = new EntityAIAttackOnCollide(this, 1.2D, true);
 
     //Maintain an array list client side for previewing
@@ -185,10 +183,10 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
     }
 
     @Override
-    public void onLivingUpdate() {
+    protected void updateAITick() {
         //Gotta do this so it doesn't get stuck shooting arrows
         if (this.getAttackTarget() != null && this.getAttackTarget().isDead) this.setAttackTarget(null);
-        super.onLivingUpdate();
+        super.updateAITick();
     }
 
     @Override
@@ -200,14 +198,12 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
         super.setAttackTarget(attackTarget);
     }
 
-    /*
     protected void attackEntity(Entity par1Entity, float par2) {
         if (this.attackTime <= 0 && par2 < 2.0F && par1Entity.boundingBox.maxY > this.boundingBox.minY && par1Entity.boundingBox.minY < this.boundingBox.maxY) {
             this.attackTime = 20;
             this.attackEntityAsMob(par1Entity);
         }
     }
-    */
 
     @Override
     public boolean attackEntityAsMob(Entity par1Entity) {
@@ -241,10 +237,12 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
 
     @Override
     public void attackEntityWithRangedAttack(EntityLivingBase var1, float var2) {
-        EntityArrow entityarrow = new EntityArrow(this.worldObj, this, var1, 1.6F, 2);
+        EntityArrow entityarrow = new EntityArrow(this.worldObj, this, var1, 1.6F, 3);
         int power = EnchantmentHelper.getEnchantmentLevel(Enchantment.power.effectId, this.getHeldItem());
         int punch = EnchantmentHelper.getEnchantmentLevel(Enchantment.punch.effectId, this.getHeldItem());
-        entityarrow.setDamage((double)(var2 * 2.0F) + this.rand.nextGaussian() * 0.25D + (double)((float)this.worldObj.difficultySetting.getDifficultyId() * 0.11F));
+        double damage = (double)(var2 * 3.0F) + this.rand.nextGaussian() * 0.25D;
+        entityarrow.setDamage(damage);
+        System.out.println(damage);
 
         if (power > 0) entityarrow.setDamage(entityarrow.getDamage() + (double)power * 0.5D + 0.5D);
         if (punch > 0) entityarrow.setKnockbackStrength(punch);
