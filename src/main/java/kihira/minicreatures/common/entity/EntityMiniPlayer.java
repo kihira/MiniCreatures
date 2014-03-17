@@ -7,9 +7,8 @@ import cpw.mods.fml.relauncher.SideOnly;
 import kihira.minicreatures.MiniCreatures;
 import kihira.minicreatures.common.customizer.EnumPartCategory;
 import net.minecraft.block.Block;
-import net.minecraft.entity.EntityAgeable;
-import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.entity.*;
 import net.minecraft.entity.ai.*;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.passive.EntityTameable;
@@ -23,6 +22,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
+import net.minecraft.util.DamageSource;
+import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
 import java.util.ArrayList;
@@ -45,10 +46,11 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature {
         this.getNavigator().setCanSwim(true);
         this.tasks.addTask(1, new EntityAISwimming(this));
         this.tasks.addTask(2, this.aiSit);
-        this.tasks.addTask(3, new EntityAIFollowOwner(this, 1.0D, 10.0F, 2.0F));
-        this.tasks.addTask(4, new EntityAIWander(this, 1.0D));
-        this.tasks.addTask(5, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
-        this.tasks.addTask(5, new EntityAILookIdle(this));
+        this.tasks.addTask(3, new EntityAIAttackOnCollide(this, 1.0D, true));
+        this.tasks.addTask(4, new EntityAIFollowOwner(this, 1.0D, 10.0F, 2.0F));
+        this.tasks.addTask(5, new EntityAIWander(this, 1.0D));
+        this.tasks.addTask(6, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
+        this.tasks.addTask(6, new EntityAILookIdle(this));
         this.setTamed(false);
     }
 
@@ -67,6 +69,8 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature {
         super.applyEntityAttributes();
         this.getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(10.0D);
         this.getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(0.30000001192092896D);
+        this.getAttributeMap().registerAttribute(SharedMonsterAttributes.attackDamage);
+        this.getEntityAttribute(SharedMonsterAttributes.attackDamage).setBaseValue(4);
     }
 
     @Override
@@ -170,6 +174,52 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature {
             }
         }
         return super.interact(player);
+    }
+
+    @Override
+    public void setAttackTarget(EntityLivingBase attackTarget) {
+        if (this.isRiding() && this.ridingEntity instanceof EntityFox) {
+            EntityFox entityFox = (EntityFox) this.ridingEntity;
+            entityFox.setPathToEntity(entityFox.getNavigator().getPathToEntityLiving(attackTarget));
+        }
+        super.setAttackTarget(attackTarget);
+    }
+
+    protected void attackEntity(Entity par1Entity, float par2) {
+        if (this.attackTime <= 0 && par2 < 2.0F && par1Entity.boundingBox.maxY > this.boundingBox.minY && par1Entity.boundingBox.minY < this.boundingBox.maxY) {
+            this.attackTime = 20;
+            this.attackEntityAsMob(par1Entity);
+        }
+    }
+
+    @Override
+    public boolean attackEntityAsMob(Entity par1Entity) {
+        float attackDamage = (float)this.getEntityAttribute(SharedMonsterAttributes.attackDamage).getAttributeValue();
+        int knockback = 0;
+
+        if (par1Entity instanceof EntityLivingBase) {
+            attackDamage += EnchantmentHelper.getEnchantmentModifierLiving(this, (EntityLivingBase) par1Entity);
+            knockback += EnchantmentHelper.getKnockbackModifier(this, (EntityLivingBase)par1Entity);
+        }
+
+        boolean flag = par1Entity.attackEntityFrom(DamageSource.causeMobDamage(this), attackDamage);
+
+        if (flag) {
+            if (knockback > 0) {
+                par1Entity.addVelocity((double)(-MathHelper.sin(this.rotationYaw * (float) Math.PI / 180.0F) * (float)knockback * 0.5F), 0.1D, (double)(MathHelper.cos(this.rotationYaw * (float)Math.PI / 180.0F) * (float)knockback * 0.5F));
+                this.motionX *= 0.6D;
+                this.motionZ *= 0.6D;
+            }
+
+            int j = EnchantmentHelper.getFireAspectModifier(this);
+            if (j > 0) par1Entity.setFire(j * 4);
+
+            if (par1Entity instanceof EntityLivingBase) EnchantmentHelper.func_151384_a((EntityLivingBase)par1Entity, this);
+
+            EnchantmentHelper.func_151385_b(this, par1Entity);
+        }
+
+        return flag;
     }
 
     public void setCarrying(ItemStack itemStack) {

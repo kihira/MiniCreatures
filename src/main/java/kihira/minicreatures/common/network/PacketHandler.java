@@ -22,6 +22,7 @@ public class PacketHandler extends FMLIndexedMessageToMessageCodec<MiniCreatures
         this.channels = NetworkRegistry.INSTANCE.newChannel("MiniCreatures", this);
 
         addDiscriminator(0, MiniCreaturesMessage.UpdateEntityMessage.class);
+        addDiscriminator(1, MiniCreaturesMessage.SetAttackTargetMessage.class);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package kihira.minicreatures;
 
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
@@ -11,6 +12,7 @@ import kihira.minicreatures.client.model.parts.PartModelFairy;
 import kihira.minicreatures.client.model.parts.PartModelHorns;
 import kihira.minicreatures.client.model.parts.PartModelTail;
 import kihira.minicreatures.common.CommandSpawnEntity;
+import kihira.minicreatures.common.EventHandler;
 import kihira.minicreatures.common.GuiHandler;
 import kihira.minicreatures.common.customizer.CustomizerRegistry;
 import kihira.minicreatures.common.entity.EntityFox;
@@ -56,6 +58,8 @@ public class MiniCreatures {
         registerItems();
         registerCustomizerParts();
         NetworkRegistry.INSTANCE.registerGuiHandler(instance, new GuiHandler());
+        //MinecraftForge.EVENT_BUS.register(new EventHandler());
+        FMLCommonHandler.instance().bus().register(new EventHandler());
     }
 
     @Mod.EventHandler

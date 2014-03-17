@@ -8,12 +8,17 @@ import cpw.mods.fml.relauncher.Side;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import kihira.minicreatures.MiniCreatures;
+import kihira.minicreatures.common.entity.EntityMiniPlayer;
 import kihira.minicreatures.common.entity.IMiniCreature;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.NetHandlerPlayServer;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.ChatComponentText;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 public abstract class MiniCreaturesMessage implements IMessage {
     public abstract IMessage onMessage(MiniCreaturesMessage message, ChannelHandlerContext ctx, Side side);
@@ -61,6 +66,48 @@ public abstract class MiniCreaturesMessage implements IMessage {
                     if (!Strings.isNullOrEmpty(part)) MiniCreatures.logger.info("Part: " + part);
                 }
                 ((IMiniCreature) entityPlayer.worldObj.getEntityByID(this.entityID)).setParts(this.partsList, false);
+            }
+            return null;
+        }
+    }
+
+    public static class SetAttackTargetMessage extends MiniCreaturesMessage {
+        private int targetEntityID;
+
+        public SetAttackTargetMessage() {}
+        public SetAttackTargetMessage(int targetEntityID) {
+            this.targetEntityID = targetEntityID;
+        }
+
+        @Override
+        public void fromBytes(ByteBuf buf) {
+            this.targetEntityID = buf.readInt();
+        }
+
+        @Override
+        public void toBytes(ByteBuf buf) {
+            buf.writeInt(this.targetEntityID);
+        }
+
+        @Override
+        public IMessage onMessage(MiniCreaturesMessage message, ChannelHandlerContext ctx, Side side) {
+            if (side == Side.SERVER) {
+                EntityPlayer entityPlayer = ((NetHandlerPlayServer) ctx.channel().attr(NetworkRegistry.NET_HANDLER).get()).playerEntity;
+                AxisAlignedBB axisalignedbb = AxisAlignedBB.getAABBPool().getAABB(entityPlayer.posX, entityPlayer.posY, entityPlayer.posZ, entityPlayer.posX, entityPlayer.posY, entityPlayer.posZ).expand(10, 10, 10);
+                List entityList = entityPlayer.worldObj.getEntitiesWithinAABB(EntityMiniPlayer.class, axisalignedbb);
+
+                if (entityList != null) {
+                    for (Object entry : entityList) {
+                        if (entry instanceof EntityMiniPlayer) {
+                            EntityMiniPlayer miniPlayer = (EntityMiniPlayer) entry;
+                            if (miniPlayer.getOwner() == entityPlayer) {
+                                EntityLivingBase attackTarget = (EntityLivingBase) entityPlayer.worldObj.getEntityByID(this.targetEntityID);
+                                miniPlayer.setAttackTarget(attackTarget);
+                                entityPlayer.addChatComponentMessage(new ChatComponentText(miniPlayer.getCommandSenderName() + ": Attacking " + attackTarget.getCommandSenderName()));
+                            }
+                        }
+                    }
+                }
             }
             return null;
         }
