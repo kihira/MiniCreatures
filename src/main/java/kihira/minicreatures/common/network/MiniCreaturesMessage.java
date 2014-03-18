@@ -11,6 +11,7 @@ import kihira.minicreatures.MiniCreatures;
 import kihira.minicreatures.common.entity.EntityMiniPlayer;
 import kihira.minicreatures.common.entity.IMiniCreature;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.util.AxisAlignedBB;
@@ -102,6 +103,9 @@ public abstract class MiniCreaturesMessage implements IMessage {
                             EntityMiniPlayer miniPlayer = (EntityMiniPlayer) entry;
                             if (miniPlayer.getOwner() == entityPlayer) {
                                 EntityLivingBase attackTarget = (EntityLivingBase) entityPlayer.worldObj.getEntityByID(this.targetEntityID);
+                                if (attackTarget.isOnSameTeam(miniPlayer)) return null;
+                                if ((attackTarget instanceof EntityTameable) && (((EntityTameable) attackTarget).getOwner() == entityPlayer)) return null;
+
                                 miniPlayer.setAttackTarget(attackTarget);
                                 entityPlayer.addChatComponentMessage(new ChatComponentText(miniPlayer.getCommandSenderName() + ": Attacking " + attackTarget.getCommandSenderName()));
                             }

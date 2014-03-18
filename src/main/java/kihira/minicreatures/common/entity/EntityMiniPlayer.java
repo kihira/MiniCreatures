@@ -242,7 +242,6 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
         int punch = EnchantmentHelper.getEnchantmentLevel(Enchantment.punch.effectId, this.getHeldItem());
         double damage = (double)(var2 * 3.0F) + this.rand.nextGaussian() * 0.25D;
         entityarrow.setDamage(damage);
-        System.out.println(damage);
 
         if (power > 0) entityarrow.setDamage(entityarrow.getDamage() + (double)power * 0.5D + 0.5D);
         if (punch > 0) entityarrow.setKnockbackStrength(punch);
