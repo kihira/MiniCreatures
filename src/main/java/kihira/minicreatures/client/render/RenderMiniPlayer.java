@@ -31,7 +31,6 @@ public class RenderMiniPlayer extends RenderBiped {
         if (itemstack != null) {
             IItemRenderer customRenderer = MinecraftForgeClient.getItemRenderer(itemstack, EQUIPPED);
             boolean is3D = (customRenderer != null && customRenderer.shouldUseRenderHelper(EQUIPPED, itemstack, BLOCK_3D));
-            if (entityMiniPlayer.isSitting()) GL11.glTranslatef(0F, 0.3F, 0F);
             if (entityMiniPlayer.isRiding() && (entityMiniPlayer.ridingEntity instanceof EntityFox) && (((EntityFox) entityMiniPlayer.ridingEntity).isSitting())) GL11.glTranslatef(0F, 0.04F, 0F);
             if (itemstack.getItem() instanceof ItemBlock && (is3D || RenderBlocks.renderItemIn3d(Block.getBlockFromItem(itemstack.getItem()).getRenderType()))) {
                 GL11.glTranslatef(0.0F, 0.8875F, -0.3F);
@@ -49,7 +48,7 @@ public class RenderMiniPlayer extends RenderBiped {
 
     @Override
     protected void func_82421_b() {
-        //We need to set these values so armour renders properly. Not fucking idea why
+        //We need to set these values so armour renders properly. Kinda got an idea why
         this.field_82423_g = new ModelMiniPlayer(1.0F);
         this.field_82425_h = new ModelMiniPlayer(0.5F);
     }
