@@ -44,7 +44,7 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
 
     public EntityMiniPlayer(World par1World) {
         super(par1World);
-        this.setSize(0.5F, 1F);
+        this.setSize(0.8F, 0.95F);
         this.getNavigator().setAvoidsWater(true);
         this.getNavigator().setCanSwim(true);
         this.tasks.addTask(1, new EntityAISwimming(this));
@@ -133,15 +133,15 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
                         }
                         return true;
                     }
-                    else if (this.getCarrying() == null) {
+                    else if (this.getHeldItem() == null) {
                         ItemStack newItemStack = itemstack.copy();
                         newItemStack.stackSize = 1;
                         this.setCarrying(newItemStack);
                         player.playSound("mob.chickenplop", 1.0F, (this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F + 1.0F);
                         if (!player.capabilities.isCreativeMode && --itemstack.stackSize <= 0) player.inventory.setInventorySlotContents(player.inventory.currentItem, null);
                     }
-                    else if (this.getCarrying() != null && itemstack.getItem() == Items.stick) {
-                        EntityItem entityItem = new EntityItem(player.worldObj, this.posX, this.posY, this.posZ, this.getCarrying().copy());
+                    else if (this.getHeldItem() != null && itemstack.getItem() == Items.stick) {
+                        EntityItem entityItem = new EntityItem(player.worldObj, this.posX, this.posY, this.posZ, this.getHeldItem().copy());
                         player.worldObj.spawnEntityInWorld(entityItem);
                         this.setCarrying(null);
                         for (int i = 0; i < inventory.getSizeInventory(); i++) {
@@ -154,9 +154,9 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
                         }
                     }
                 }
-                else if (!player.isSneaking() && this.getCarrying() != null) {
-                    if (Block.getBlockFromItem(this.getCarrying().getItem()) == Blocks.chest) player.openGui(MiniCreatures.instance, 0, player.worldObj, this.getEntityId(), 0, 0);
-                    else if (Block.getBlockFromItem(this.getCarrying().getItem()) == Blocks.anvil) player.openGui(MiniCreatures.instance, 1, player.worldObj, (int) this.posX, (int) this.posY, (int) this.posZ);
+                else if (!player.isSneaking() && this.getHeldItem() != null) {
+                    if (Block.getBlockFromItem(this.getHeldItem().getItem()) == Blocks.chest) player.openGui(MiniCreatures.instance, 0, player.worldObj, this.getEntityId(), 0, 0);
+                    else if (Block.getBlockFromItem(this.getHeldItem().getItem()) == Blocks.anvil) player.openGui(MiniCreatures.instance, 1, player.worldObj, (int) this.posX, (int) this.posY, (int) this.posZ);
                 }
                 else if (player.getCommandSenderName().equalsIgnoreCase(this.getOwnerName()) && !this.worldObj.isRemote) {
                     if (this.isRiding()) {
@@ -237,7 +237,7 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
 
     @Override
     public void attackEntityWithRangedAttack(EntityLivingBase var1, float var2) {
-        EntityArrow entityarrow = new EntityArrow(this.worldObj, this, var1, 1.6F, 3);
+        EntityArrow entityarrow = new EntityArrow(this.worldObj, this, var1, 1.6F, 3); //TODO fix
         int power = EnchantmentHelper.getEnchantmentLevel(Enchantment.power.effectId, this.getHeldItem());
         int punch = EnchantmentHelper.getEnchantmentLevel(Enchantment.punch.effectId, this.getHeldItem());
         double damage = (double)(var2 * 3.0F) + this.rand.nextGaussian() * 0.25D;
@@ -263,10 +263,6 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
     public void setCarrying(ItemStack itemStack) {
         this.setCurrentItemOrArmor(0, itemStack);
         this.setCombatAI();
-    }
-
-    public ItemStack getCarrying() {
-        return this.getHeldItem();
     }
 
     public void setMindControlled(boolean mindControlled) {

@@ -34,11 +34,10 @@ import java.util.List;
 public class EntityFox extends EntityTameable implements IMiniCreature {
 
     private final IInventory inventory = new InventoryBasic(this.getCommandSenderName(), false, 18);
-    private ArrayList<String> parts = new ArrayList<String>();
 
     public EntityFox(World par1World) {
         super(par1World);
-        this.setSize(0.4f, 0.2f);
+        this.setSize(0.4f, 0.4f);
         this.getNavigator().setAvoidsWater(true);
         this.getNavigator().setCanSwim(true);
         this.tasks.addTask(1, new EntityAISwimming(this));
