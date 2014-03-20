@@ -237,7 +237,11 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
 
     @Override
     public void attackEntityWithRangedAttack(EntityLivingBase var1, float var2) {
-        EntityArrow entityarrow = new EntityArrow(this.worldObj, this, var1, 1.6F, 3); //TODO fix
+        EntityArrow entityarrow = new EntityArrow(this.worldObj, this, var1, Math.max(1F, getDistanceToEntity(var1) / 10F), 1);
+        entityarrow.posX = this.posX;
+        entityarrow.posY = this.posY + this.getEyeHeight();
+        entityarrow.posZ = this.posZ;
+
         int power = EnchantmentHelper.getEnchantmentLevel(Enchantment.power.effectId, this.getHeldItem());
         int punch = EnchantmentHelper.getEnchantmentLevel(Enchantment.punch.effectId, this.getHeldItem());
         double damage = (double)(var2 * 3.0F) + this.rand.nextGaussian() * 0.25D;
