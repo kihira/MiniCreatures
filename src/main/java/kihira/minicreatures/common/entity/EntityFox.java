@@ -5,6 +5,7 @@ import kihira.minicreatures.MiniCreatures;
 import kihira.minicreatures.common.customizer.EnumPartCategory;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockColored;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityAgeable;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.SharedMonsterAttributes;
@@ -42,11 +43,12 @@ public class EntityFox extends EntityTameable implements IMiniCreature {
         this.getNavigator().setCanSwim(true);
         this.tasks.addTask(1, new EntityAISwimming(this));
         this.tasks.addTask(2, this.aiSit);
-        this.tasks.addTask(3, new EntityAIFollowOwner(this, 1.0D, 10.0F, 2.0F));
-        this.tasks.addTask(4, new EntityAIMate(this, 1.0D));
-        this.tasks.addTask(5, new EntityAIWander(this, 1.0D));
-        this.tasks.addTask(6, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
-        this.tasks.addTask(6, new EntityAILookIdle(this));
+        this.tasks.addTask(3, new EntityAIAttackOnCollide(this, 1.0D, true));
+        this.tasks.addTask(4, new EntityAIFollowOwner(this, 1.0D, 10.0F, 2.0F));
+        this.tasks.addTask(5, new EntityAIMate(this, 1.0D));
+        this.tasks.addTask(6, new EntityAIWander(this, 1.0D));
+        this.tasks.addTask(7, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
+        this.tasks.addTask(7, new EntityAILookIdle(this));
         this.targetTasks.addTask(1, new EntityAITargetNonTamed(this, EntityChicken.class, 200, false));
         this.setTamed(false);
     }
@@ -296,6 +298,12 @@ public class EntityFox extends EntityTameable implements IMiniCreature {
             entityFox.setTamed(true);
         }
         return entityFox;
+    }
+
+    @Override
+    public boolean attackEntityAsMob(Entity par1Entity) {
+        int i = this.isTamed() ? 4 : 2;
+        return par1Entity.attackEntityFrom(DamageSource.causeMobDamage(this), (float)i);
     }
 
     @Override

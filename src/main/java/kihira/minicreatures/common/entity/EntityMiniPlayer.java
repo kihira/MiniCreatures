@@ -191,9 +191,10 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
 
     @Override
     public void setAttackTarget(EntityLivingBase attackTarget) {
-        if (this.isRiding() && this.ridingEntity instanceof EntityFox) {
+        if (this.isRiding() && this.ridingEntity instanceof EntityFox && attackTarget != null) {
             EntityFox entityFox = (EntityFox) this.ridingEntity;
-            entityFox.setPathToEntity(entityFox.getNavigator().getPathToEntityLiving(attackTarget));
+            //entityFox.setPathToEntity(entityFox.getNavigator().getPathToEntityLiving(attackTarget));
+            entityFox.setAttackTarget(attackTarget);
         }
         super.setAttackTarget(attackTarget);
     }
