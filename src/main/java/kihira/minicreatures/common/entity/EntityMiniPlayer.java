@@ -72,10 +72,10 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
     @Override
     protected void applyEntityAttributes() {
         super.applyEntityAttributes();
-        this.getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(10.0D);
+        this.getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(20);
         this.getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(0.30000001192092896D);
-        this.getAttributeMap().registerAttribute(SharedMonsterAttributes.attackDamage).setBaseValue(4);
-        this.getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(40D);
+        this.getAttributeMap().registerAttribute(SharedMonsterAttributes.attackDamage).setBaseValue(3);
+        this.getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(40);
     }
 
     @Override
@@ -93,7 +93,6 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
     @Override
     public void readEntityFromNBT(NBTTagCompound par1NBTTagCompound) {
         super.readEntityFromNBT(par1NBTTagCompound);
-        MiniCreatures.logger.info("Reading NBT!");
 
         //Load parts list
         NBTTagList tagList = par1NBTTagCompound.getTagList("Parts", 8);

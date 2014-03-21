@@ -15,7 +15,7 @@ public class RenderFox extends RenderLiving {
     private final ResourceLocation foxCollarTexture = new ResourceLocation("minicreatures", "textures/entity/foxcollar.png");
 
     public RenderFox() {
-        super(new ModelFox(), 0.5F);
+        super(new ModelFox(), 0.4F);
         this.setRenderPassModel(new ModelFox());
     }
 
@@ -23,7 +23,7 @@ public class RenderFox extends RenderLiving {
     protected int shouldRenderPass(EntityLivingBase par1EntityLivingBase, int par2, float par3) {
         EntityFox entityFox = (EntityFox) par1EntityLivingBase;
         if (par2 == 1 && entityFox.isTamed()) {
-            this.bindTexture(foxCollarTexture);
+            this.bindTexture(this.foxCollarTexture);
             int j = entityFox.getCollarColor();
             GL11.glColor3f(EntitySheep.fleeceColorTable[j][0], EntitySheep.fleeceColorTable[j][1], EntitySheep.fleeceColorTable[j][2]);
             return 1;
@@ -33,6 +33,6 @@ public class RenderFox extends RenderLiving {
 
     @Override
     protected ResourceLocation getEntityTexture(Entity entity) {
-        return foxTexture;
+        return this.foxTexture;
     }
 }

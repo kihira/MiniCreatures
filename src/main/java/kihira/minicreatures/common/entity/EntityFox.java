@@ -49,7 +49,7 @@ public class EntityFox extends EntityTameable implements IMiniCreature {
         this.tasks.addTask(6, new EntityAIWander(this, 1.0D));
         this.tasks.addTask(7, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
         this.tasks.addTask(7, new EntityAILookIdle(this));
-        this.targetTasks.addTask(1, new EntityAITargetNonTamed(this, EntityChicken.class, 200, false));
+        this.targetTasks.addTask(1, new EntityAITargetNonTamed(this, EntityChicken.class, 750, false));
         this.setTamed(false);
     }
 
@@ -187,11 +187,11 @@ public class EntityFox extends EntityTameable implements IMiniCreature {
         tag.setByte("CollarColor", (byte) this.getCollarColor());
         if (this.hasChest()) {
             NBTTagList nbttaglist = new NBTTagList();
-            for (int i = 0; i < inventory.getSizeInventory(); i++) {
-                if (inventory.getStackInSlot(i) != null) {
+            for (int i = 0; i < this.inventory.getSizeInventory(); i++) {
+                if (this.inventory.getStackInSlot(i) != null) {
                     NBTTagCompound stacktag = new NBTTagCompound();
                     stacktag.setByte("Slot", (byte)i);
-                    inventory.getStackInSlot(i).writeToNBT(stacktag);
+                    this.inventory.getStackInSlot(i).writeToNBT(stacktag);
                     nbttaglist.appendTag(stacktag);
                 }
             }
@@ -215,7 +215,7 @@ public class EntityFox extends EntityTameable implements IMiniCreature {
             for (int i = 0; i < nbttaglist.tagCount(); i++) {
                 NBTTagCompound stacktag = nbttaglist.getCompoundTagAt(i);
                 int j = stacktag.getByte("Slot");
-                if (j >= 0 && j < inventory.getSizeInventory()) inventory.setInventorySlotContents(j, ItemStack.loadItemStackFromNBT(stacktag));
+                if (j >= 0 && j < this.inventory.getSizeInventory()) this.inventory.setInventorySlotContents(j, ItemStack.loadItemStackFromNBT(stacktag));
             }
         }
         if (tag.hasKey("CollarColor", 99)) this.setCollarColor(tag.getByte("CollarColor"));
@@ -342,7 +342,6 @@ public class EntityFox extends EntityTameable implements IMiniCreature {
         for (String part : parts) {
             s += part + ",";
         }
-        System.out.println(s);
         this.dataWatcher.updateObject(20, s);
     }
 

@@ -24,25 +24,6 @@ public class RenderMiniPlayer extends RenderBiped {
         super(new ModelMiniPlayer(), 0.3F);
     }
 
-    //Copied from RenderPlayer.renderSpecials
-    private void renderCarrying(EntityMiniPlayer entityMiniPlayer, float par2) {
-        ItemStack itemstack = entityMiniPlayer.getHeldItem();
-        if (itemstack != null) {
-            IItemRenderer customRenderer = MinecraftForgeClient.getItemRenderer(itemstack, EQUIPPED);
-            boolean is3D = (customRenderer != null && customRenderer.shouldUseRenderHelper(EQUIPPED, itemstack, BLOCK_3D));
-            if (itemstack.getItem() instanceof ItemBlock && (is3D || RenderBlocks.renderItemIn3d(Block.getBlockFromItem(itemstack.getItem()).getRenderType()))) {
-                GL11.glTranslatef(0.0F, 0.8875F, -0.3F);
-                GL11.glRotatef(-90.0F, 0.0F, 1.0F, 0.0F);
-                GL11.glScalef(-0.3F, -0.3F, -0.3F);
-                this.renderManager.itemRenderer.renderItem(entityMiniPlayer, itemstack, 0);
-            }
-            else {
-                GL11.glTranslatef(0F, 0.725F, -0.025F);
-                GL11.glScalef(0.5F, 0.5F, 0.5F);
-                super.renderEquippedItems(entityMiniPlayer, par2);
-            }
-        }
-    }
 
     @Override
     protected void func_82421_b() {
@@ -51,9 +32,25 @@ public class RenderMiniPlayer extends RenderBiped {
         this.field_82425_h = new ModelMiniPlayer(0.5F);
     }
 
+    //Copied from RenderPlayer.renderSpecials
     @Override
     protected void renderEquippedItems(EntityLivingBase par1EntityLivingBase, float par2) {
-        this.renderCarrying((EntityMiniPlayer) par1EntityLivingBase, par2);
+        ItemStack itemstack = par1EntityLivingBase.getHeldItem();
+        if (itemstack != null) {
+            IItemRenderer customRenderer = MinecraftForgeClient.getItemRenderer(itemstack, EQUIPPED);
+            boolean is3D = (customRenderer != null && customRenderer.shouldUseRenderHelper(EQUIPPED, itemstack, BLOCK_3D));
+            if (itemstack.getItem() instanceof ItemBlock && (is3D || RenderBlocks.renderItemIn3d(Block.getBlockFromItem(itemstack.getItem()).getRenderType()))) {
+                GL11.glTranslatef(0.0F, 0.8875F, -0.3F);
+                GL11.glRotatef(-90.0F, 0.0F, 1.0F, 0.0F);
+                GL11.glScalef(-0.3F, -0.3F, -0.3F);
+                this.renderManager.itemRenderer.renderItem(par1EntityLivingBase, itemstack, 0);
+            }
+            else {
+                GL11.glTranslatef(0F, 0.725F, -0.025F);
+                GL11.glScalef(0.5F, 0.5F, 0.5F);
+                super.renderEquippedItems(par1EntityLivingBase, par2);
+            }
+        }
     }
 
     @Override
