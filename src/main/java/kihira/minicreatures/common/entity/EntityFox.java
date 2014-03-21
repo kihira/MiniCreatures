@@ -38,7 +38,7 @@ public class EntityFox extends EntityTameable implements IMiniCreature {
 
     public EntityFox(World par1World) {
         super(par1World);
-        this.setSize(0.4f, 0.4f);
+        this.setSize(0.3f, 0.2f);
         this.getNavigator().setAvoidsWater(true);
         this.getNavigator().setCanSwim(true);
         this.tasks.addTask(1, new EntityAISwimming(this));
@@ -114,21 +114,22 @@ public class EntityFox extends EntityTameable implements IMiniCreature {
                     }
                 }
                 else if (itemstack.getItem() == Items.brick) {
-                    double d0 = 7.0D;
-                    List list = this.worldObj.getEntitiesWithinAABB(EntityMiniPlayer.class, AxisAlignedBB.getAABBPool().getAABB(this.posX - d0, this.posY - d0, this.posZ - d0, this.posX + d0, this.posY + d0, this.posZ + d0));
+                    if (this.riddenByEntity == null) {
+                        double d0 = 7.0D;
+                        List list = this.worldObj.getEntitiesWithinAABB(EntityMiniPlayer.class, AxisAlignedBB.getAABBPool().getAABB(this.posX - d0, this.posY - d0, this.posZ - d0, this.posX + d0, this.posY + d0, this.posZ + d0));
 
-                    if (list != null) {
-                        for (Object aList : list) {
-                            EntityLiving entityliving = (EntityLiving) aList;
-                            if (entityliving.getLeashed() && entityliving.getLeashedToEntity() == player) {
-                                entityliving.setLeashedToEntity(null, true);
-                                entityliving.mountEntity(this);
-                                break;
+                        if (list != null) {
+                            for (Object aList : list) {
+                                EntityLiving entityliving = (EntityLiving) aList;
+                                if (entityliving.getLeashed() && entityliving.getLeashedToEntity() == player) {
+                                    entityliving.setLeashedToEntity(null, true);
+                                    entityliving.mountEntity(this);
+                                    break;
+                                }
                             }
                         }
                     }
                 }
-                else if (itemstack.getItem() == Items.brick) return false;
             }
             if (!player.isSneaking() && this.hasChest()) {
                 //Send Entity ID as x coord. Inspired by OpenBlocks
@@ -166,6 +167,7 @@ public class EntityFox extends EntityTameable implements IMiniCreature {
         return super.interact(player);
     }
 
+    @Override
     public void onDeath(DamageSource par1DamageSource) {
         super.onDeath(par1DamageSource);
 

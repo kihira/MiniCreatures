@@ -133,6 +133,7 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
                         }
                         return true;
                     }
+                    else if (itemstack.getItem() == Items.brick && this.isRiding()) this.mountEntity(null);
                     else if (this.getHeldItem() == null) {
                         ItemStack newItemStack = itemstack.copy();
                         newItemStack.stackSize = 1;
