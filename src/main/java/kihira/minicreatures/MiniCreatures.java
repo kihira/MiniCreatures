@@ -17,6 +17,7 @@ import kihira.minicreatures.common.GuiHandler;
 import kihira.minicreatures.common.customizer.CustomizerRegistry;
 import kihira.minicreatures.common.entity.EntityFox;
 import kihira.minicreatures.common.entity.EntityMiniPlayer;
+import kihira.minicreatures.common.entity.EntityMiniShark;
 import kihira.minicreatures.common.entity.EntityTRex;
 import kihira.minicreatures.common.item.ItemCustomizer;
 import kihira.minicreatures.common.item.ItemMindControlHelmet;
@@ -48,6 +49,7 @@ public class MiniCreatures {
     public static boolean enableMiniFoxes;
     public static boolean enableMiniTRex;
     public static boolean enableMiniPlayers;
+    public static boolean enableMiniShark;
 
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent e) {
@@ -78,6 +80,8 @@ public class MiniCreatures {
         enableMiniTRex = property.getBoolean(true);
         property = configuration.get(Configuration.CATEGORY_GENERAL, "Enable Mini Players", true);
         enableMiniPlayers = property.getBoolean(true);
+        property = configuration.get(Configuration.CATEGORY_GENERAL, "Enable Mini Sharks", true);
+        enableMiniShark = property.getBoolean(true);
 
         if (configuration.hasChanged()) configuration.save();
     }
@@ -104,5 +108,9 @@ public class MiniCreatures {
             EntityRegistry.addSpawn(EntityTRex.class, 2, 1, 1, EnumCreatureType.creature, BiomeGenBase.jungle, BiomeGenBase.jungleHills);
         }
         if (enableMiniPlayers) EntityRegistry.registerModEntity(EntityMiniPlayer.class, "MiniPlayer", 2, this, 64, 5, true);
+        if (enableMiniShark) {
+            EntityRegistry.registerModEntity(EntityMiniShark.class, "MiniShark", 3, this, 64, 1, true);
+            EntityRegistry.addSpawn(EntityTRex.class, 10, 4, 4, EnumCreatureType.waterCreature, BiomeGenBase.ocean, BiomeGenBase.deepOcean);
+        }
     }
 }
