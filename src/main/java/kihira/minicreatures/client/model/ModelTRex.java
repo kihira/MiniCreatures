@@ -3,8 +3,6 @@ package kihira.minicreatures.client.model;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.util.MathHelper;
 
 public class ModelTRex extends ModelBase {
 
@@ -28,7 +26,7 @@ public class ModelTRex extends ModelBase {
         textureHeight = 64;
 
         leftLegLower = new ModelRenderer(this, 0, 5);
-        leftLegLower.addBox(-0.5F, 0F, -1F, 1, 6, 2);
+        leftLegLower.addBox(0F, 0F, 0F, 1, 6, 2);
         leftLegLower.setRotationPoint(2.5F, 18.3F, -2.3F);
         leftLegLower.mirror = true;
         setRotation(leftLegLower, 0.5759587F, 0F, 0F);
@@ -104,19 +102,22 @@ public class ModelTRex extends ModelBase {
         head.render(f5);
     }
 
+    /*
     public void setLivingAnimations(EntityLivingBase entityLivingBase, float par2, float par3, float par4) {
         this.leftLegUpper.rotateAngleX = MathHelper.cos(par2 * 0.6F) * 1.4F * par3 + 0.9599311F;
         this.rightLegUpper.rotateAngleX = MathHelper.cos(par2 * 0.6F + (float)Math.PI) * 1.4F * par3  + 0.9599311F;
 
         //TODO Make this work
-        float x = (float)((5 * this.leftLegUpper.rotateAngleX) + -7.1);
-        float y = (float)((5 * this.leftLegUpper.rotateAngleX) + 13.8);
+        float x = (float)((5 * Math.sin(this.leftLegUpper.rotateAngleX)) + 1F);
+        float y = (float)((5 * Math.cos(this.leftLegUpper.rotateAngleX)) + 15.4F);
+        //System.out.println(Math.toDegrees(this.leftLegUpper.rotateAngleX));
         //this.leftLegLower.setRotationPoint(x, y, (float)-2.3);
         this.leftLegLower.setRotationPoint((float)2.5, y, x);
 
         //this.leftLegLower.rotateAngleX = -MathHelper.cos(par2 * 0.6F + (float)Math.PI) * 1.4F * par3 + 0.5759587F;
         //this.rightLegLower.rotateAngleX = -MathHelper.cos(par2 * 0.6F) * 1.4F * par3 + 0.5759587F;
     }
+    */
 
     private void setRotation(ModelRenderer model, float x, float y, float z) {
         model.rotateAngleX = x;
