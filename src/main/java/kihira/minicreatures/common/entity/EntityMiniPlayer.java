@@ -113,13 +113,11 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
     public boolean interact(EntityPlayer player) {
         ItemStack itemstack = player.inventory.getCurrentItem();
         if (!this.worldObj.isRemote) {
-            if (!this.isTamed()) {
-                this.setTamed(true);
-                this.setOwner(player.getCommandSenderName());
-            }
-            else if (this.isTamed()) {
+            if (this.isTamed()) {
+                //If player has item
                 if (itemstack != null) {
-                    if (itemstack.getItem() instanceof ItemArmor) {
+                    //If armour, equip it
+                    if (itemstack.getItem() instanceof ItemArmor && !player.isSneaking()) {
                         int i = EntityLiving.getArmorPosition(itemstack) - 1;
                         if (this.getEquipmentInSlot(i + 1) == null) {
                             this.setCurrentItemOrArmor(i + 1, itemstack.copy());
@@ -132,18 +130,14 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
                         }
                         return true;
                     }
-                    else if (itemstack.getItem() == Items.brick && this.isRiding()) this.mountEntity(null);
-                    else if (this.getHeldItem() == null) {
-                        ItemStack newItemStack = itemstack.copy();
-                        newItemStack.stackSize = 1;
-                        this.setCarrying(newItemStack);
-                        player.playSound("mob.chickenplop", 1.0F, (this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F + 1.0F);
-                        if (!player.capabilities.isCreativeMode && --itemstack.stackSize <= 0) player.inventory.setInventorySlotContents(player.inventory.currentItem, null);
-                    }
-                    else if (this.getHeldItem() != null && itemstack.getItem() == Items.stick) {
+                    //If lead and mounted, unmount
+                    else if (itemstack.getItem() == Items.lead && this.isRiding() && !player.isSneaking()) this.mountEntity(null);
+                    //If entity is holding something and player is holding a stick, drop current item
+                    else if (itemstack.getItem() == Items.stick && this.getHeldItem() != null) {
                         EntityItem entityItem = new EntityItem(player.worldObj, this.posX, this.posY, this.posZ, this.getHeldItem().copy());
                         player.worldObj.spawnEntityInWorld(entityItem);
                         this.setCarrying(null);
+                        //Drop chest contents
                         for (int i = 0; i < inventory.getSizeInventory(); i++) {
                             ItemStack itemStackToDrop = inventory.getStackInSlot(i);
                             if (itemStackToDrop != null) {
@@ -153,8 +147,16 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
                             inventory.setInventorySlotContents(i, null);
                         }
                     }
+                    else if (this.getHeldItem() == null) {
+                        ItemStack newItemStack = itemstack.copy();
+                        newItemStack.stackSize = 1;
+                        this.setCarrying(newItemStack);
+                        player.playSound("mob.chickenplop", 1.0F, (this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F + 1.0F);
+                        if (!player.capabilities.isCreativeMode && --itemstack.stackSize <= 0) player.inventory.setInventorySlotContents(player.inventory.currentItem, null);
+                    }
                 }
-                else if (!player.isSneaking() && this.getHeldItem() != null) {
+                //If entity is holding something and player isn't, open GUI
+                else if (this.getHeldItem() != null && !player.isSneaking()) {
                     if (Block.getBlockFromItem(this.getHeldItem().getItem()) == Blocks.chest) player.openGui(MiniCreatures.instance, 0, player.worldObj, this.getEntityId(), 0, 0);
                     else if (Block.getBlockFromItem(this.getHeldItem().getItem()) == Blocks.anvil) player.openGui(MiniCreatures.instance, 1, player.worldObj, (int) this.posX, (int) this.posY, (int) this.posZ);
                 }
