@@ -24,13 +24,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
-import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
-import java.util.List;
 
 public class EntityFox extends EntityTameable implements IMiniCreature {
 
@@ -96,7 +94,7 @@ public class EntityFox extends EntityTameable implements IMiniCreature {
             if (itemstack != null) {
                 if (itemstack.getItem() instanceof ItemFood) {
                     ItemFood itemfood = (ItemFood)itemstack.getItem();
-                    if (itemfood.isWolfsFavoriteMeat() && this.getMaxHealth() < 20.0F) {
+                    if (itemfood.isWolfsFavoriteMeat() && this.getMaxHealth() < this.getEntityAttribute(SharedMonsterAttributes.maxHealth).getAttributeValue()) {
                         this.heal((float)itemfood.func_150905_g(itemstack));
                         if (!player.capabilities.isCreativeMode && --itemstack.stackSize <= 0) player.inventory.setInventorySlotContents(player.inventory.currentItem, null);
                         return true;
@@ -114,23 +112,6 @@ public class EntityFox extends EntityTameable implements IMiniCreature {
                         this.setCollarColor(i);
                         if (!player.capabilities.isCreativeMode && --itemstack.stackSize <= 0) player.inventory.setInventorySlotContents(player.inventory.currentItem, null);
                         return true;
-                    }
-                }
-                else if (itemstack.getItem() == Items.brick) {
-                    if (this.riddenByEntity == null) {
-                        double d0 = 7.0D;
-                        List list = this.worldObj.getEntitiesWithinAABB(EntityMiniPlayer.class, AxisAlignedBB.getAABBPool().getAABB(this.posX - d0, this.posY - d0, this.posZ - d0, this.posX + d0, this.posY + d0, this.posZ + d0));
-
-                        if (list != null) {
-                            for (Object aList : list) {
-                                EntityLiving entityliving = (EntityLiving) aList;
-                                if (entityliving.getLeashed() && entityliving.getLeashedToEntity() == player) {
-                                    entityliving.setLeashedToEntity(null, true);
-                                    entityliving.mountEntity(this);
-                                    break;
-                                }
-                            }
-                        }
                     }
                 }
             }
