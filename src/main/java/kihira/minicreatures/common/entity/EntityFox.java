@@ -38,7 +38,7 @@ public class EntityFox extends EntityTameable implements IMiniCreature {
 
     public EntityFox(World par1World) {
         super(par1World);
-        this.setSize(0.3f, 0.2f);
+        this.setSize(0.3f, 0.35f);
         this.getNavigator().setAvoidsWater(true);
         this.getNavigator().setCanSwim(true);
         this.tasks.addTask(1, new EntityAISwimming(this));
@@ -49,7 +49,10 @@ public class EntityFox extends EntityTameable implements IMiniCreature {
         this.tasks.addTask(6, new EntityAIWander(this, 1.0D));
         this.tasks.addTask(7, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
         this.tasks.addTask(7, new EntityAILookIdle(this));
-        this.targetTasks.addTask(1, new EntityAITargetNonTamed(this, EntityChicken.class, 750, false));
+        this.targetTasks.addTask(1, new EntityAIOwnerHurtByTarget(this));
+        this.targetTasks.addTask(2, new EntityAIOwnerHurtTarget(this));
+        this.targetTasks.addTask(3, new EntityAIHurtByTarget(this, true));
+        this.targetTasks.addTask(4, new EntityAITargetNonTamed(this, EntityChicken.class, 750, false));
         this.setTamed(false);
     }
 
