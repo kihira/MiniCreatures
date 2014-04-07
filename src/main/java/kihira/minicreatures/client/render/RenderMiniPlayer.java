@@ -24,7 +24,6 @@ public class RenderMiniPlayer extends RenderBiped {
         super(new ModelMiniPlayer(), 0.3F);
     }
 
-
     @Override
     protected void func_82421_b() {
         //We need to set these values so armour renders properly. Kinda got an idea why
@@ -62,5 +61,18 @@ public class RenderMiniPlayer extends RenderBiped {
             AbstractClientPlayer.getDownloadImageSkin(resourcelocation, entityMiniPlayer.getCustomNameTag());
         }
         return resourcelocation;
+    }
+
+    //This is the method called to render name tags/scoreboard data
+    //par9 == render pass?
+    @Override
+    protected void func_96449_a(EntityLivingBase entity, double x, double y, double z, String text, float par9, double renderDistance) {
+        EntityMiniPlayer miniPlayer = (EntityMiniPlayer) entity;
+
+        //Our message
+        //this.func_147906_a(miniPlayer, "I'm hungry...", x, y, z, 64);
+        //Move the next message above this one
+        //y += (double)((float)this.getFontRendererFromRenderManager().FONT_HEIGHT * 1.15F * par9);
+        super.func_96449_a(entity, x, y, z, text, par9, renderDistance);
     }
 }
