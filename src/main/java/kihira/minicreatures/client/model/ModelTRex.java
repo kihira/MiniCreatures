@@ -105,14 +105,15 @@ public class ModelTRex extends ModelBase {
     /*
     public void setLivingAnimations(EntityLivingBase entityLivingBase, float par2, float par3, float par4) {
         this.leftLegUpper.rotateAngleX = MathHelper.cos(par2 * 0.6F) * 1.4F * par3 + 0.9599311F;
-        this.rightLegUpper.rotateAngleX = MathHelper.cos(par2 * 0.6F + (float)Math.PI) * 1.4F * par3  + 0.9599311F;
+        this.rightLegUpper.rotateAngleX = MathHelper.cos(par2 * 0.6F + (float) Math.PI) * 1.4F * par3  + 0.9599311F;
 
         //TODO Make this work
-        float x = (float)((5 * Math.sin(this.leftLegUpper.rotateAngleX)) + 1F);
-        float y = (float)((5 * Math.cos(this.leftLegUpper.rotateAngleX)) + 15.4F);
+        float x = (float)((5 * Math.sin(this.leftLegUpper.rotateAngleX + Math.toRadians(90))) + 15.4F);
+        float y = (float)((5 * Math.cos(this.leftLegUpper.rotateAngleX + Math.toRadians(90))) + 1F);
         //System.out.println(Math.toDegrees(this.leftLegUpper.rotateAngleX));
         //this.leftLegLower.setRotationPoint(x, y, (float)-2.3);
-        this.leftLegLower.setRotationPoint((float)2.5, y, x);
+        this.leftLegLower.setRotationPoint((float)2.5, x, y);
+        this.leftLegLower.rotateAngleX = 0F;
 
         //this.leftLegLower.rotateAngleX = -MathHelper.cos(par2 * 0.6F + (float)Math.PI) * 1.4F * par3 + 0.5759587F;
         //this.rightLegLower.rotateAngleX = -MathHelper.cos(par2 * 0.6F) * 1.4F * par3 + 0.5759587F;

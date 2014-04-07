@@ -1,15 +1,23 @@
 package kihira.minicreatures.common;
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.InputEvent;
 import kihira.minicreatures.MiniCreatures;
+import kihira.minicreatures.common.entity.EntityMiniPlayer;
 import kihira.minicreatures.common.network.MiniCreaturesMessage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.monster.EntityZombie;
+import net.minecraft.item.ItemPotion;
 import net.minecraft.item.ItemSword;
+import net.minecraft.potion.Potion;
+import net.minecraft.potion.PotionEffect;
+import net.minecraft.potion.PotionHelper;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
+import net.minecraftforge.client.event.MouseEvent;
+import net.minecraftforge.event.entity.player.AttackEntityEvent;
 
 import java.util.List;
 
@@ -17,8 +25,9 @@ public class EventHandler {
 
     private long lastTrigger = 0;
 
+    //TODO Overhaul this? Make it so it can be calculated server side
     @SubscribeEvent
-    public void leftClick(InputEvent.MouseInputEvent interactEvent) {
+    public void leftClick(MouseEvent interactEvent) {
         //Only trigger if it has been more then 5 seconds
         if ((System.currentTimeMillis() - this.lastTrigger > 5000) && Minecraft.getMinecraft().gameSettings.keyBindAttack.getIsKeyPressed()) {
             //Only if it's a sword
@@ -32,7 +41,44 @@ public class EventHandler {
         }
     }
 
-    public MovingObjectPosition getMouseOver(double distance) {
+    @SubscribeEvent
+    @SuppressWarnings("unchecked")
+    public void onInteract(AttackEntityEvent event) {
+        if (event.target instanceof EntityZombie) {
+            EntityZombie entityZombie = (EntityZombie) event.target;
+            //Is target viable
+            if (entityZombie.isChild() && !entityZombie.isConverting() && entityZombie.isPotionActive(Potion.weakness) && event.entityPlayer.getCurrentEquippedItem() != null && event.entityPlayer.getCurrentEquippedItem().getItem() instanceof ItemPotion) {
+                List<PotionEffect> potionEffects = PotionHelper.getPotionEffects(event.entityPlayer.getCurrentEquippedItem().getItemDamage(), false);
+                for (PotionEffect effect : potionEffects) {
+                    if (effect.getPotionID() == Potion.heal.getId()) {
+                        event.setCanceled(true);
+                        event.entityPlayer.setCurrentItemOrArmor(0, null);
+
+                        //Create the mini player and copy some data
+                        EntityMiniPlayer miniPlayer = new EntityMiniPlayer(event.entityPlayer.worldObj);
+                        miniPlayer.copyLocationAndAnglesFrom(entityZombie);
+                        miniPlayer.setCustomNameTag(entityZombie.getCustomNameTag());
+                        miniPlayer.setOwner(event.entityPlayer.getCommandSenderName());
+                        miniPlayer.setTamed(true);
+                        for (int i = 0; i < 5; i++) {
+                            miniPlayer.setCurrentItemOrArmor(i, entityZombie.getEquipmentInSlot(0));
+                        }
+
+                        //Spawn them in
+                        event.entityPlayer.worldObj.removeEntity(entityZombie);
+                        event.entityPlayer.worldObj.spawnEntityInWorld(miniPlayer);
+
+                        //Spawns a particle on the server (ie tells all nearby players about this particle)
+                        //name, x, y, z, particleCount, areaAlongXAxisToDisperse, areaAlongYAxisToDisperse, areaAlongZAxisToDisperse, ?
+                        //Final 4 params seem to define an area based around x, y, z where the particles will randomly spawn
+                        MinecraftServer.getServer().worldServerForDimension(event.entityPlayer.worldObj.provider.dimensionId).func_147487_a("heart", miniPlayer.posX + (miniPlayer.width / 2), miniPlayer.posY + miniPlayer.height, miniPlayer.posZ + (miniPlayer.width / 2) - miniPlayer.width, 10, 0.5, 1, 0.5, 0);
+                    }
+                }
+            }
+        }
+    }
+
+    private MovingObjectPosition getMouseOver(double distance) {
         MovingObjectPosition objectMouseOver = null;
         if ((Minecraft.getMinecraft().renderViewEntity != null) && (Minecraft.getMinecraft().theWorld != null)) {
             Entity pointedEntity = null;

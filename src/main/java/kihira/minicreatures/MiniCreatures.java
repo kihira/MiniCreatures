@@ -1,6 +1,5 @@
 package kihira.minicreatures;
 
-import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
@@ -25,6 +24,7 @@ import kihira.minicreatures.common.network.PacketHandler;
 import kihira.minicreatures.proxy.CommonProxy;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
 import org.apache.logging.log4j.LogManager;
@@ -60,8 +60,8 @@ public class MiniCreatures {
         registerItems();
         registerCustomizerParts();
         NetworkRegistry.INSTANCE.registerGuiHandler(instance, new GuiHandler());
-        //MinecraftForge.EVENT_BUS.register(new EventHandler());
-        FMLCommonHandler.instance().bus().register(new EventHandler());
+        MinecraftForge.EVENT_BUS.register(new EventHandler());
+        //FMLCommonHandler.instance().bus().register(new EventHandler());
     }
 
     @Mod.EventHandler
