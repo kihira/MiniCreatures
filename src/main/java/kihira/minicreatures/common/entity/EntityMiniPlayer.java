@@ -40,7 +40,7 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
 
     //Maintain an array list client side for previewing
     @SideOnly(Side.CLIENT)
-    private ArrayList<String> previewParts;
+    private ArrayList<String> previewParts = new ArrayList<String>();
 
     public EntityMiniPlayer(World par1World) {
         super(par1World);
