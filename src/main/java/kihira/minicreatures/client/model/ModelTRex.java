@@ -26,20 +26,6 @@ public class ModelTRex extends ModelBase {
         textureWidth = 128;
         textureHeight = 64;
 
-        leftLegUpper = new ModelRenderer(this, 6, 5);
-        leftLegUpper.addBox(-1F, -1.5F, -5F, 2, 3, 5);
-        leftLegUpper.setRotationPoint(2.5F, 15.4F, 1F);
-        setRotation(leftLegUpper, 0.9599311F, 0F, 0F);
-
-        leftLegLower = new ModelRenderer(this, 0, 5);
-        leftLegLower.addBox(-0.5F, 0.8F, -5.2F, 1, 6, 2);
-        leftLegLower.setRotationPoint(2.5F, 15.4F, 1F);
-        setRotation(leftLegLower, 0.5759587F, 0F, 0F);
-
-        leftLegFoot = new ModelRenderer(this, 0, 0);
-        leftLegFoot.addBox(-1.5F, 7.6F, -3F, 3, 1, 4);
-        leftLegFoot.setRotationPoint(2.5F, 15.4F, 1F);
-
         rightLegUpper = new ModelRenderer(this, 6, 5);
         rightLegUpper.addBox(-1F, -1.5F, -5F, 2, 3, 5);
         rightLegUpper.setRotationPoint(-2.5F, 15.4F, 1F);
@@ -54,35 +40,62 @@ public class ModelTRex extends ModelBase {
         rightLegFoot.addBox(-1.5F, 7.6F, -3F, 3, 1, 4);
         rightLegFoot.setRotationPoint(-2.5F, 15.4F, 1F);
 
+        leftLegUpper = new ModelRenderer(this, 6, 5);
+        leftLegUpper.mirror = true;
+        leftLegUpper.addBox(-1F, -1.5F, -5F, 2, 3, 5);
+        leftLegUpper.setRotationPoint(2.5F, 15.4F, 1F);
+        leftLegUpper.setTextureSize(128, 64);
+        setRotation(leftLegUpper, 0.9599311F, 0F, 0F);
+
+        leftLegLower = new ModelRenderer(this, 0, 5);
+        leftLegLower.mirror = true;
+        leftLegLower.addBox(-0.5F, 0.8F, -5.2F, 1, 6, 2);
+        leftLegLower.setRotationPoint(2.5F, 15.4F, 1F);
+        leftLegLower.setTextureSize(128, 64);
+        setRotation(leftLegLower, 0.5759587F, 0F, 0F);
+
+        leftLegFoot = new ModelRenderer(this, 0, 0);
+        leftLegFoot.mirror = true;
+        leftLegFoot.addBox(-1.5F, 7.6F, -3F, 3, 1, 4);
+        leftLegFoot.setRotationPoint(2.5F, 15.4F, 1F);
+        leftLegFoot.setTextureSize(128, 64);
+
         neck = new ModelRenderer(this, 20, 0);
         neck.addBox(-1.5F, 3F, -2F, 3, 3, 5);
         neck.setRotationPoint(0F, 8F, 0F);
         setRotation(neck, -0.8486954F, 0F, 0F);
+
         tailTip = new ModelRenderer(this, 0, 40);
         tailTip.addBox(-1F, 10F, 3.546667F, 2, 2, 4);
         tailTip.setRotationPoint(0F, 8F, 0F);
         setRotation(tailTip, 0.6108652F, 0F, 0F);
 
         leftArm = new ModelRenderer(this, 20, 8);
+        leftArm.mirror = true;
         leftArm.addBox(1F, 5F, -9F, 1, 1, 4);
         leftArm.setRotationPoint(0F, 8F, 0F);
         setRotation(leftArm, 0.4537856F, 0F, 0F);
-        tailBase = new ModelRenderer(this, 0, 25);
-        tailBase.addBox(-2F, 6F, 3F, 4, 4, 4);
-        tailBase.setRotationPoint(0F, 8F, 0F);
-        setRotation(tailBase, -0.0872665F, 0F, 0F);
-        tailMid = new ModelRenderer(this, 0, 33);
-        tailMid.addBox(-1.5F, 8F, 3F, 3, 3, 4);
-        tailMid.setRotationPoint(0F, 8F, 0F);
-        setRotation(tailMid, 0.296706F, 0F, 0F);
-        body = new ModelRenderer(this, 0, 13);
-        body.addBox(-2.5F, 3F, 1F, 5, 5, 7);
-        body.setRotationPoint(0F, 8F, 0F);
-        setRotation(body, -0.6283185F, 0F, 0F);
+
         rightArm = new ModelRenderer(this, 20, 8);
         rightArm.addBox(-2F, 5F, -9F, 1, 1, 4);
         rightArm.setRotationPoint(0F, 8F, 0F);
         setRotation(rightArm, 0.4537856F, 0F, 0F);
+
+        tailBase = new ModelRenderer(this, 0, 25);
+        tailBase.addBox(-2F, 6F, 3F, 4, 4, 4);
+        tailBase.setRotationPoint(0F, 8F, 0F);
+        setRotation(tailBase, -0.0872665F, 0F, 0F);
+
+        tailMid = new ModelRenderer(this, 0, 33);
+        tailMid.addBox(-1.5F, 8F, 3F, 3, 3, 4);
+        tailMid.setRotationPoint(0F, 8F, 0F);
+        setRotation(tailMid, 0.296706F, 0F, 0F);
+
+        body = new ModelRenderer(this, 0, 13);
+        body.addBox(-2.5F, 3F, 1F, 5, 5, 7);
+        body.setRotationPoint(0F, 8F, 0F);
+        setRotation(body, -0.6283185F, 0F, 0F);
+
         head = new ModelRenderer(this, 36, 0);
         head.addBox(-2.5F, -3.5F, -7F, 5, 5, 7);
         head.setRotationPoint(0F, 10F, -3F);
