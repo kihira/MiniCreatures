@@ -15,7 +15,6 @@ import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.ChatComponentText;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -107,7 +106,7 @@ public abstract class MiniCreaturesMessage implements IMessage {
                                 if ((attackTarget instanceof EntityTameable) && (((EntityTameable) attackTarget).getOwner() == entityPlayer)) return null;
 
                                 miniPlayer.setAttackTarget(attackTarget);
-                                entityPlayer.addChatComponentMessage(new ChatComponentText(miniPlayer.getCommandSenderName() + ": Attacking " + attackTarget.getCommandSenderName()));
+                                //entityPlayer.addChatComponentMessage(new ChatComponentText(miniPlayer.getCommandSenderName() + ": Attacking " + attackTarget.getCommandSenderName()));
                             }
                         }
                     }
