@@ -2,11 +2,14 @@ package kihira.minicreatures.common;
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import kihira.minicreatures.MiniCreatures;
+import kihira.minicreatures.common.entity.EntityFox;
 import kihira.minicreatures.common.entity.EntityMiniPlayer;
 import kihira.minicreatures.common.network.MiniCreaturesMessage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.monster.EntityZombie;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemPotion;
 import net.minecraft.item.ItemSword;
 import net.minecraft.potion.Potion;
@@ -18,6 +21,7 @@ import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
 import net.minecraftforge.client.event.MouseEvent;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
+import net.minecraftforge.event.entity.player.EntityInteractEvent;
 
 import java.util.List;
 
@@ -42,8 +46,43 @@ public class EventHandler {
     }
 
     @SubscribeEvent
+    public void onInteract(EntityInteractEvent event) {
+        //We do this stuff here as if the player right clicks with a lead, entity.interact never fires
+        if (event.entityPlayer.getCurrentEquippedItem() != null && event.entityPlayer.getCurrentEquippedItem().getItem() == Items.lead) {
+            //Mount the fox
+            if (event.target instanceof EntityFox) {
+                EntityFox entityFox = (EntityFox) event.target;
+                if (entityFox.riddenByEntity == null && entityFox.ridingEntity == null) {
+                    double d0 = 7.0D;
+                    List list = entityFox.worldObj.getEntitiesWithinAABB(EntityMiniPlayer.class, AxisAlignedBB.getAABBPool().getAABB(entityFox.posX - d0, entityFox.posY - d0, entityFox.posZ - d0, entityFox.posX + d0, entityFox.posY + d0, entityFox.posZ + d0));
+
+                    if (list != null) {
+                        for (Object aList : list) {
+                            EntityLiving entityliving = (EntityLiving) aList;
+                            if (entityliving instanceof EntityMiniPlayer && entityliving.getLeashed() && entityliving.getLeashedToEntity() == event.entityPlayer) {
+                                entityliving.setLeashedToEntity(null, true);
+                                entityliving.mountEntity(entityFox);
+                                event.setCanceled(true);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            //Unmount from fox
+            else if (event.target instanceof EntityMiniPlayer) {
+                EntityMiniPlayer entityMiniPlayer = (EntityMiniPlayer) event.target;
+                if (entityMiniPlayer.ridingEntity != null) {
+                    entityMiniPlayer.mountEntity(null);
+                    event.setCanceled(true);
+                }
+            }
+        }
+    }
+
+    @SubscribeEvent
     @SuppressWarnings("unchecked")
-    public void onInteract(AttackEntityEvent event) {
+    public void onAttack(AttackEntityEvent event) {
         if (event.target instanceof EntityZombie) {
             EntityZombie entityZombie = (EntityZombie) event.target;
             //Is target viable

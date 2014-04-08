@@ -113,6 +113,10 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
     public boolean interact(EntityPlayer player) {
         ItemStack itemstack = player.inventory.getCurrentItem();
         if (!this.worldObj.isRemote) {
+            if (!this.isTamed() && player.capabilities.isCreativeMode) {
+                this.setOwner(player.getCommandSenderName());
+                this.setTamed(true);
+            }
             if (this.isTamed()) {
                 //If player has item
                 if (itemstack != null) {
