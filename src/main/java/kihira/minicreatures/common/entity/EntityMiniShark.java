@@ -24,6 +24,7 @@ public class EntityMiniShark extends EntityWaterMob {
         this.tasks.addTask(3, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
         this.tasks.addTask(3, new EntityAILookIdle(this));
         this.targetTasks.addTask(1, new EntityAINearestAttackableTarget(this, EntityPlayer.class, 0, true));
+        this.renderDistanceWeight = 4D;
     }
 
     @Override

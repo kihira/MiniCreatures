@@ -52,6 +52,7 @@ public class EntityFox extends EntityTameable implements IMiniCreature {
         this.targetTasks.addTask(3, new EntityAIHurtByTarget(this, true));
         this.targetTasks.addTask(4, new EntityAITargetNonTamed(this, EntityChicken.class, 750, false));
         this.setTamed(false);
+        this.renderDistanceWeight = 4D;
     }
 
     @Override

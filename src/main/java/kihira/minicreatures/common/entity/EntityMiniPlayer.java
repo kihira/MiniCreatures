@@ -55,6 +55,7 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
         this.tasks.addTask(6, new EntityAILookIdle(this));
         this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, true));
         this.setTamed(false);
+        this.renderDistanceWeight = 4D;
 
         if (par1World != null && !par1World.isRemote) this.setCombatAI();
     }
@@ -208,6 +209,7 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
     protected void attackEntity(Entity par1Entity, float par2) {
         if (this.attackTime <= 0 && par2 < 2.0F && par1Entity.boundingBox.maxY > this.boundingBox.minY && par1Entity.boundingBox.minY < this.boundingBox.maxY) {
             this.attackTime = 20;
+            this.swingItem();
             this.attackEntityAsMob(par1Entity);
         }
     }
