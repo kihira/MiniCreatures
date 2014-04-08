@@ -19,7 +19,6 @@ import kihira.minicreatures.common.entity.EntityMiniPlayer;
 import kihira.minicreatures.common.entity.EntityMiniShark;
 import kihira.minicreatures.common.entity.EntityTRex;
 import kihira.minicreatures.common.item.ItemCustomizer;
-import kihira.minicreatures.common.item.ItemMindControlHelmet;
 import kihira.minicreatures.common.network.PacketHandler;
 import kihira.minicreatures.proxy.CommonProxy;
 import net.minecraft.entity.EnumCreatureType;
@@ -32,7 +31,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 
-@Mod(modid = "minicreatures", useMetadata = true, guiFactory = "kihira.minicreatures.client.gui.ConfigGuiFactory")
+@Mod(modid = "minicreatures", name = "Mini Creatures", version = "${version}", useMetadata = true, guiFactory = "kihira.minicreatures.client.gui.ConfigGuiFactory")
 public class MiniCreatures {
 
     @SidedProxy(clientSide = "kihira.minicreatures.proxy.ClientProxy", serverSide = "kihira.minicreatures.proxy.CommonProxy")
@@ -44,12 +43,13 @@ public class MiniCreatures {
     public static final PacketHandler packetHandler = new PacketHandler();
 
     public static final ItemCustomizer itemCustomizer = new ItemCustomizer();
-    public static final ItemMindControlHelmet itemMindControlHelmet = new ItemMindControlHelmet();
+    //public static final ItemMindControlHelmet itemMindControlHelmet = new ItemMindControlHelmet();
 
     public static boolean enableMiniFoxes;
     public static boolean enableMiniTRex;
     public static boolean enableMiniPlayers;
     public static boolean enableMiniShark;
+    public static boolean enableCustomizer;
 
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent e) {
@@ -81,7 +81,12 @@ public class MiniCreatures {
         property = configuration.get(Configuration.CATEGORY_GENERAL, "Enable Mini Players", true);
         enableMiniPlayers = property.getBoolean(true);
         property = configuration.get(Configuration.CATEGORY_GENERAL, "Enable Mini Sharks", true);
-        enableMiniShark = property.getBoolean(true);
+        property.comment = "THIS ENTITY IS NOT YET COMPLETE. Enabling it might cause some strange issues";
+        enableMiniShark = property.getBoolean(false);
+        property = configuration.get(Configuration.CATEGORY_GENERAL, "Enable Customizer", true);
+        property.comment = "This feature is still in development and may cause issues";
+        enableCustomizer = property.getBoolean(true);
+
 
         if (configuration.hasChanged()) configuration.save();
     }
@@ -94,8 +99,8 @@ public class MiniCreatures {
     }
 
     private void registerItems() {
-        GameRegistry.registerItem(itemCustomizer, "customizer");
-        GameRegistry.registerItem(itemMindControlHelmet, "mindControlHelmet");
+        if (enableCustomizer) GameRegistry.registerItem(itemCustomizer, "customizer");
+        //GameRegistry.registerItem(itemMindControlHelmet, "mindControlHelmet");
     }
 
     private void registerEntities() {
