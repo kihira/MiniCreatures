@@ -14,3 +14,4 @@ category.LEFTLEG.part=Left Leg
 category.RIGHTLEG.part=Right Leg
 gui.reset=Reset
 gui.clear=Clear All
+item.customizer.name=Customizer
