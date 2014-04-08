@@ -35,8 +35,8 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
 
     private final InventoryBasic inventory = new InventoryBasic(this.getCommandSenderName(), false, 18);
 
-    private EntityAIArrowAttack aiArrowAttack = new EntityAIArrowAttack(this, 1.0D, 20, 50, 15F); //Set par3 and par4 to the same to have a consant firing rate. par5 seems to effect damage output. Higher = more damage falloff
-    private EntityAIAttackOnCollide aiAttackOnCollide = new EntityAIAttackOnCollide(this, 1.2D, true);
+    private final EntityAIArrowAttack aiArrowAttack = new EntityAIArrowAttack(this, 1.0D, 20, 50, 15F); //Set par3 and par4 to the same to have a consant firing rate. par5 seems to effect damage output. Higher = more damage falloff
+    private final EntityAIAttackOnCollide aiAttackOnCollide = new EntityAIAttackOnCollide(this, 1.2D, true);
 
     //Maintain an array list client side for previewing
     @SideOnly(Side.CLIENT)
@@ -102,6 +102,7 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
         }
         this.dataWatcher.updateObject(18, s);
         this.setCombatAI();
+        this.inventory.func_110133_a(this.getCommandSenderName());
     }
 
     @Override
@@ -160,7 +161,7 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
                     }
                 }
                 //If entity is holding something and player isn't, open GUI
-                else if (this.getHeldItem() != null && !player.isSneaking()) {
+                if (this.getHeldItem() != null && !player.isSneaking()) {
                     if (Block.getBlockFromItem(this.getHeldItem().getItem()) == Blocks.chest) player.openGui(MiniCreatures.instance, 0, player.worldObj, this.getEntityId(), 0, 0);
                     else if (Block.getBlockFromItem(this.getHeldItem().getItem()) == Blocks.anvil) player.openGui(MiniCreatures.instance, 1, player.worldObj, (int) this.posX, (int) this.posY, (int) this.posZ);
                 }
