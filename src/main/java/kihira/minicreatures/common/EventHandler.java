@@ -61,7 +61,7 @@ public class EventHandler {
                         miniPlayer.setOwner(event.entityPlayer.getCommandSenderName());
                         miniPlayer.setTamed(true);
                         for (int i = 0; i < 5; i++) {
-                            miniPlayer.setCurrentItemOrArmor(i, entityZombie.getEquipmentInSlot(0));
+                            miniPlayer.setCurrentItemOrArmor(i, entityZombie.getEquipmentInSlot(i));
                         }
 
                         //Spawn them in
