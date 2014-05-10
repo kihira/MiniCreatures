@@ -36,7 +36,7 @@ public class EntityMiniShark extends EntityWaterMob {
 
     public EntityMiniShark(World par1World) {
         super(par1World);
-        this.setSize(0.95F, 0.95F);
+        this.setSize(0.95F, 0.4F);
         this.getNavigator().setAvoidsWater(false);
         this.getNavigator().setCanSwim(true);
         this.renderDistanceWeight = 4D;
@@ -92,9 +92,9 @@ public class EntityMiniShark extends EntityWaterMob {
         d3 = (double) MathHelper.sqrt_double(d3);
 
         if (this.isCourseTraversable(d3)) {
-            this.motionX += d0 / d3 * 0.02D;
-            this.motionY += d1 / d3 * 0.02D;
-            this.motionZ += d2 / d3 * 0.02D;
+            this.motionX += d0 / d3 * (this.targetedEntity != null ? 0.02D : 0.01D);
+            this.motionY += d1 / d3 * (this.targetedEntity != null ? 0.02D : 0.01D);
+            this.motionZ += d2 / d3 * (this.targetedEntity != null ? 0.02D : 0.01D);
         }
         else {
             this.waypointX = this.posX;
@@ -102,12 +102,17 @@ public class EntityMiniShark extends EntityWaterMob {
             this.waypointZ = this.posZ;
         }
 
+        if (!this.isInWater()) {
+            this.motionX = 0D;
+            this.motionY -= 0.08D;
+            this.motionY *= 0.9800000190734863D;
+            this.motionZ = 0D;
+        }
+
         if (this.targetedEntity != null && this.targetedEntity.isDead) this.targetedEntity = null;
         if (this.targetedEntity == null) this.targetedEntity = this.worldObj.getClosestVulnerablePlayerToEntity(this, 64D);
         if (this.targetedEntity != null && this.targetedEntity.getDistanceSqToEntity(this) < 4096D) {
-            double d5 = this.targetedEntity.posX - this.posX;
-            double d7 = this.targetedEntity.posZ - this.posZ;
-            this.renderYawOffset = this.rotationYaw = -((float)Math.atan2(d5, d7)) * 180F / (float)Math.PI;
+            this.faceEntity(this.targetedEntity, 2F, 2F);
 
             if (this.canEntityBeSeen(this.targetedEntity) && this.targetedEntity.isInWater()) {
                 this.waypointX = this.targetedEntity.posX;
@@ -123,7 +128,7 @@ public class EntityMiniShark extends EntityWaterMob {
             }
         }
         else {
-            this.renderYawOffset = this.rotationYaw = -((float)Math.atan2(this.motionX, this.motionZ)) * 180F / (float)Math.PI;
+            this.renderYawOffset = this.rotationYaw = -((float)Math.atan2(this.motionX, this.motionZ)) * 180.0F / (float)Math.PI;
         }
     }
 
@@ -162,13 +167,16 @@ public class EntityMiniShark extends EntityWaterMob {
             this.motionZ *= 0.5D;
         }
         else {
-            //this.moveFlying(par1, par2, 0.02F);
+            this.moveFlying(par1, par2, 0.02F);
             this.moveEntity(this.motionX, this.motionY, this.motionZ);
-            this.motionX *= 0.800000011920929D;
-            this.motionY = -0.800000011920929D;
-            this.motionZ *= 0.800000011920929D;
+            this.motionX = 0D;
+            this.motionY *= 0.5D;
+            this.motionZ = 0D;
         }
     }
+
+    @Override
+    protected void jump() {}
 
     @Override
     public boolean isInWater() {
