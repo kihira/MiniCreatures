@@ -14,17 +14,16 @@
 
 package kihira.minicreatures.common.customizer;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.ListMultimap;
 import kihira.minicreatures.MiniCreatures;
-import kihira.minicreatures.common.entity.IMiniCreature;
+import net.minecraft.entity.Entity;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class CustomizerRegistry {
 
     private static final HashMap<String, ICustomizerPart> partList = new HashMap<String, ICustomizerPart>();
-    private static final ListMultimap<EnumSoundCategory, String> soundsList = ArrayListMultimap.create();
 
     /**
      * An instance of ICustomizerPart should be passed to here
@@ -41,32 +40,12 @@ public class CustomizerRegistry {
         else MiniCreatures.logger.error("A customizer with the name " + name + " is already registered!", new IllegalArgumentException());
     }
 
-    /**
-     * Registers a sound for the specified category. It can be used by all entities
-     * TODO Make it so sounds are limited to specific entities?
-     * @param name This must be the name that is registered with Minecraft
-     * @param soundCategories A set of categories that the sound is valid for
-     */
-    public static void registerSound(String name, EnumSet<EnumSoundCategory> soundCategories) {
-        for (EnumSoundCategory soundCategory : soundCategories) {
-            if (!soundsList.get(soundCategory).contains(name)) soundsList.put(soundCategory, name);
-            else {
-                MiniCreatures.logger.error("A sound with the name " + name + " is already registered!", new IllegalArgumentException());
-                break;
-            }
-        }
-    }
-
-    public static ArrayList<String> getValidParts(IMiniCreature miniCreature, EnumPartCategory partCategory) {
+    public static ArrayList<String> getValidParts(Entity miniCreature, EnumPartCategory partCategory) {
         ArrayList<String> validPartsList = new ArrayList<String>();
         for (Map.Entry<String, ICustomizerPart> part : partList.entrySet()) {
-            if (part.getValue().isPartValidForEntity(miniCreature.getEntity(), partCategory)) validPartsList.add(part.getKey());
+            if (part.getValue().isPartValidForEntity(miniCreature, partCategory)) validPartsList.add(part.getKey());
         }
         return validPartsList;
-    }
-
-    public static List<String> getSoundsForCategory(EnumSoundCategory soundCategory) {
-        return soundsList.get(soundCategory);
     }
 
     public static ICustomizerPart getPart(String name) {

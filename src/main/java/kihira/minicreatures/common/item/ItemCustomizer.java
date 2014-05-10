@@ -15,7 +15,7 @@
 package kihira.minicreatures.common.item;
 
 import kihira.minicreatures.MiniCreatures;
-import kihira.minicreatures.common.entity.IMiniCreature;
+import kihira.minicreatures.common.entity.ICustomisable;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -31,7 +31,7 @@ public class ItemCustomizer extends Item {
     }
 
     public boolean onLeftClickEntity(ItemStack stack, EntityPlayer player, Entity entity) {
-        if (entity instanceof IMiniCreature) {
+        if (entity instanceof ICustomisable) {
             player.openGui(MiniCreatures.instance, 2, player.worldObj, entity.getEntityId(), 0, 0);
             return true;
         }

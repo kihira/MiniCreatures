@@ -12,8 +12,21 @@
  *     GNU General Public License for more details.
  */
 
-package kihira.minicreatures.common.customizer;
+package kihira.minicreatures.common.entity;
 
-public enum EnumSoundCategory {
-    STEP, DEATH, HURT, LIVING
+import kihira.minicreatures.common.customizer.EnumPartCategory;
+import net.minecraft.entity.EntityLiving;
+
+import java.util.ArrayList;
+import java.util.EnumSet;
+
+public interface ICustomisable {
+
+    public EnumSet<EnumPartCategory> getPartCatergoies();
+
+    public ArrayList<String> getCurrentParts(boolean isPreview);
+
+    public void setParts(ArrayList<String> parts, boolean isPreview);
+
+    public EntityLiving getEntity();
 }

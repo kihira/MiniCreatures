@@ -23,7 +23,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import kihira.minicreatures.MiniCreatures;
 import kihira.minicreatures.common.entity.EntityMiniPlayer;
-import kihira.minicreatures.common.entity.IMiniCreature;
+import kihira.minicreatures.common.entity.ICustomisable;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.player.EntityPlayer;
@@ -79,7 +79,7 @@ public abstract class MiniCreaturesMessage implements IMessage {
                 for (String part : this.partsList) {
                     if (!Strings.isNullOrEmpty(part)) MiniCreatures.logger.info("Part: " + part);
                 }
-                ((IMiniCreature) entityPlayer.worldObj.getEntityByID(this.entityID)).setParts(this.partsList, false);
+                ((ICustomisable) entityPlayer.worldObj.getEntityByID(this.entityID)).setParts(this.partsList, false);
             }
             return null;
         }

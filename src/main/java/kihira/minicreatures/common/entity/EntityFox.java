@@ -14,9 +14,7 @@
 
 package kihira.minicreatures.common.entity;
 
-import com.google.common.base.Strings;
 import kihira.minicreatures.MiniCreatures;
-import kihira.minicreatures.common.customizer.EnumPartCategory;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockColored;
 import net.minecraft.entity.Entity;
@@ -40,9 +38,6 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
-
-import java.util.ArrayList;
-import java.util.EnumSet;
 
 public class EntityFox extends EntityTameable implements IMiniCreature {
 
@@ -319,29 +314,6 @@ public class EntityFox extends EntityTameable implements IMiniCreature {
     @Override
     public IInventory getInventory() {
         return this.inventory;
-    }
-
-    @Override
-    public EnumSet<EnumPartCategory> getPartCatergoies() {
-        return EnumSet.of(EnumPartCategory.ALL, EnumPartCategory.HEAD, EnumPartCategory.BODY);
-    }
-
-    @Override
-    public ArrayList<String> getCurrentParts(boolean isPreview) {
-        ArrayList<String> parts = new ArrayList<String>();
-        for (String part : this.dataWatcher.getWatchableObjectString(20).split(",")) {
-            if (!Strings.isNullOrEmpty(part)) parts.add(part);
-        }
-        return parts;
-    }
-
-    @Override
-    public void setParts(ArrayList<String> parts, boolean isPreview) {
-        String s = "";
-        for (String part : parts) {
-            s += part + ",";
-        }
-        this.dataWatcher.updateObject(20, s);
     }
 
     @Override

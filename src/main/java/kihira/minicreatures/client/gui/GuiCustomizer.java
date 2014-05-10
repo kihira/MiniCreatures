@@ -18,7 +18,7 @@ import com.google.common.base.Strings;
 import kihira.minicreatures.MiniCreatures;
 import kihira.minicreatures.common.customizer.CustomizerRegistry;
 import kihira.minicreatures.common.customizer.EnumPartCategory;
-import kihira.minicreatures.common.entity.IMiniCreature;
+import kihira.minicreatures.common.entity.ICustomisable;
 import kihira.minicreatures.common.network.MiniCreaturesMessage;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
@@ -31,7 +31,7 @@ import java.util.ArrayList;
 
 public class GuiCustomizer extends GuiScreen {
 
-    private final IMiniCreature miniCreature;
+    private final ICustomisable miniCreature;
     private final ResourceLocation guiTextures = new ResourceLocation("minicreatures", "textures/gui/customizer.png");
     private int guiLeft;
     private int guiTop;
@@ -46,7 +46,7 @@ public class GuiCustomizer extends GuiScreen {
     //This should never be changed except during init
     private ArrayList<String> originalParts;
 
-    public GuiCustomizer(IMiniCreature entity) {
+    public GuiCustomizer(ICustomisable entity) {
         this.miniCreature = entity;
     }
 
@@ -125,7 +125,7 @@ public class GuiCustomizer extends GuiScreen {
     }
 
     private void updatePartsList() {
-        this.currentValidParts = CustomizerRegistry.getValidParts(this.miniCreature, this.currentCategory);
+        this.currentValidParts = CustomizerRegistry.getValidParts(this.miniCreature.getEntity(), this.currentCategory);
         this.partsList = new String[6];
         for (int i = 1; i < 7; i++) {
             int num = (this.currentPage * 6) + i - 1;

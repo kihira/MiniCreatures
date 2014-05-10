@@ -14,7 +14,6 @@
 
 package kihira.minicreatures.common.entity;
 
-import kihira.minicreatures.common.customizer.EnumPartCategory;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityAgeable;
 import net.minecraft.entity.EntityLiving;
@@ -29,9 +28,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
-
-import java.util.ArrayList;
-import java.util.EnumSet;
 
 public class EntityTRex extends EntityTameable implements IMiniCreature {
 
@@ -121,20 +117,5 @@ public class EntityTRex extends EntityTameable implements IMiniCreature {
     @Override
     public EntityLiving getEntity() {
         return this;
-    }
-
-    @Override
-    public EnumSet<EnumPartCategory> getPartCatergoies() {
-        return null;
-    }
-
-    @Override
-    public ArrayList<String> getCurrentParts(boolean isPreview) {
-        return null;
-    }
-
-    @Override
-    public void setParts(ArrayList<String> parts, boolean isPreview) {
-
     }
 }
