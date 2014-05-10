@@ -129,7 +129,7 @@ public class GuiCustomizer extends GuiScreen {
 
     private void closeGUI(boolean shouldUpdate) {
         if (shouldUpdate) {
-            MiniCreatures.packetHandler.sendToServer(new MiniCreaturesMessage.UpdateEntityMessage(this.miniCreature.getEntity().getEntityId(), this.currentEquippedParts));
+            MiniCreatures.proxy.packetHandler.sendToServer(new MiniCreaturesMessage.UpdateEntityMessage(this.miniCreature.getEntity().getEntityId(), this.currentEquippedParts));
         }
         else {
             this.miniCreature.setParts(this.originalParts, false);

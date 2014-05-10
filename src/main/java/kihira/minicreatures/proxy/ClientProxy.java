@@ -23,9 +23,4 @@ public class ClientProxy extends CommonProxy {
         if (MiniCreatures.enableMiniPlayers) RenderingRegistry.registerEntityRenderingHandler(EntityMiniPlayer.class, new RenderMiniPlayer());
         if (MiniCreatures.enableMiniShark) RenderingRegistry.registerEntityRenderingHandler(EntityMiniShark.class, new RenderMiniShark());
     }
-
-    @Override
-    public void registerSounds() {
-
-    }
 }

@@ -39,7 +39,7 @@ public class EventHandler {
                 MovingObjectPosition target = getMouseOver(20);
                 if (target != null && target.typeOfHit == MovingObjectPosition.MovingObjectType.ENTITY) {
                     this.lastTrigger = System.currentTimeMillis();
-                    MiniCreatures.packetHandler.sendToServer(new MiniCreaturesMessage.SetAttackTargetMessage(target.entityHit.getEntityId()));
+                    MiniCreatures.proxy.packetHandler.sendToServer(new MiniCreaturesMessage.SetAttackTargetMessage(target.entityHit.getEntityId()));
                 }
             }
         }
