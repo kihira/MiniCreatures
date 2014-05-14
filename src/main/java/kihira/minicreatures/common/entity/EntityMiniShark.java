@@ -15,7 +15,6 @@
 package kihira.minicreatures.common.entity;
 
 import net.minecraft.block.BlockLiquid;
-import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.passive.EntityWaterMob;
@@ -36,9 +35,7 @@ public class EntityMiniShark extends EntityWaterMob {
 
     public EntityMiniShark(World par1World) {
         super(par1World);
-        this.setSize(0.95F, 0.4F);
-        this.getNavigator().setAvoidsWater(false);
-        this.getNavigator().setCanSwim(true);
+        this.setSize(0.9F, 0.3F);
         this.renderDistanceWeight = 4D;
     }
 
@@ -103,10 +100,10 @@ public class EntityMiniShark extends EntityWaterMob {
         }
 
         if (!this.isInWater()) {
-            this.motionX = 0D;
+            //this.motionX = 0D;
             this.motionY -= 0.08D;
-            this.motionY *= 0.9800000190734863D;
-            this.motionZ = 0D;
+            //this.motionY *= 0.9800000190734863D;
+            //this.motionZ = 0D;
         }
 
         if (this.targetedEntity != null && this.targetedEntity.isDead) this.targetedEntity = null;
@@ -177,9 +174,4 @@ public class EntityMiniShark extends EntityWaterMob {
 
     @Override
     protected void jump() {}
-
-    @Override
-    public boolean isInWater() {
-        return this.worldObj.handleMaterialAcceleration(this.boundingBox.expand(0.0D, -0.4000000059604645D, 0.0D).contract(0.001D, 0.001D, 0.001D), Material.water, this);
-    }
 }
