@@ -49,9 +49,11 @@ public class RenderMiniPlayer extends RenderBiped {
     @Override
     protected void renderEquippedItems(EntityLivingBase par1EntityLivingBase, float par2) {
         ItemStack itemstack = par1EntityLivingBase.getHeldItem();
+        EntityMiniPlayer miniPlayer = (EntityMiniPlayer) par1EntityLivingBase;
         if (itemstack != null) {
             IItemRenderer customRenderer = MinecraftForgeClient.getItemRenderer(itemstack, EQUIPPED);
             boolean is3D = (customRenderer != null && customRenderer.shouldUseRenderHelper(EQUIPPED, itemstack, BLOCK_3D));
+            if (miniPlayer.isSitting()) GL11.glTranslatef(0F, 0.3F, 0F);
             if (itemstack.getItem() instanceof ItemBlock && (is3D || RenderBlocks.renderItemIn3d(Block.getBlockFromItem(itemstack.getItem()).getRenderType()))) {
                 GL11.glTranslatef(0.0F, 0.8875F, -0.3F);
                 GL11.glRotatef(-90.0F, 0.0F, 1.0F, 0.0F);
