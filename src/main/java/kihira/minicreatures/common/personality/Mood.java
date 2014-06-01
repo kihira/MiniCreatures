@@ -1,11 +1,12 @@
 package kihira.minicreatures.common.personality;
 
-import net.minecraft.entity.EntityLiving;
+import java.util.ArrayList;
+import java.util.List;
 
-public class PersonalityType {
+public class Mood {
 
     public String name = "";
-    public String className;
+    public List<String> validClassNames = new ArrayList<String>();
     public float maxHappiness = 0;
     public float minHappiness = 0;
     public float maxHostility = 0;
@@ -14,17 +15,17 @@ public class PersonalityType {
     public int maxMoodTime = 100;
     public int minMoodTime = 0;
 
-    public PersonalityType(String name, Class<? extends EntityLiving> entityClass, float maxHappiness, float minHappiness, float maxHostility, float minHostility) {
+    public Mood(String name, List<String> validClassNames, float maxHappiness, float minHappiness, float maxHostility, float minHostility) {
         this.name = name;
-        this.className = entityClass.getName();
+        this.validClassNames = validClassNames;
         this.maxHappiness = maxHappiness;
         this.minHappiness = minHappiness;
         this.maxHostility = maxHostility;
         this.minHostility = minHostility;
     }
 
-    public boolean isValidMood(Personality personality) {
-        if (personality.theEntity != null) {
+    public boolean isValidMood(Personality personality, IPersonality theEntity) {
+        if (theEntity != null && this.validClassNames.contains(theEntity.getClass().getName())) {
             float happinessLevel = personality.getHappinessLevel();
             float hostilityLevel = personality.getHostilityLevel();
             if (happinessLevel >= this.minHappiness && happinessLevel <= this.maxHappiness &&
@@ -33,14 +34,5 @@ public class PersonalityType {
             }
         }
         return false;
-    }
-
-    public Class getEntityClass() {
-        try {
-            return Class.forName(this.className);
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 }

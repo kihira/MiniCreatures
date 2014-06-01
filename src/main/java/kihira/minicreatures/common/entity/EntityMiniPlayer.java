@@ -15,14 +15,15 @@
 package kihira.minicreatures.common.entity;
 
 import com.google.common.base.Strings;
+import com.google.gson.Gson;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import kihira.minicreatures.MiniCreatures;
 import kihira.minicreatures.common.customizer.EnumPartCategory;
 import kihira.minicreatures.common.personality.IPersonality;
+import kihira.minicreatures.common.personality.Mood;
 import kihira.minicreatures.common.personality.Personality;
-import kihira.minicreatures.common.personality.PersonalityType;
 import net.minecraft.block.Block;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -53,7 +54,7 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
     private final InventoryBasic inventory = new InventoryBasic(this.getCommandSenderName(), false, 18);
     private final EntityAIArrowAttack aiArrowAttack = new EntityAIArrowAttack(this, 1.0D, 20, 50, 15F); //Set par3 and par4 to the same to have a consant firing rate. par5 seems to effect damage output. Higher = more damage falloff
     private final EntityAIAttackOnCollide aiAttackOnCollide = new EntityAIAttackOnCollide(this, 1.2D, true);
-    private Personality personality;
+    private Personality personality = new Personality();
 
     //Maintain an array list client side for previewing
     @SideOnly(Side.CLIENT)
@@ -73,7 +74,6 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
         this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, true));
         this.setTamed(false);
         this.renderDistanceWeight = 4D;
-        this.personality = new Personality(this);
 
         if (par1World != null && !par1World.isRemote) this.setCombatAI();
     }
@@ -98,23 +98,34 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
     }
 
     @Override
-    public void writeEntityToNBT(NBTTagCompound par1NBTTagCompound) {
-        super.writeEntityToNBT(par1NBTTagCompound);
+    public void writeEntityToNBT(NBTTagCompound tagCompound) {
+        super.writeEntityToNBT(tagCompound);
+
+        //Save personality
+        Gson gson = new Gson();
+        tagCompound.setString("Personality", gson.toJson(this.personality));
 
         //Save parts list
         NBTTagList nbttaglist = new NBTTagList();
         for (String part : this.dataWatcher.getWatchableObjectString(18).split(",")) {
             if (part != null) nbttaglist.appendTag(new NBTTagString(part));
         }
-        par1NBTTagCompound.setTag("Parts", nbttaglist);
+        tagCompound.setTag("Parts", nbttaglist);
     }
 
     @Override
-    public void readEntityFromNBT(NBTTagCompound par1NBTTagCompound) {
-        super.readEntityFromNBT(par1NBTTagCompound);
+    public void readEntityFromNBT(NBTTagCompound tagCompound) {
+        super.readEntityFromNBT(tagCompound);
+
+        //Load Personality
+        Gson gson = new Gson();
+        Personality personality = gson.fromJson(tagCompound.getString("Personality"), Personality.class);
+        if (personality != null) {
+            this.personality = personality;
+        }
 
         //Load parts list
-        NBTTagList tagList = par1NBTTagCompound.getTagList("Parts", 8);
+        NBTTagList tagList = tagCompound.getTagList("Parts", 8);
         String s = "";
         for (int i = 0; i < tagList.tagCount(); i++) {
             s += tagList.getStringTagAt(i) + ",";
@@ -213,6 +224,7 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
         //Gotta do this so it doesn't get stuck shooting arrows
         if (this.getAttackTarget() != null && this.getAttackTarget().isDead) this.setAttackTarget(null);
         super.updateAITick();
+        this.personality.onUpdate(this);
     }
 
     @Override
@@ -224,11 +236,13 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
         super.setAttackTarget(attackTarget);
     }
 
-    protected void attackEntity(Entity par1Entity, float par2) {
+    public void attackEntity(Entity par1Entity, float par2) {
         if (this.attackTime <= 0 && par2 < 2.0F && par1Entity.boundingBox.maxY > this.boundingBox.minY && par1Entity.boundingBox.minY < this.boundingBox.maxY) {
             this.attackTime = 20;
             this.swingItem();
             this.attackEntityAsMob(par1Entity);
+            this.personality.changeHappinessLevel(-5);
+            this.personality.changeHostilityLevel(+5);
         }
     }
 
@@ -356,7 +370,12 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
     }
 
     @Override
-    public PersonalityType getCurrentPersonality() {
+    public Mood getCurrentPersonality() {
         return this.personality.getCurrentMood();
+    }
+
+    @Override
+    public Personality getPersonality() {
+        return this.personality;
     }
 }

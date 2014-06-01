@@ -31,8 +31,8 @@ import kihira.minicreatures.common.entity.EntityMiniPlayer;
 import kihira.minicreatures.common.entity.EntityMiniShark;
 import kihira.minicreatures.common.entity.EntityTRex;
 import kihira.minicreatures.common.item.ItemCustomizer;
+import kihira.minicreatures.common.personality.Mood;
 import kihira.minicreatures.common.personality.Personality;
-import kihira.minicreatures.common.personality.PersonalityType;
 import kihira.minicreatures.proxy.CommonProxy;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.world.biome.BiomeGenBase;
@@ -46,6 +46,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 @Mod(modid = "minicreatures", name = "Mini Creatures", version = "${version}", useMetadata = true, guiFactory = "kihira.minicreatures.client.gui.ConfigGuiFactory")
 public class MiniCreatures {
@@ -122,8 +124,10 @@ public class MiniCreatures {
                 //Create defaults
                 //Create default personalities
                 jsonWriter.beginArray();
-                gson.toJson(gson.toJsonTree(new PersonalityType("psychotic", EntityMiniPlayer.class, 50, 35, 50, 40)), jsonWriter);
-                gson.toJson(gson.toJsonTree(new PersonalityType("coldblooded", EntityMiniPlayer.class, 0, -50, 50, 40)), jsonWriter);
+                List<String> list = new ArrayList<String>();
+                list.add(EntityMiniPlayer.class.getName());
+                gson.toJson(gson.toJsonTree(new Mood("psychotic", list, 50, 35, 50, 40)), jsonWriter);
+                gson.toJson(gson.toJsonTree(new Mood("coldblooded", list, 0, -50, 50, 40)), jsonWriter);
                 jsonWriter.endArray();
                 jsonWriter.close();
             }
@@ -132,8 +136,8 @@ public class MiniCreatures {
             JsonReader reader = new JsonReader(new FileReader(personalityTypesFile));
             reader.beginArray();
             while (reader.hasNext()) {
-                PersonalityType personalityType = gson.fromJson(reader, PersonalityType.class);
-                Personality.personalityMap.put(personalityType.getEntityClass(), personalityType);
+                Mood mood = gson.fromJson(reader, Mood.class);
+                Personality.moodList.add(mood);
             }
             reader.endArray();
         } catch (IOException e1) {

@@ -1,59 +1,50 @@
 package kihira.minicreatures.common.personality;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
-import net.minecraft.entity.EntityLiving;
+import kihira.minicreatures.MiniCreatures;
 import net.minecraft.util.MathHelper;
 
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Personality {
 
-    public static final Multimap<Class<? extends EntityLiving>, PersonalityType> personalityMap = HashMultimap.create();
+    public static final List<Mood> moodList = new ArrayList<Mood>();
 
-    public final EntityLiving theEntity;
-    private PersonalityType currentMood;
+    private Mood currentMood;
     private int currentMoodTime = 0;
-
     private float happinessLevel = 0;
     private float hostilityLevel = 0;
 
     private final float upperBound = 50;
     private final float lowerBound = -50;
 
-    public Personality(EntityLiving theEntity, float happinessLevel, float hostilityLevel) {
-        this.theEntity = theEntity;
-        this.happinessLevel = happinessLevel;
-        this.hostilityLevel = hostilityLevel;
-    }
+    public Personality() {}
 
-    public Personality(EntityLiving theEntity) {
-        this.theEntity = theEntity;
-    }
-
-    public PersonalityType getCurrentMood() {
+    public void onUpdate(IPersonality theEntity) {
         if (this.currentMood != null) {
             //If current mood has exceeded its max limit, reset it
             if (this.currentMood.maxMoodTime > this.currentMoodTime) {
                 this.currentMood = null;
                 this.currentMoodTime = 0;
             }
-            //Return current mood
-            else return this.currentMood;
         }
 
         //Find new mood
-        Collection<PersonalityType> personalityTypes = personalityMap.get(this.theEntity.getClass());
-        if (personalityTypes != null && !personalityTypes.isEmpty()) {
-            for (PersonalityType personalityType : personalityTypes) {
-                if (personalityType.isValidMood(this)) {
-                    this.currentMood = personalityType;
+        if (!moodList.isEmpty()) {
+            for (Mood mood : moodList) {
+                if (mood.isValidMood(this, theEntity)) {
+                    this.currentMood = mood;
                     this.currentMoodTime = 0;
-                    return this.currentMood;
                 }
             }
         }
-        return null;
+        if (this.currentMood != null) {
+            this.currentMoodTime++;
+        }
+    }
+
+    public Mood getCurrentMood() {
+        return this.currentMood;
     }
 
     public float getHappinessLevel() {
@@ -66,9 +57,11 @@ public class Personality {
 
     public void changeHappinessLevel(float change) {
         MathHelper.clamp_float(this.happinessLevel += change, this.lowerBound, this.upperBound);
+        MiniCreatures.logger.info("Changed happiness level to %s(%s)", this.happinessLevel, change);
     }
 
     public void changeHostilityLevel(float change) {
         MathHelper.clamp_float(this.hostilityLevel += change, this.lowerBound, this.upperBound);
+        MiniCreatures.logger.info("Changed hostility level to %s(%s)", this.happinessLevel, change);
     }
 }
