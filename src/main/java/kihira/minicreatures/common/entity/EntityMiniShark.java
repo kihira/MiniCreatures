@@ -35,7 +35,7 @@ public class EntityMiniShark extends EntityWaterMob {
 
     public EntityMiniShark(World par1World) {
         super(par1World);
-        this.setSize(0.9F, 0.3F);
+        //this.setSize(0.9F, 0.3F);
         this.renderDistanceWeight = 4D;
     }
 

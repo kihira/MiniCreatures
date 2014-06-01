@@ -20,6 +20,9 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import kihira.minicreatures.MiniCreatures;
 import kihira.minicreatures.common.customizer.EnumPartCategory;
+import kihira.minicreatures.common.personality.IPersonality;
+import kihira.minicreatures.common.personality.Personality;
+import kihira.minicreatures.common.personality.PersonalityType;
 import net.minecraft.block.Block;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -45,12 +48,12 @@ import net.minecraft.world.World;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
-public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, ICustomisable, IRangedAttackMob {
+public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, ICustomisable, IRangedAttackMob, IPersonality {
 
     private final InventoryBasic inventory = new InventoryBasic(this.getCommandSenderName(), false, 18);
-
     private final EntityAIArrowAttack aiArrowAttack = new EntityAIArrowAttack(this, 1.0D, 20, 50, 15F); //Set par3 and par4 to the same to have a consant firing rate. par5 seems to effect damage output. Higher = more damage falloff
     private final EntityAIAttackOnCollide aiAttackOnCollide = new EntityAIAttackOnCollide(this, 1.2D, true);
+    private Personality personality;
 
     //Maintain an array list client side for previewing
     @SideOnly(Side.CLIENT)
@@ -70,6 +73,7 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
         this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, true));
         this.setTamed(false);
         this.renderDistanceWeight = 4D;
+        this.personality = new Personality(this);
 
         if (par1World != null && !par1World.isRemote) this.setCombatAI();
     }
@@ -349,5 +353,10 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
     @Override
     public EntityLiving getEntity() {
         return this;
+    }
+
+    @Override
+    public PersonalityType getCurrentPersonality() {
+        return this.personality.getCurrentMood();
     }
 }
