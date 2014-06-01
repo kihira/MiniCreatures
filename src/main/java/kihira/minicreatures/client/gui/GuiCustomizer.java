@@ -19,7 +19,7 @@ import kihira.minicreatures.MiniCreatures;
 import kihira.minicreatures.common.customizer.CustomizerRegistry;
 import kihira.minicreatures.common.customizer.EnumPartCategory;
 import kihira.minicreatures.common.entity.ICustomisable;
-import kihira.minicreatures.common.network.MiniCreaturesMessage;
+import kihira.minicreatures.common.network.UpdateEntityMessage;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiInventory;
@@ -143,7 +143,7 @@ public class GuiCustomizer extends GuiScreen {
 
     private void closeGUI(boolean shouldUpdate) {
         if (shouldUpdate) {
-            MiniCreatures.proxy.packetHandler.sendToServer(new MiniCreaturesMessage.UpdateEntityMessage(this.miniCreature.getEntity().getEntityId(), this.currentEquippedParts));
+            MiniCreatures.proxy.simpleNetworkWrapper.sendToServer(new UpdateEntityMessage(this.miniCreature.getEntity().getEntityId(), this.currentEquippedParts));
         }
         else {
             this.miniCreature.setParts(this.originalParts, false);

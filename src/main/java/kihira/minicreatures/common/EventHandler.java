@@ -18,7 +18,7 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import kihira.minicreatures.MiniCreatures;
 import kihira.minicreatures.common.entity.EntityFox;
 import kihira.minicreatures.common.entity.EntityMiniPlayer;
-import kihira.minicreatures.common.network.MiniCreaturesMessage;
+import kihira.minicreatures.common.network.SetAttackTargetMessage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
@@ -53,7 +53,7 @@ public class EventHandler {
                 MovingObjectPosition target = getMouseOver(20);
                 if (target != null && target.typeOfHit == MovingObjectPosition.MovingObjectType.ENTITY) {
                     this.lastTrigger = System.currentTimeMillis();
-                    MiniCreatures.proxy.packetHandler.sendToServer(new MiniCreaturesMessage.SetAttackTargetMessage(target.entityHit.getEntityId()));
+                    MiniCreatures.proxy.simpleNetworkWrapper.sendToServer(new SetAttackTargetMessage(target.entityHit.getEntityId()));
                 }
             }
         }

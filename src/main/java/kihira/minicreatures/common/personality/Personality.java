@@ -1,6 +1,8 @@
 package kihira.minicreatures.common.personality;
 
+import com.google.gson.Gson;
 import kihira.minicreatures.MiniCreatures;
+import kihira.minicreatures.common.network.PersonalityMessage;
 import net.minecraft.util.MathHelper;
 
 import java.util.ArrayList;
@@ -35,6 +37,8 @@ public class Personality {
                 if (mood.isValidMood(this, theEntity)) {
                     this.currentMood = mood;
                     this.currentMoodTime = 0;
+                    Gson gson = new Gson();
+                    MiniCreatures.proxy.simpleNetworkWrapper.sendToDimension(new PersonalityMessage(theEntity.theEntity().getEntityId(), gson.toJson(this.currentMood)), theEntity.theEntity().dimension);
                 }
             }
         }

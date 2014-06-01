@@ -14,17 +14,21 @@
 
 package kihira.minicreatures.proxy;
 
+import cpw.mods.fml.common.network.NetworkRegistry;
+import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import cpw.mods.fml.common.registry.GameRegistry;
+import cpw.mods.fml.relauncher.Side;
 import kihira.minicreatures.MiniCreatures;
 import kihira.minicreatures.client.model.parts.PartModelFairy;
 import kihira.minicreatures.client.model.parts.PartModelHorns;
 import kihira.minicreatures.client.model.parts.PartModelTail;
 import kihira.minicreatures.common.customizer.CustomizerRegistry;
-import kihira.minicreatures.common.network.PacketHandler;
+import kihira.minicreatures.common.network.PersonalityMessage;
+import kihira.minicreatures.common.network.SetAttackTargetMessage;
+import kihira.minicreatures.common.network.UpdateEntityMessage;
 
 public class CommonProxy {
-
-    public final PacketHandler packetHandler = new PacketHandler();
+    public final SimpleNetworkWrapper simpleNetworkWrapper = NetworkRegistry.INSTANCE.newSimpleChannel("minicreatures");
 
     public void registerRenderers() { }
 
@@ -33,6 +37,12 @@ public class CommonProxy {
         CustomizerRegistry.registerPart("fairy", new PartModelFairy());
         CustomizerRegistry.registerPart("horns", new PartModelHorns());
         CustomizerRegistry.registerPart("tail", new PartModelTail());
+    }
+
+    public void registerMessages() {
+        this.simpleNetworkWrapper.registerMessage(PersonalityMessage.PersonalityMessageHandler.class, PersonalityMessage.class, 0, Side.CLIENT);
+        this.simpleNetworkWrapper.registerMessage(UpdateEntityMessage.UpdateEntityMessageHandler.class, UpdateEntityMessage.class, 1, Side.SERVER);
+        this.simpleNetworkWrapper.registerMessage(SetAttackTargetMessage.SetAttackTargetMessageHandler.class, SetAttackTargetMessage.class, 2, Side.SERVER);
     }
 
     public void registerItems() {

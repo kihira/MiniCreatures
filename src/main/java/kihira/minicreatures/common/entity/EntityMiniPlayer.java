@@ -53,7 +53,7 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
 
     private final InventoryBasic inventory = new InventoryBasic(this.getCommandSenderName(), false, 18);
     private final EntityAIArrowAttack aiArrowAttack = new EntityAIArrowAttack(this, 1.0D, 20, 50, 15F); //Set par3 and par4 to the same to have a consant firing rate. par5 seems to effect damage output. Higher = more damage falloff
-    private final EntityAIAttackOnCollide aiAttackOnCollide = new EntityAIAttackOnCollide(this, 1.2D, true);
+    private final EntityAIAttackOnCollide aiAttackOnCollide = new EntityAIAttackOnCollide(this, 1.0D, true);
     private Personality personality = new Personality();
 
     //Maintain an array list client side for previewing
@@ -377,5 +377,15 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
     @Override
     public Personality getPersonality() {
         return this.personality;
+    }
+
+    @Override
+    public void setPersonality(Personality personality) {
+        this.personality = personality;
+    }
+
+    @Override
+    public EntityLiving theEntity() {
+        return this;
     }
 }

@@ -75,6 +75,7 @@ public class MiniCreatures {
         registerEntities();
         proxy.registerItems();
         proxy.registerCustomizerParts();
+        proxy.registerMessages();
         NetworkRegistry.INSTANCE.registerGuiHandler(instance, new GuiHandler());
         MinecraftForge.EVENT_BUS.register(new EventHandler());
 
