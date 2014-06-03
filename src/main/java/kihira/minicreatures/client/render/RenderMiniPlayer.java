@@ -14,6 +14,8 @@
 
 package kihira.minicreatures.client.render;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import kihira.minicreatures.client.model.ModelMiniPlayer;
 import kihira.minicreatures.common.entity.EntityMiniPlayer;
 import net.minecraft.block.Block;
@@ -25,6 +27,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.StatCollector;
 import net.minecraftforge.client.IItemRenderer;
 import net.minecraftforge.client.MinecraftForgeClient;
 import org.lwjgl.opengl.GL11;
@@ -32,6 +35,7 @@ import org.lwjgl.opengl.GL11;
 import static net.minecraftforge.client.IItemRenderer.ItemRenderType.EQUIPPED;
 import static net.minecraftforge.client.IItemRenderer.ItemRendererHelper.BLOCK_3D;
 
+@SideOnly(Side.CLIENT)
 public class RenderMiniPlayer extends RenderBiped {
 
     public RenderMiniPlayer() {
@@ -86,9 +90,13 @@ public class RenderMiniPlayer extends RenderBiped {
         EntityMiniPlayer miniPlayer = (EntityMiniPlayer) entity;
 
         //Our message
-        //this.func_147906_a(miniPlayer, "I'm hungry...", x, y, z, 64);
+        String mood = "Neutral";
+        if (miniPlayer.getPersonality().getCurrentMood() != null) {
+            mood = StatCollector.translateToLocal("personality." + miniPlayer.getPersonality().getCurrentMood().name + ".name");
+        }
+        this.func_147906_a(miniPlayer, mood, x, y, z, 64);
         //Move the next message above this one
-        //y += (double)((float)this.getFontRendererFromRenderManager().FONT_HEIGHT * 1.15F * par9);
+        y += (double)((float)this.getFontRendererFromRenderManager().FONT_HEIGHT * 1.15F * par9);
         super.func_96449_a(entity, x, y, z, text, par9, renderDistance);
     }
 }
