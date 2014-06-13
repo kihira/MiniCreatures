@@ -46,9 +46,10 @@ public class EntityAIIdleChat extends EntityAIBase {
         if (!this.miniPlayer.isTamed() && !this.miniPlayer.isSitting() && !this.miniPlayer.getNavigator().noPath()){
             return false;
         }
-        else if (this.miniPlayer.getRNG().nextInt(240) != 0) {
+        else if (this.miniPlayer.getRNG().nextInt(2) != 0) {
             return false;
         }
+        //Find nearby block
         else {
             double x;
             double y;
@@ -75,7 +76,7 @@ public class EntityAIIdleChat extends EntityAIBase {
 
     @Override
     public boolean continueExecuting() {
-        return this.chatLines != null && this.chatLines.hasNext() && !this.miniPlayer.worldObj.isAirBlock((int) this.targetX, (int) this.targetY, (int) this.targetZ);
+        return this.chatCooldown >= 0 || (this.chatLines != null && this.chatLines.hasNext() && !this.miniPlayer.worldObj.isAirBlock((int) this.targetX, (int) this.targetY, (int) this.targetZ));
     }
 
     @Override
@@ -112,7 +113,7 @@ public class EntityAIIdleChat extends EntityAIBase {
         //Get next chat line
         if (this.chatCooldown <= 0 && this.chatLines != null && this.chatLines.hasNext()) {
             String chat = this.chatLines.next();
-            //this.miniPlayer.setCustomNameTag(chat);
+            this.miniPlayer.setChat(chat);
             this.chatCooldown = chat.length() * 2;
         }
 
@@ -127,5 +128,6 @@ public class EntityAIIdleChat extends EntityAIBase {
         this.targetZ = 0;
         this.chatLines = null;
         this.chatCooldown = 0;
+        this.miniPlayer.setChat("");
     }
 }

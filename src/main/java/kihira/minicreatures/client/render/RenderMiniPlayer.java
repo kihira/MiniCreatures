@@ -20,9 +20,13 @@ import kihira.minicreatures.client.model.ModelMiniPlayer;
 import kihira.minicreatures.common.entity.EntityMiniPlayer;
 import net.minecraft.block.Block;
 import net.minecraft.client.entity.AbstractClientPlayer;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderBlocks;
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderBiped;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
@@ -49,6 +53,12 @@ public class RenderMiniPlayer extends RenderBiped {
         this.field_82425_h = new ModelMiniPlayer(0.5F);
     }
 
+    @Override
+    public void doRender(Entity par1Entity, double x, double y, double z, float par8, float par9) {
+        this.doRender((EntityLiving) par1Entity, x, y, z, par8, par9);
+        this.renderChatMessage((EntityMiniPlayer) par1Entity, x, y, z);
+    }
+
     //Copied from RenderPlayer.renderSpecials
     @Override
     protected void renderEquippedItems(EntityLivingBase par1EntityLivingBase, float par2) {
@@ -69,6 +79,45 @@ public class RenderMiniPlayer extends RenderBiped {
                 GL11.glScalef(0.5F, 0.5F, 0.5F);
                 super.renderEquippedItems(par1EntityLivingBase, par2);
             }
+        }
+    }
+
+    //TODO add multi line support
+    private void renderChatMessage(EntityMiniPlayer miniPlayer, double x, double y, double z) {
+        String chat = miniPlayer.getChat();
+        if (!chat.isEmpty()) {
+            FontRenderer fontrenderer = this.getFontRendererFromRenderManager();
+            float scale = 0.016666668F * 1.1F;
+            int xOffset = 20;
+            GL11.glPushMatrix();
+            GL11.glTranslated(x + 0.0F, y + miniPlayer.height + 0.27F, z);
+            GL11.glNormal3f(0.0F, 1.0F, 0.0F);
+            GL11.glRotatef(-this.renderManager.playerViewY, 0.0F, 1.0F, 0.0F);
+            GL11.glRotatef(this.renderManager.playerViewX, 1.0F, 0.0F, 0.0F);
+            GL11.glScalef(-scale, -scale, scale);
+            GL11.glDisable(GL11.GL_LIGHTING);
+            GL11.glDepthMask(false);
+            GL11.glDisable(GL11.GL_DEPTH_TEST);
+            GL11.glEnable(GL11.GL_BLEND);
+            OpenGlHelper.glBlendFunc(770, 771, 1, 0);
+            Tessellator tessellator = Tessellator.instance;
+            GL11.glDisable(GL11.GL_TEXTURE_2D);
+            tessellator.startDrawingQuads();
+            int width = fontrenderer.getStringWidth(chat);
+            tessellator.setColorRGBA_F(0.0F, 0.0F, 0.0F, 0.25F);
+            tessellator.addVertex((double) xOffset - 1, (double)(-1), 0.0D);
+            tessellator.addVertex((double) xOffset - 1, (double)(8), 0.0D);
+            tessellator.addVertex((double) xOffset + width + 1, (double) (8), 0.0D);
+            tessellator.addVertex((double) xOffset + width + 1, (double) (-1), 0.0D);
+            tessellator.draw();
+            GL11.glEnable(GL11.GL_TEXTURE_2D);
+            GL11.glEnable(GL11.GL_DEPTH_TEST);
+            GL11.glDepthMask(true);
+            fontrenderer.drawString(chat, xOffset, 0, -1);
+            GL11.glEnable(GL11.GL_LIGHTING);
+            GL11.glDisable(GL11.GL_BLEND);
+            GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+            GL11.glPopMatrix();
         }
     }
 

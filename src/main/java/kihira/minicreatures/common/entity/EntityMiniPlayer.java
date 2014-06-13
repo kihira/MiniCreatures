@@ -87,6 +87,7 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
         super.entityInit();
         this.dataWatcher.addObject(18, ""); //Parts list
         this.dataWatcher.addObject(19, 0); //Has Mind Control device
+        this.dataWatcher.addObject(20, ""); //Chat
     }
 
     @Override
@@ -317,6 +318,14 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
 
     public boolean isMindControlled() {
         return this.dataWatcher.getWatchableObjectInt(19) == 1;
+    }
+
+    public String getChat() {
+        return this.dataWatcher.getWatchableObjectString(20);
+    }
+
+    public void setChat(String string) {
+        this.dataWatcher.updateObject(20, Strings.nullToEmpty(string));
     }
 
     @Override
