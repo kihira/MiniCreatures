@@ -15,3 +15,9 @@ category.RIGHTLEG.part=Right Leg
 gui.reset=Reset
 gui.clear=Clear All
 item.customizer.name=Customizer
+
+chat.idle.generic.0=That block is rather...blocky;And this is a new line!
+chat.idle.generic.1=That block is rather...blocky;And this is a new line!
+chat.idle.generic.2=That block is rather...blocky;And this is a new line!
+chat.idle.generic.3=That block is rather...blocky;And this is a new line!
+chat.idle.generic.4=That block is rather...blocky;And this is a new line!
