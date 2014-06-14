@@ -108,7 +108,7 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
         super.writeEntityToNBT(tagCompound);
 
         //Save personality
-        Gson gson = new Gson();
+        Gson gson = new GsonBuilder().setVersion(1.0).create();
         tagCompound.setString("Personality", gson.toJson(this.personality));
 
         //Save parts list
@@ -150,10 +150,12 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
     public boolean interact(EntityPlayer player) {
         ItemStack itemstack = player.inventory.getCurrentItem();
         if (!this.worldObj.isRemote) {
+            //Allow taming in creative mode without items
             if (!this.isTamed() && player.capabilities.isCreativeMode) {
                 this.setOwner(player.getCommandSenderName());
                 this.setTamed(true);
             }
+            //If tamed
             if (this.isTamed()) {
                 //If player has item
                 if (itemstack != null) {
@@ -248,7 +250,7 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
             this.swingItem();
             this.attackEntityAsMob(par1Entity);
             this.personality.changeMoodVariableLevel("happiness", -5);
-            this.personality.changeMoodVariableLevel("hostility", -5);
+            this.personality.changeMoodVariableLevel("hostility", 5);
         }
     }
 

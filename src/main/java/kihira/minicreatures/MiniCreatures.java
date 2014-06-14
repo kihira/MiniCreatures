@@ -138,6 +138,14 @@ public class MiniCreatures {
                     put("happiness", new MoodVariable(-50, 0));
                     put("hostility", new MoodVariable(40, 50));
                 }})), jsonWriter);
+                gson.toJson(gson.toJsonTree(new Mood("happy", list, new HashMap<String, MoodVariable>() {{
+                    put("happiness", new MoodVariable(10, 50));
+                    put("hostility", new MoodVariable(-50, 10));
+                }})), jsonWriter);
+                gson.toJson(gson.toJsonTree(new Mood("depressed", list, new HashMap<String, MoodVariable>() {{
+                    put("happiness", new MoodVariable(-50, 0));
+                    put("hostility", new MoodVariable(-10, 10));
+                }})), jsonWriter);
                 jsonWriter.endArray();
                 jsonWriter.close();
             }

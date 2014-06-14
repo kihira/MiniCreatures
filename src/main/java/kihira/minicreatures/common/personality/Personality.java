@@ -50,18 +50,33 @@ public class Personality implements Serializable {
         }
 
         //Find new mood
-        if (!moodList.isEmpty()) {
-            for (Mood mood : moodList) {
-                if (mood.isValidMood(this, theEntity)) {
-                    this.currentMood = mood;
-                    this.currentMoodTime = 0;
-                    Gson gson = new Gson();
-                    MiniCreatures.proxy.simpleNetworkWrapper.sendToDimension(new PersonalityMessage(theEntity.theEntity().getEntityId(), gson.toJson(this.currentMood)), theEntity.theEntity().dimension);
+        if (this.currentMood == neturalMood || this.currentMood == null) {
+            if (!moodList.isEmpty()) {
+                for (Mood mood : moodList) {
+                    if (mood.isValidMood(this, theEntity)) {
+                        this.currentMood = mood;
+                        this.currentMoodTime = 0;
+                        Gson gson = new Gson();
+                        MiniCreatures.proxy.simpleNetworkWrapper.sendToDimension(new PersonalityMessage(theEntity.theEntity().getEntityId(), gson.toJson(this.currentMood)), theEntity.theEntity().dimension);
+                    }
                 }
             }
         }
+
         if (this.currentMood != null) {
             this.currentMoodTime++;
+        }
+
+        //Minute
+        if (theEntity.theEntity().worldObj.getTotalWorldTime() % 1200 == 0) {
+            for (MoodVariable moodVariable : this.moodVariables.values()) {
+                if (moodVariable.getCurrentValue() > moodVariable.getRestingValue()) {
+                    moodVariable.changeValue(-1);
+                }
+                else if (moodVariable.getCurrentValue() < moodVariable.getRestingValue()) {
+                    moodVariable.changeValue(+1);
+                }
+            }
         }
     }
 

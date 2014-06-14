@@ -23,6 +23,7 @@ public class MoodVariable implements Serializable {
     private int currentValue = 0;
     private int maxValue = 0;
     private int minValue = 0;
+    private int restingValue = 0;
 
     public MoodVariable() {}
 
@@ -55,6 +56,10 @@ public class MoodVariable implements Serializable {
         return this;
     }
 
+    public void setRestingValue(int restingValue) {
+        this.restingValue = restingValue;
+    }
+
     //Getters
     public int getCurrentValue() {
         return this.currentValue;
@@ -66,5 +71,9 @@ public class MoodVariable implements Serializable {
 
     public int getMinValue() {
         return this.minValue;
+    }
+
+    public int getRestingValue() {
+        return restingValue;
     }
 }
