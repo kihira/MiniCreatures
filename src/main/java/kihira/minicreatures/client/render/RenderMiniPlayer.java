@@ -89,6 +89,7 @@ public class RenderMiniPlayer extends RenderBiped {
             FontRenderer fontrenderer = this.getFontRendererFromRenderManager();
             float scale = 0.016666668F * 1.1F;
             int xOffset = 20;
+
             GL11.glPushMatrix();
             GL11.glTranslated(x + 0.0F, y + miniPlayer.height + 0.27F, z);
             GL11.glNormal3f(0.0F, 1.0F, 0.0F);
@@ -103,17 +104,18 @@ public class RenderMiniPlayer extends RenderBiped {
             Tessellator tessellator = Tessellator.instance;
             GL11.glDisable(GL11.GL_TEXTURE_2D);
             tessellator.startDrawingQuads();
-            int width = fontrenderer.getStringWidth(chat);
+            int width = 100;
+            int height = fontrenderer.listFormattedStringToWidth(chat, width).size() * fontrenderer.FONT_HEIGHT;
             tessellator.setColorRGBA_F(0.0F, 0.0F, 0.0F, 0.25F);
             tessellator.addVertex((double) xOffset - 1, (double)(-1), 0.0D);
-            tessellator.addVertex((double) xOffset - 1, (double)(8), 0.0D);
-            tessellator.addVertex((double) xOffset + width + 1, (double) (8), 0.0D);
+            tessellator.addVertex((double) xOffset - 1, (double)(height), 0.0D);
+            tessellator.addVertex((double) xOffset + width + 1, (double) (height), 0.0D);
             tessellator.addVertex((double) xOffset + width + 1, (double) (-1), 0.0D);
             tessellator.draw();
             GL11.glEnable(GL11.GL_TEXTURE_2D);
             GL11.glEnable(GL11.GL_DEPTH_TEST);
             GL11.glDepthMask(true);
-            fontrenderer.drawString(chat, xOffset, 0, -1);
+            fontrenderer.drawSplitString(chat, xOffset, 0, width, -1);
             GL11.glEnable(GL11.GL_LIGHTING);
             GL11.glDisable(GL11.GL_BLEND);
             GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);

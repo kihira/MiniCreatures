@@ -38,7 +38,7 @@ public class EntityAIChat extends EntityAIBase {
 
     @Override
     public boolean continueExecuting() {
-        return this.chatCooldown >= 0 || (this.chatLines != null && this.chatLines.hasNext());
+        return this.chatCooldown > 0 || (this.chatLines != null && this.chatLines.hasNext());
     }
 
     @Override
@@ -47,11 +47,16 @@ public class EntityAIChat extends EntityAIBase {
         if (this.chatCooldown <= 0 && this.chatLines != null && this.chatLines.hasNext()) {
             String chat = this.chatLines.next();
             this.miniPlayer.setChat(chat);
-            this.chatCooldown = chat.length() * 2;
+            this.chatCooldown = chat.length() * 3;
         }
 
         //Reduces the time between chat
         this.chatCooldown--;
+    }
+
+    @Override
+    public boolean isInterruptible() {
+        return false;
     }
 
     @Override

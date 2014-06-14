@@ -39,7 +39,7 @@ public class EntityAIIdleEntityChat extends EntityAIChat {
         if (!super.shouldExecute()) {
             return false;
         }
-        else if (this.miniPlayer.getRNG().nextInt(2) != 0) {
+        else if (this.miniPlayer.getRNG().nextInt(200) != 0) {
             return false;
         }
         //Find nearby entity
