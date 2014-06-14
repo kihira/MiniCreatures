@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Mood implements Serializable {
 
@@ -29,13 +30,12 @@ public class Mood implements Serializable {
 
     public boolean isValidMood(Personality personality, IPersonality theEntity) {
         if (theEntity != null && this.validClassNames.contains(theEntity.getClass().getName())) {
-            int happinessLevel = personality.getMoodVariableValue("happiness");
-            int hostilityLevel = personality.getMoodVariableValue("hostility");
-            MoodVariable happinessLimits = this.getMoodVariable("happiness");
-            MoodVariable hostilityLimits = this.getMoodVariable("hostility");
-            if (happinessLimits.isWithinBounds(happinessLevel) && hostilityLimits.isWithinBounds(hostilityLevel)) {
-                return true;
+            for (Map.Entry<String, MoodVariable> entry : this.moodVariablesLimits.entrySet()) {
+                if (!entry.getValue().isWithinBounds(personality.getMoodVariableValue(entry.getKey()))) {
+                    return false;
+                }
             }
+            return true;
         }
         return false;
     }
