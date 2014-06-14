@@ -81,7 +81,6 @@ public class RenderMiniPlayer extends RenderBiped {
         }
     }
 
-    //TODO add multi line support
     private void renderChatMessage(EntityMiniPlayer miniPlayer, double x, double y, double z) {
         String chat = miniPlayer.getChat();
         if (!chat.isEmpty()) {

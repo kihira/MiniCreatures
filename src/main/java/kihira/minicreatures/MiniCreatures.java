@@ -15,6 +15,7 @@
 package kihira.minicreatures;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import cpw.mods.fml.common.Mod;
@@ -116,7 +117,7 @@ public class MiniCreatures {
         File personalityTypesFile = new File(configDir, File.separator + "MiniCreatures" + File.separator + "PersonalityTypes.json");
 
         try {
-            Gson gson = new Gson();
+            Gson gson = new GsonBuilder().setVersion(1.0).create();
             if (!personalityTypesFile.exists()) {
                 //Create files/directories
                 new File(configDir, File.separator + "MiniCreatures").mkdirs();

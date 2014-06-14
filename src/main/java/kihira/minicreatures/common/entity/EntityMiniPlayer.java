@@ -16,6 +16,7 @@ package kihira.minicreatures.common.entity;
 
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -123,7 +124,7 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
         super.readEntityFromNBT(tagCompound);
 
         //Load Personality
-        Gson gson = new Gson();
+        Gson gson = new GsonBuilder().setVersion(1.0).create();
         Personality personality = gson.fromJson(tagCompound.getString("Personality"), Personality.class);
         if (personality != null) {
             this.personality = personality;

@@ -44,7 +44,7 @@ public class Personality implements Serializable {
         if (this.currentMood != null) {
             //If current mood has exceeded its max limit, reset it
             if (this.currentMood.maxMoodTime > this.currentMoodTime) {
-                this.currentMood = this.neturalMood;
+                this.currentMood = neturalMood;
                 this.currentMoodTime = 0;
             }
         }
@@ -71,7 +71,7 @@ public class Personality implements Serializable {
      */
     public Mood getCurrentMood() {
         if (this.currentMood == null) {
-            this.currentMood = this.neturalMood;
+            this.currentMood = neturalMood;
         }
         return this.currentMood;
     }
