@@ -31,7 +31,6 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.StatCollector;
 import net.minecraftforge.client.IItemRenderer;
 import net.minecraftforge.client.MinecraftForgeClient;
 import org.lwjgl.opengl.GL11;
@@ -141,10 +140,7 @@ public class RenderMiniPlayer extends RenderBiped {
         EntityMiniPlayer miniPlayer = (EntityMiniPlayer) entity;
 
         //Our message
-        String mood = "Neutral";
-        if (miniPlayer.getPersonality().getCurrentMood() != null) {
-            mood = StatCollector.translateToLocal("personality." + miniPlayer.getPersonality().getCurrentMood().name + ".name");
-        }
+        String mood = miniPlayer.getPersonality().getCurrentMood().name;
         this.func_147906_a(miniPlayer, mood, x, y, z, 64);
         //Move the next message above this one
         y += (double)((float)this.getFontRendererFromRenderManager().FONT_HEIGHT * 1.15F * par9);
