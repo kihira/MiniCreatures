@@ -2,9 +2,11 @@ entity.minicreatures.MiniFox.name=Mini Fox
 entity.minicreatures.MiniTRex.name=Mini T-Rex
 entity.minicreatures.MiniPlayer.name=Mini Player
 entity.minicreatures.MiniShark.name=Mini Shark
+
 name.fairy.part=Fairy
 name.horns.part=Horns
 name.tail.part=Tail
+
 category.ALL.part=All
 category.BODY.part=Body
 category.HEAD.part=Head
@@ -12,16 +14,26 @@ category.LEFTARM.part=Left Arm
 category.RIGHTARM.part=Right Arm
 category.LEFTLEG.part=Left Leg
 category.RIGHTLEG.part=Right Leg
+
 gui.reset=Reset
 gui.clear=Clear All
+
 item.customizer.name=Customizer
 
-chat.idle.block.generic.0=That block is rather...blocky;And this is a new line!
-chat.idle.block.generic.1=That block is rather...blocky;And this is a new line!
-chat.idle.block.generic.2=That block is rather...blocky;And this is a new line!
-chat.idle.block.generic.3=That block is rather...blocky;And this is a new line!
-chat.idle.block.generic.4=That block is rather...blocky;And this is a new line!
+personality.neutral.name=Neutral
 
-chat.idle.entity.generic.0=Have you ever just tried to, you know, eat it?
-chat.idle.entity.Sheep.0=They're so fluffy!
-chat.idle.entity.minicreatures.MiniFox.0=Ah a noble stead, I can ride you into battle!
+chat.idle.block.generic.neutral.0=That block is rather...blocky;And this is a new line!
+chat.idle.block.generic.neutral.1=That block is rather...blocky;And this is a new line!
+chat.idle.block.generic.neutral.2=That block is rather...blocky;And this is a new line!
+chat.idle.block.generic.neutral.3=That block is rather...blocky;And this is a new line!
+chat.idle.block.generic.neutral.4=That block is rather...blocky;And this is a new line!
+
+chat.idle.entity.generic.neutral.0=Have you ever just tried to, you know, eat it?
+
+chat.idle.entity.Sheep.happy.0=They're so fluffy!
+chat.idle.entity.Sheep.neutral.0=A sheep, otherwise known as a portable bed
+chat.idle.entity.Sheep.neutral.1=I've always found it weird that sheep are meatless; They must just be wool all the way through
+
+chat.idle.entity.Player.neutral.0=I've gotta be honest here; That armour is so not flattering on you
+
+chat.idle.entity.minicreatures.MiniFox.neutral.0=Ah a noble stead, I can ride you into battle!

@@ -18,6 +18,7 @@ import com.google.common.collect.Iterators;
 import kihira.minicreatures.common.entity.EntityMiniPlayer;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.StatCollector;
 
 import java.util.List;
@@ -68,12 +69,12 @@ public class EntityAIIdleEntityChat extends EntityAIChat {
     @Override
     public void startExecuting() {
         //Look for some valid chat lines to say about this entity
-        String entityName = EntityList.getEntityString(this.target);
+        String entityName = this.target instanceof EntityPlayer ? "Player" : EntityList.getEntityString(this.target);
 
         //Look for some valid chat lines to say about this block
         if (entityName != null) {
             for (int i = 0; i < 10; i++) {
-                String chatLine = "chat.idle.entity." + entityName + "." + i;
+                String chatLine = "chat.idle.entity." + this.miniPlayer.getPersonality().getCurrentMood().name + "." + entityName + "." + i;
                 if (StatCollector.canTranslate(chatLine)) {
                     this.chatLines = Iterators.forArray(StatCollector.translateToLocal(chatLine).split(";"));
                     break;
@@ -83,7 +84,7 @@ public class EntityAIIdleEntityChat extends EntityAIChat {
         //If we can't find anything, load default chat if there is a chance too
         if (this.chatLines == null && this.miniPlayer.getRNG().nextInt(30) == 0) {
             for (int i = 0; i < 10; i++) {
-                String chatLine = "chat.idle.entity.generic." + i;
+                String chatLine = "chat.idle.entity.generic." + this.miniPlayer.getPersonality().getCurrentMood().name + "." + i;
                 if (StatCollector.canTranslate(chatLine)) {
                     this.chatLines = Iterators.forArray(StatCollector.translateToLocal(chatLine).split(";"));
                     break;

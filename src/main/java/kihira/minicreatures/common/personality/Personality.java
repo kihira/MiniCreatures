@@ -12,6 +12,8 @@ public class Personality {
 
     public static final List<Mood> moodList = new ArrayList<Mood>();
 
+    private final Mood neturalMood = new Mood("neutral");
+
     private Mood currentMood;
     private int currentMoodTime = 0;
     private float happinessLevel = 0;
@@ -26,7 +28,7 @@ public class Personality {
         if (this.currentMood != null) {
             //If current mood has exceeded its max limit, reset it
             if (this.currentMood.maxMoodTime > this.currentMoodTime) {
-                this.currentMood = null;
+                this.currentMood = this.neturalMood;
                 this.currentMoodTime = 0;
             }
         }
@@ -48,6 +50,9 @@ public class Personality {
     }
 
     public Mood getCurrentMood() {
+        if (this.currentMood == null) {
+            this.currentMood = this.neturalMood;
+        }
         return this.currentMood;
     }
 

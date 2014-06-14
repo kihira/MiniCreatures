@@ -15,6 +15,10 @@ public class Mood {
     public int maxMoodTime = 100;
     public int minMoodTime = 0;
 
+    public Mood(String name) {
+        this(name, new ArrayList<String>(), 0, 0, 0, 0);
+    }
+
     public Mood(String name, List<String> validClassNames, float maxHappiness, float minHappiness, float maxHostility, float minHostility) {
         this.name = name;
         this.validClassNames = validClassNames;

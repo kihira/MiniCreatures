@@ -81,7 +81,7 @@ public class EntityAIIdleBlockChat extends EntityAIChat {
         //Look for some valid chat lines to say about this block
         String blockName = GameData.getBlockRegistry().getNameForObject(targetBlock);
         for (int i = 0; i < 10; i++) {
-            String chatLine = "chat.idle.block." + blockName + "." + i;
+            String chatLine = "chat.idle.block." + this.miniPlayer.getPersonality().getCurrentMood().name + "." + blockName + "." + i;
             if (StatCollector.canTranslate(chatLine)) {
                 this.chatLines = Iterators.forArray(StatCollector.translateToLocal(chatLine).split(";"));
                 break;
@@ -90,7 +90,7 @@ public class EntityAIIdleBlockChat extends EntityAIChat {
         //If we can't find anything, load default chat if there is a chance too
         if (this.chatLines == null && this.miniPlayer.getRNG().nextInt(30) == 0) {
             for (int i = 0; i < 10; i++) {
-                String chatLine = "chat.idle.block.generic." + i;
+                String chatLine = "chat.idle.block.generic." + this.miniPlayer.getPersonality().getCurrentMood().name + "." + i;
                 if (StatCollector.canTranslate(chatLine)) {
                     this.chatLines = Iterators.forArray(StatCollector.translateToLocal(chatLine).split(";"));
                     break;
