@@ -1,42 +1,46 @@
 package kihira.minicreatures.common.personality;
 
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
-public class Mood {
+public class Mood implements Serializable {
 
     public String name = "";
     public List<String> validClassNames = new ArrayList<String>();
-    public float maxHappiness = 0;
-    public float minHappiness = 0;
-    public float maxHostility = 0;
-    public float minHostility = 0;
+    /**
+     * These MoodVariables are used to define the max and minimum amounts for the MoodVariables in the main Personality
+     */
+    public HashMap<String, MoodVariable> moodVariablesLimits = new HashMap<String, MoodVariable>();
 
     public int maxMoodTime = 100;
     public int minMoodTime = 0;
 
     public Mood(String name) {
-        this(name, new ArrayList<String>(), 0, 0, 0, 0);
+        this(name, new ArrayList<String>(), new HashMap<String, MoodVariable>());
     }
 
-    public Mood(String name, List<String> validClassNames, float maxHappiness, float minHappiness, float maxHostility, float minHostility) {
+    public Mood(String name, List<String> validClassNames, HashMap<String, MoodVariable> moodVariablesLimits) {
         this.name = name;
         this.validClassNames = validClassNames;
-        this.maxHappiness = maxHappiness;
-        this.minHappiness = minHappiness;
-        this.maxHostility = maxHostility;
-        this.minHostility = minHostility;
+        this.moodVariablesLimits = moodVariablesLimits;
     }
 
     public boolean isValidMood(Personality personality, IPersonality theEntity) {
         if (theEntity != null && this.validClassNames.contains(theEntity.getClass().getName())) {
-            float happinessLevel = personality.getHappinessLevel();
-            float hostilityLevel = personality.getHostilityLevel();
-            if (happinessLevel >= this.minHappiness && happinessLevel <= this.maxHappiness &&
-                    hostilityLevel >= this.minHostility && hostilityLevel <= this.maxHostility) {
+            int happinessLevel = personality.getMoodVariableValue("happiness");
+            int hostilityLevel = personality.getMoodVariableValue("hostility");
+            MoodVariable happinessLimits = this.getMoodVariable("happiness");
+            MoodVariable hostilityLimits = this.getMoodVariable("hostility");
+            if (happinessLimits.isWithinBounds(happinessLevel) && hostilityLimits.isWithinBounds(hostilityLevel)) {
                 return true;
             }
         }
         return false;
+    }
+
+    private MoodVariable getMoodVariable(String name) {
+        return this.moodVariablesLimits.containsKey(name) ? this.moodVariablesLimits.get(name) : new MoodVariable();
     }
 }

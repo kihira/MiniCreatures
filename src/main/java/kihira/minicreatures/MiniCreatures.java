@@ -32,6 +32,7 @@ import kihira.minicreatures.common.entity.EntityMiniShark;
 import kihira.minicreatures.common.entity.EntityTRex;
 import kihira.minicreatures.common.item.ItemCustomizer;
 import kihira.minicreatures.common.personality.Mood;
+import kihira.minicreatures.common.personality.MoodVariable;
 import kihira.minicreatures.common.personality.Personality;
 import kihira.minicreatures.proxy.CommonProxy;
 import net.minecraft.entity.EnumCreatureType;
@@ -47,6 +48,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 @Mod(modid = "minicreatures", name = "Mini Creatures", version = "${version}", useMetadata = true, guiFactory = "kihira.minicreatures.client.gui.ConfigGuiFactory")
@@ -127,8 +129,14 @@ public class MiniCreatures {
                 jsonWriter.beginArray();
                 List<String> list = new ArrayList<String>();
                 list.add(EntityMiniPlayer.class.getName());
-                gson.toJson(gson.toJsonTree(new Mood("psychotic", list, 50, 35, 50, 40)), jsonWriter);
-                gson.toJson(gson.toJsonTree(new Mood("coldblooded", list, 0, -50, 50, 40)), jsonWriter);
+                gson.toJson(gson.toJsonTree(new Mood("psychotic", list, new HashMap<String, MoodVariable>() {{
+                    put("happiness", new MoodVariable(35, 50));
+                    put("hostility", new MoodVariable(40, 50));
+                }})), jsonWriter);
+                gson.toJson(gson.toJsonTree(new Mood("coldblooded", list, new HashMap<String, MoodVariable>() {{
+                    put("happiness", new MoodVariable(-50, 0));
+                    put("hostility", new MoodVariable(40, 50));
+                }})), jsonWriter);
                 jsonWriter.endArray();
                 jsonWriter.close();
             }

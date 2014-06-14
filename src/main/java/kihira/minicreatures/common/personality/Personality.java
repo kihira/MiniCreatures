@@ -3,19 +3,28 @@ package kihira.minicreatures.common.personality;
 import com.google.gson.Gson;
 import kihira.minicreatures.MiniCreatures;
 import kihira.minicreatures.common.network.PersonalityMessage;
-import net.minecraft.util.MathHelper;
 
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
-public class Personality {
+/**
+ * This class is serializable by Gson and should be saved that way
+ */
+public class Personality implements Serializable {
 
     public static final List<Mood> moodList = new ArrayList<Mood>();
 
     /**
      * A base neutral mood for when there is no other moods
      */
-    private final Mood neturalMood = new Mood("neutral");
+    public static final Mood neturalMood = new Mood("neutral");
+
+    /**
+     * All the MoodVariables assigned to this personality
+     */
+    public HashMap<String, MoodVariable> moodVariables = new HashMap<String, MoodVariable>();
 
     /**
      * The current active mood
@@ -25,19 +34,11 @@ public class Personality {
      * How long the mood has been active for
      */
     private int currentMoodTime = 0;
-    /**
-     * Current happiness level of the entity
-     */
-    private float happinessLevel = 0;
-    /**
-     * Current hostility level of the entity
-     */
-    private float hostilityLevel = 0;
 
-    private final float upperBound = 50;
-    private final float lowerBound = -50;
-
-    public Personality() {}
+    public Personality() {
+        this.moodVariables.put("happiness", new MoodVariable());
+        this.moodVariables.put("hostility", new MoodVariable());
+    }
 
     public void onUpdate(IPersonality theEntity) {
         if (this.currentMood != null) {
@@ -76,36 +77,25 @@ public class Personality {
     }
 
     /**
-     * @return Get the current happiness level for this personality
+     * Changes the value for a mood variable. If a variable by that name doesn't exist, one is created
+     * @param name Name of the variable
+     * @param value Change
      */
-    public float getHappinessLevel() {
-        return this.happinessLevel;
+    public void changeMoodVariableLevel(String name, int value) {
+        MoodVariable moodVariable = new MoodVariable();
+        if (this.moodVariables.containsKey(name)) {
+            moodVariable = this.moodVariables.get(name);
+        }
+
+        moodVariable.changeValue(value);
     }
 
-    /**
-     * @return Get the current hostility level for this personality
-     */
-    public float getHostilityLevel() {
-        return this.hostilityLevel;
-    }
+    public int getMoodVariableValue(String name) {
+        MoodVariable moodVariable = new MoodVariable();
+        if (this.moodVariables.containsKey(name)) {
+            moodVariable = this.moodVariables.get(name);
+        }
 
-    /**
-     * Changes the current happiness level by a certain amount. This is only a change, so it will be added on to the
-     * current value!
-     * @param change The value change (supports negatives)
-     */
-    public void changeHappinessLevel(float change) {
-        MathHelper.clamp_float(this.happinessLevel += change, this.lowerBound, this.upperBound);
-        MiniCreatures.logger.info("Changed happiness level to %s(%s)", this.happinessLevel, change);
-    }
-
-    /**
-     * Changes the current hostility level by a certain amount. This is only a change, so it will be added on to the
-     * current value!
-     * @param change The value change (supports negatives)
-     */
-    public void changeHostilityLevel(float change) {
-        MathHelper.clamp_float(this.hostilityLevel += change, this.lowerBound, this.upperBound);
-        MiniCreatures.logger.info("Changed hostility level to %s(%s)", this.happinessLevel, change);
+        return moodVariable.getCurrentValue();
     }
 }

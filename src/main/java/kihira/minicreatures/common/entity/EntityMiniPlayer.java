@@ -246,8 +246,8 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
             this.attackTime = 20;
             this.swingItem();
             this.attackEntityAsMob(par1Entity);
-            this.personality.changeHappinessLevel(-5);
-            this.personality.changeHostilityLevel(+5);
+            this.personality.changeMoodVariableLevel("happiness", -5);
+            this.personality.changeMoodVariableLevel("hostility", -5);
         }
     }
 
