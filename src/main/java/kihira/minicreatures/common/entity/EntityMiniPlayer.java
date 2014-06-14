@@ -25,7 +25,6 @@ import kihira.minicreatures.common.customizer.EnumPartCategory;
 import kihira.minicreatures.common.entity.ai.EntityAIIdleBlockChat;
 import kihira.minicreatures.common.entity.ai.EntityAIIdleEntityChat;
 import kihira.minicreatures.common.personality.IPersonality;
-import kihira.minicreatures.common.personality.Mood;
 import kihira.minicreatures.common.personality.Personality;
 import net.minecraft.block.Block;
 import net.minecraft.enchantment.Enchantment;
@@ -385,11 +384,6 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
     @Override
     public EntityLiving getEntity() {
         return this;
-    }
-
-    @Override
-    public Mood getCurrentPersonality() {
-        return this.personality.getCurrentMood();
     }
 
     @Override
