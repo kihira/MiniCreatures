@@ -12,4 +12,8 @@ public interface IPersonality {
     public void setPersonality(Personality personality);
 
     public EntityLiving theEntity();
+
+    public String getChat();
+
+    public void setChat(String string);
 }

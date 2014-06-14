@@ -21,6 +21,8 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import kihira.minicreatures.MiniCreatures;
 import kihira.minicreatures.common.customizer.EnumPartCategory;
+import kihira.minicreatures.common.entity.ai.EntityAIIdleBlockChat;
+import kihira.minicreatures.common.entity.ai.EntityAIIdleEntityChat;
 import kihira.minicreatures.common.personality.IPersonality;
 import kihira.minicreatures.common.personality.Mood;
 import kihira.minicreatures.common.personality.Personality;
@@ -69,9 +71,10 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
         this.tasks.addTask(2, this.aiSit);
         this.tasks.addTask(4, new EntityAIFollowOwner(this, 1.0D, 10.0F, 2.0F));
         this.tasks.addTask(5, new EntityAIWander(this, 1.0D));
-        this.tasks.addTask(6, new EntityAIIdleChat(this, 6));
         this.tasks.addTask(6, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
         this.tasks.addTask(6, new EntityAILookIdle(this));
+        this.tasks.addTask(7, new EntityAIIdleBlockChat(this, 6));
+        this.tasks.addTask(7, new EntityAIIdleEntityChat(this, 12));
         this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, true));
         this.setTamed(false);
         this.renderDistanceWeight = 4D;
@@ -320,10 +323,12 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
         return this.dataWatcher.getWatchableObjectInt(19) == 1;
     }
 
+    @Override
     public String getChat() {
         return this.dataWatcher.getWatchableObjectString(20);
     }
 
+    @Override
     public void setChat(String string) {
         this.dataWatcher.updateObject(20, Strings.nullToEmpty(string));
     }

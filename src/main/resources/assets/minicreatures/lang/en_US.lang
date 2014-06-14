@@ -16,8 +16,12 @@ gui.reset=Reset
 gui.clear=Clear All
 item.customizer.name=Customizer
 
-chat.idle.generic.0=That block is rather...blocky;And this is a new line!
-chat.idle.generic.1=That block is rather...blocky;And this is a new line!
-chat.idle.generic.2=That block is rather...blocky;And this is a new line!
-chat.idle.generic.3=That block is rather...blocky;And this is a new line!
-chat.idle.generic.4=That block is rather...blocky;And this is a new line!
+chat.idle.block.generic.0=That block is rather...blocky;And this is a new line!
+chat.idle.block.generic.1=That block is rather...blocky;And this is a new line!
+chat.idle.block.generic.2=That block is rather...blocky;And this is a new line!
+chat.idle.block.generic.3=That block is rather...blocky;And this is a new line!
+chat.idle.block.generic.4=That block is rather...blocky;And this is a new line!
+
+chat.idle.entity.generic.0=Have you ever just tried to, you know, eat it?
+chat.idle.entity.Sheep.0=They're so fluffy!
+chat.idle.entity.minicreatures.MiniFox.0=Ah a noble stead, I can ride you into battle!
