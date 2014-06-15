@@ -2,7 +2,7 @@ package kihira.minicreatures.common.personality;
 
 import net.minecraft.entity.EntityLiving;
 
-//This would probably serve better as abstract however I like the flexibility of this
+//This would probably serve better as abstract however I like the flexibility of this. Or maybe a trait?
 public interface IPersonality {
 
     /**

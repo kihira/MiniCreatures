@@ -1,6 +1,7 @@
 package kihira.minicreatures.common.personality;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import kihira.minicreatures.MiniCreatures;
 import kihira.minicreatures.common.network.PersonalityMessage;
 
@@ -56,8 +57,7 @@ public class Personality implements Serializable {
                     if (mood.isValidMood(this, theEntity)) {
                         this.currentMood = mood;
                         this.currentMoodTime = 0;
-                        Gson gson = new Gson();
-                        MiniCreatures.proxy.simpleNetworkWrapper.sendToDimension(new PersonalityMessage(theEntity.theEntity().getEntityId(), gson.toJson(this.currentMood)), theEntity.theEntity().dimension);
+                        this.updateClient(theEntity);
                     }
                 }
             }
@@ -96,13 +96,15 @@ public class Personality implements Serializable {
      * @param name Name of the variable
      * @param value Change
      */
-    public void changeMoodVariableLevel(String name, int value) {
+    public void changeMoodVariableLevel(IPersonality theEntity, String name, int value) {
         MoodVariable moodVariable = new MoodVariable();
         if (this.moodVariables.containsKey(name)) {
             moodVariable = this.moodVariables.get(name);
         }
 
         moodVariable.changeValue(value);
+
+        this.updateClient(theEntity);
     }
 
     public int getMoodVariableValue(String name) {
@@ -112,5 +114,10 @@ public class Personality implements Serializable {
         }
 
         return moodVariable.getCurrentValue();
+    }
+
+    private void updateClient(IPersonality theEntity) {
+        Gson gson = new GsonBuilder().setVersion(1.0).create();
+        MiniCreatures.proxy.simpleNetworkWrapper.sendToDimension(new PersonalityMessage(theEntity.theEntity().getEntityId(), gson.toJson(this)), theEntity.theEntity().dimension);
     }
 }

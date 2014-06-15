@@ -22,6 +22,9 @@ item.customizer.name=Customizer
 
 personality.neutral.name=Neutral
 
+mood.variable.happiness.name=Happiness
+mood.variable.hostility.name=Hostility
+
 chat.idle.block.generic.neutral.0=That block is rather...blocky;And this is a new line!
 chat.idle.block.generic.neutral.1=That block is rather...blocky;And this is a new line!
 chat.idle.block.generic.neutral.2=That block is rather...blocky;And this is a new line!

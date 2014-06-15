@@ -26,7 +26,6 @@ import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderBiped;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
@@ -54,8 +53,29 @@ public class RenderMiniPlayer extends RenderBiped {
 
     @Override
     public void doRender(Entity par1Entity, double x, double y, double z, float par8, float par9) {
-        this.doRender((EntityLiving) par1Entity, x, y, z, par8, par9);
-        this.renderChatMessage((EntityMiniPlayer) par1Entity, x, y, z);
+        EntityMiniPlayer miniPlayer = (EntityMiniPlayer) par1Entity;
+        this.doRender(miniPlayer, x, y, z, par8, par9);
+
+        String chat = miniPlayer.getChat();
+        if (chat != null && !chat.isEmpty()) {
+            this.renderMultiLineMessage(miniPlayer, x, y, z, chat, 20);
+        }
+
+        //This is greater then 0 if we have changes to display
+        if (miniPlayer.statMessageTime < 60) {
+            //Messages floats up over time
+            float yOffset = 0.4F + (miniPlayer.statMessageTime / 150F);
+            //Loop through any changes
+            for (String statChange : miniPlayer.statMessage.split(";")) {
+                if (!statChange.isEmpty()) {
+                    this.renderStatChange(miniPlayer, x, y + yOffset, z, statChange, miniPlayer.statMessageTime / 60F);
+                    yOffset += 0.4;
+                }
+            }
+        }
+
+/*        chat = EnumChatFormatting.DARK_GREEN + "Happiness+";
+        this.renderStatChange(miniPlayer, x, y + 0.4, z, chat);*/
     }
 
     //Copied from RenderPlayer.renderSpecials
@@ -81,44 +101,66 @@ public class RenderMiniPlayer extends RenderBiped {
         }
     }
 
-    private void renderChatMessage(EntityMiniPlayer miniPlayer, double x, double y, double z) {
-        String chat = miniPlayer.getChat();
-        if (!chat.isEmpty()) {
-            FontRenderer fontrenderer = this.getFontRendererFromRenderManager();
-            float scale = 0.016666668F * 1.1F;
-            int xOffset = 20;
+    private void renderMultiLineMessage(EntityMiniPlayer miniPlayer, double x, double y, double z, String chat, int xOffset) {
+        FontRenderer fontrenderer = this.getFontRendererFromRenderManager();
+        float scale = 0.016666668F * 1.1F;
 
-            GL11.glPushMatrix();
-            GL11.glTranslated(x + 0.0F, y + miniPlayer.height + 0.27F, z);
-            GL11.glNormal3f(0.0F, 1.0F, 0.0F);
-            GL11.glRotatef(-this.renderManager.playerViewY, 0.0F, 1.0F, 0.0F);
-            GL11.glRotatef(this.renderManager.playerViewX, 1.0F, 0.0F, 0.0F);
-            GL11.glScalef(-scale, -scale, scale);
-            GL11.glDisable(GL11.GL_LIGHTING);
-            GL11.glDepthMask(false);
-            GL11.glDisable(GL11.GL_DEPTH_TEST);
-            GL11.glEnable(GL11.GL_BLEND);
-            OpenGlHelper.glBlendFunc(770, 771, 1, 0);
-            Tessellator tessellator = Tessellator.instance;
-            GL11.glDisable(GL11.GL_TEXTURE_2D);
-            tessellator.startDrawingQuads();
-            int width = 100;
-            int height = fontrenderer.listFormattedStringToWidth(chat, width).size() * fontrenderer.FONT_HEIGHT;
-            tessellator.setColorRGBA_F(0.0F, 0.0F, 0.0F, 0.25F);
-            tessellator.addVertex((double) xOffset - 1, (double)(-1), 0.0D);
-            tessellator.addVertex((double) xOffset - 1, (double)(height), 0.0D);
-            tessellator.addVertex((double) xOffset + width + 1, (double) (height), 0.0D);
-            tessellator.addVertex((double) xOffset + width + 1, (double) (-1), 0.0D);
-            tessellator.draw();
-            GL11.glEnable(GL11.GL_TEXTURE_2D);
-            GL11.glEnable(GL11.GL_DEPTH_TEST);
-            GL11.glDepthMask(true);
-            fontrenderer.drawSplitString(chat, xOffset, 0, width, -1);
-            GL11.glEnable(GL11.GL_LIGHTING);
-            GL11.glDisable(GL11.GL_BLEND);
-            GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-            GL11.glPopMatrix();
-        }
+        GL11.glPushMatrix();
+        GL11.glTranslated(x + 0.0F, y + miniPlayer.height + 0.27F, z);
+        GL11.glNormal3f(0.0F, 1.0F, 0.0F);
+        GL11.glRotatef(-this.renderManager.playerViewY, 0.0F, 1.0F, 0.0F);
+        GL11.glRotatef(this.renderManager.playerViewX, 1.0F, 0.0F, 0.0F);
+        GL11.glScalef(-scale, -scale, scale);
+        GL11.glDisable(GL11.GL_LIGHTING);
+        GL11.glDepthMask(false);
+        GL11.glDisable(GL11.GL_DEPTH_TEST);
+        GL11.glEnable(GL11.GL_BLEND);
+        OpenGlHelper.glBlendFunc(770, 771, 1, 0);
+        Tessellator tessellator = Tessellator.instance;
+        GL11.glDisable(GL11.GL_TEXTURE_2D);
+        tessellator.startDrawingQuads();
+        int width = 100;
+        int height = fontrenderer.listFormattedStringToWidth(chat, width).size() * fontrenderer.FONT_HEIGHT;
+        tessellator.setColorRGBA_F(0.0F, 0.0F, 0.0F, 0.25F);
+        tessellator.addVertex((double) xOffset - 1, (double)(-1), 0.0D);
+        tessellator.addVertex((double) xOffset - 1, (double)(height), 0.0D);
+        tessellator.addVertex((double) xOffset + width + 1, (double) (height), 0.0D);
+        tessellator.addVertex((double) xOffset + width + 1, (double) (-1), 0.0D);
+        tessellator.draw();
+        GL11.glEnable(GL11.GL_TEXTURE_2D);
+        GL11.glEnable(GL11.GL_DEPTH_TEST);
+        GL11.glDepthMask(true);
+        fontrenderer.drawSplitString(chat, xOffset, 0, width, -1);
+        GL11.glEnable(GL11.GL_LIGHTING);
+        GL11.glDisable(GL11.GL_BLEND);
+        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+        GL11.glPopMatrix();
+    }
+
+    private void renderStatChange(EntityMiniPlayer miniPlayer, double x, double y, double z, String text, float alpha) {
+        FontRenderer fontrenderer = this.getFontRendererFromRenderManager();
+        float scale = 0.016666668F;
+
+        GL11.glPushMatrix();
+        GL11.glTranslated(x + 0.0F, y + miniPlayer.height + 0.27F, z);
+        GL11.glNormal3f(0.0F, 1.0F, 0.0F);
+        GL11.glRotatef(-this.renderManager.playerViewY, 0.0F, 1.0F, 0.0F);
+        GL11.glRotatef(this.renderManager.playerViewX, 1.0F, 0.0F, 0.0F);
+        GL11.glScalef(-scale, -scale, scale);
+        GL11.glDisable(GL11.GL_LIGHTING);
+        GL11.glDepthMask(false);
+        GL11.glDisable(GL11.GL_DEPTH_TEST);
+        GL11.glEnable(GL11.GL_BLEND);
+        OpenGlHelper.glBlendFunc(770, 771, 1, 0);
+        GL11.glDisable(GL11.GL_TEXTURE_2D);
+        GL11.glEnable(GL11.GL_TEXTURE_2D);
+        GL11.glEnable(GL11.GL_DEPTH_TEST);
+        GL11.glDepthMask(true);
+        fontrenderer.drawString(text, -fontrenderer.getStringWidth(text) / 2, 0, (int) (-alpha * 255) << 24);
+        GL11.glEnable(GL11.GL_LIGHTING);
+        GL11.glDisable(GL11.GL_BLEND);
+        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+        GL11.glPopMatrix();
     }
 
     @Override
@@ -138,11 +180,19 @@ public class RenderMiniPlayer extends RenderBiped {
     protected void func_96449_a(EntityLivingBase entity, double x, double y, double z, String text, float par9, double renderDistance) {
         EntityMiniPlayer miniPlayer = (EntityMiniPlayer) entity;
 
-        //Our message
-        String mood = miniPlayer.getPersonality().getCurrentMood().name;
-        this.func_147906_a(miniPlayer, mood, x, y, z, 64);
-        //Move the next message above this one
-        y += (double)((float)this.getFontRendererFromRenderManager().FONT_HEIGHT * 1.15F * par9);
-        super.func_96449_a(entity, x, y, z, text, par9, renderDistance);
+        //The entitys name
+        super.func_96449_a(entity, x, y, z, text, par9, renderDistance); //func_96449_a = renderTextWithSleepingOffset
+
+        //Offset next message
+/*        y += (double)((float)this.getFontRendererFromRenderManager().FONT_HEIGHT * 1.1F * par9);
+        //text = miniPlayer.getStatChanges();
+        text = EnumChatFormatting.DARK_GREEN + "Happiness+";
+        if (text != null && !text.isEmpty()) {
+            GL11.glPushMatrix();
+            GL11.glScalef(0.6F, 0.6F, 1F);
+            super.func_96449_a(entity, x, y, z, text, par9, renderDistance);
+            GL11.glPopMatrix();
+        }*/
+        //this.func_147906_a(miniPlayer, text, x, y, z, (int) renderDistance);
     }
 }

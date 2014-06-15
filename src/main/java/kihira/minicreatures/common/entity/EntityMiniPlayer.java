@@ -25,6 +25,7 @@ import kihira.minicreatures.common.customizer.EnumPartCategory;
 import kihira.minicreatures.common.entity.ai.EntityAIIdleBlockChat;
 import kihira.minicreatures.common.entity.ai.EntityAIIdleEntityChat;
 import kihira.minicreatures.common.personality.IPersonality;
+import kihira.minicreatures.common.personality.MoodVariable;
 import kihira.minicreatures.common.personality.Personality;
 import net.minecraft.block.Block;
 import net.minecraft.enchantment.Enchantment;
@@ -45,11 +46,13 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.Map;
 
 public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, ICustomisable, IRangedAttackMob, IPersonality {
 
@@ -61,6 +64,11 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
     //Maintain an array list client side for previewing
     @SideOnly(Side.CLIENT)
     private ArrayList<String> previewParts = new ArrayList<String>();
+
+    @SideOnly(Side.CLIENT)
+    public String statMessage = "";
+    @SideOnly(Side.CLIENT)
+    public int statMessageTime = 60;
 
     public EntityMiniPlayer(World par1World) {
         super(par1World);
@@ -189,6 +197,9 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
                             inventory.setInventorySlotContents(i, null);
                         }
                     }
+/*                    else if (itemstack.getItem() == Items.diamond) {
+                        this.personality.changeMoodVariableLevel(this, "happiness", -5);
+                    }*/
                     else if (this.getHeldItem() == null) {
                         ItemStack newItemStack = itemstack.copy();
                         newItemStack.stackSize = 1;
@@ -235,6 +246,13 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
     }
 
     @Override
+    public void onLivingUpdate() {
+        if (this.worldObj.isRemote && this.statMessageTime < 60) {
+            this.statMessageTime++;
+        }
+    }
+
+    @Override
     public void setAttackTarget(EntityLivingBase attackTarget) {
         if (this.isRiding() && this.ridingEntity instanceof EntityFox) {
             EntityFox entityFox = (EntityFox) this.ridingEntity;
@@ -248,8 +266,8 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
             this.attackTime = 20;
             this.swingItem();
             this.attackEntityAsMob(par1Entity);
-            this.personality.changeMoodVariableLevel("happiness", -5);
-            this.personality.changeMoodVariableLevel("hostility", 5);
+            this.personality.changeMoodVariableLevel(this, "happiness", -5);
+            this.personality.changeMoodVariableLevel(this, "hostility", 5);
         }
     }
 
@@ -392,8 +410,32 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
     }
 
     @Override
-    public void setPersonality(Personality personality) {
-        this.personality = personality;
+    public void setPersonality(Personality newPersonality) {
+        //Check if there is an existing one
+        if (this.getPersonality() != null) {
+            Personality oldPersonality = this.getPersonality();
+            String stat = "";
+            //Loop through the new personalities
+            for (Map.Entry<String, MoodVariable> entry : newPersonality.moodVariables.entrySet()) {
+                int newValue = entry.getValue().getCurrentValue();
+                int oldValue = oldPersonality.getMoodVariableValue(entry.getKey());
+                //If greater, show that's increased
+                if (newValue > oldValue) {
+                    stat += EnumChatFormatting.DARK_GREEN + "mood.variable." + entry.getKey() + ".name" + "+;";
+                }
+                //If less, show that's decreased
+                else if (newValue < oldValue) {
+                    stat += EnumChatFormatting.DARK_RED + "mood.variable." + entry.getKey() + ".name" + "-;";
+                }
+            }
+            //If any stats have changed, show them
+            if (!stat.isEmpty()) {
+                this.statMessage = stat;
+                this.statMessageTime = 0;
+            }
+        }
+
+        this.personality = newPersonality;
     }
 
     @Override

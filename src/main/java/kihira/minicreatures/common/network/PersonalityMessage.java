@@ -1,11 +1,14 @@
 package kihira.minicreatures.common.network;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSyntaxException;
 import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import io.netty.buffer.ByteBuf;
+import kihira.minicreatures.MiniCreatures;
 import kihira.minicreatures.common.personality.IPersonality;
 import kihira.minicreatures.common.personality.Personality;
 import net.minecraft.client.Minecraft;
@@ -42,11 +45,18 @@ public class PersonalityMessage implements IMessage {
         public IMessage onMessage(PersonalityMessage message, MessageContext ctx) {
             Entity entity = Minecraft.getMinecraft().theWorld.getEntityByID(message.entityID);
             if (entity instanceof IPersonality) {
-                Gson gson = new Gson();
-                Personality personality = gson.fromJson(message.personalityJson, Personality.class);
-                if (personality != null) {
-                    ((IPersonality) entity).setPersonality(personality);
+                Gson gson = new GsonBuilder().setVersion(1.0).create();
+                try {
+                    Personality newPersonality = gson.fromJson(message.personalityJson, Personality.class);
+                    if (newPersonality != null) {
+                        ((IPersonality) entity).setPersonality(newPersonality);
+                    }
+                } catch (JsonSyntaxException e) {
+                    e.printStackTrace();
                 }
+            }
+            else {
+                MiniCreatures.logger.warn("Received a personality update for an entity that is not a personality! " + entity);
             }
             return null;
         }
