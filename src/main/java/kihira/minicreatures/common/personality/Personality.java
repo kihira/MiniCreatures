@@ -120,4 +120,9 @@ public class Personality implements Serializable {
         Gson gson = new GsonBuilder().setVersion(1.0).create();
         MiniCreatures.proxy.simpleNetworkWrapper.sendToDimension(new PersonalityMessage(theEntity.theEntity().getEntityId(), gson.toJson(this)), theEntity.theEntity().dimension);
     }
+
+    @Override
+    public String toString() {
+        return String.format("Current Mood: %s (Active: %s), MoodVariables: %s", this.currentMood, this.currentMoodTime, this.moodVariables);
+    }
 }

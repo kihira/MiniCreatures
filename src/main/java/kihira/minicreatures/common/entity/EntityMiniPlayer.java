@@ -136,6 +136,7 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
         Personality personality = gson.fromJson(tagCompound.getString("Personality"), Personality.class);
         if (personality != null) {
             this.personality = personality;
+            //System.out.println(this.personality);
         }
 
         //Load parts list

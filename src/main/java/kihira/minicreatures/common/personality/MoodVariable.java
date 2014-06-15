@@ -76,4 +76,9 @@ public class MoodVariable implements Serializable {
     public int getRestingValue() {
         return restingValue;
     }
+
+    @Override
+    public String toString() {
+        return String.format("[Max: %s, Min: %s, Current: %s, Resting: %s]", this.getMaxValue(), this.getMinValue(), this.getCurrentValue(), this.getRestingValue());
+    }
 }
