@@ -45,7 +45,7 @@ public class PersonalityMessage implements IMessage {
             Entity entity = Minecraft.getMinecraft().theWorld.getEntityByID(message.entityID);
             if (entity instanceof IPersonality) {
                 try {
-                    Personality newPersonality = GsonHelper.fromJsonToPersonality(message.personalityJson);
+                    Personality newPersonality = GsonHelper.fromJson(message.personalityJson, Personality.class);
                     if (newPersonality != null) {
                         ((IPersonality) entity).setPersonality(newPersonality);
                     }

@@ -130,7 +130,7 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
         super.readEntityFromNBT(tagCompound);
 
         //Load Personality
-        Personality personality = GsonHelper.fromJsonToPersonality(tagCompound.getString("Personality"));
+        Personality personality = GsonHelper.fromJson(tagCompound.getString("Personality"), Personality.class);
         if (personality != null) {
             this.personality = personality;
             System.out.println(this.personality);
