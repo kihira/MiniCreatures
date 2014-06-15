@@ -73,9 +73,6 @@ public class RenderMiniPlayer extends RenderBiped {
                 }
             }
         }
-
-/*        chat = EnumChatFormatting.DARK_GREEN + "Happiness+";
-        this.renderStatChange(miniPlayer, x, y + 0.4, z, chat);*/
     }
 
     //Copied from RenderPlayer.renderSpecials
@@ -172,27 +169,5 @@ public class RenderMiniPlayer extends RenderBiped {
             AbstractClientPlayer.getDownloadImageSkin(resourcelocation, entityMiniPlayer.getCustomNameTag());
         }
         return resourcelocation;
-    }
-
-    //This is the method called to render name tags/scoreboard data
-    //par9 == render pass?
-    @Override
-    protected void func_96449_a(EntityLivingBase entity, double x, double y, double z, String text, float par9, double renderDistance) {
-        EntityMiniPlayer miniPlayer = (EntityMiniPlayer) entity;
-
-        //The entitys name
-        super.func_96449_a(entity, x, y, z, text, par9, renderDistance); //func_96449_a = renderTextWithSleepingOffset
-
-        //Offset next message
-/*        y += (double)((float)this.getFontRendererFromRenderManager().FONT_HEIGHT * 1.1F * par9);
-        //text = miniPlayer.getStatChanges();
-        text = EnumChatFormatting.DARK_GREEN + "Happiness+";
-        if (text != null && !text.isEmpty()) {
-            GL11.glPushMatrix();
-            GL11.glScalef(0.6F, 0.6F, 1F);
-            super.func_96449_a(entity, x, y, z, text, par9, renderDistance);
-            GL11.glPopMatrix();
-        }*/
-        //this.func_147906_a(miniPlayer, text, x, y, z, (int) renderDistance);
     }
 }

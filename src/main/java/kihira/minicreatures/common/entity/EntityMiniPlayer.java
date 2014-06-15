@@ -48,6 +48,7 @@ import net.minecraft.nbt.NBTTagString;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MathHelper;
+import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 
 import java.util.ArrayList;
@@ -197,9 +198,6 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
                             inventory.setInventorySlotContents(i, null);
                         }
                     }
-/*                    else if (itemstack.getItem() == Items.diamond) {
-                        this.personality.changeMoodVariableLevel(this, "happiness", -5);
-                    }*/
                     else if (this.getHeldItem() == null) {
                         ItemStack newItemStack = itemstack.copy();
                         newItemStack.stackSize = 1;
@@ -247,6 +245,7 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
 
     @Override
     public void onLivingUpdate() {
+        super.onLivingUpdate();
         if (this.worldObj.isRemote && this.statMessageTime < 60) {
             this.statMessageTime++;
         }
@@ -421,11 +420,11 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
                 int oldValue = oldPersonality.getMoodVariableValue(entry.getKey());
                 //If greater, show that's increased
                 if (newValue > oldValue) {
-                    stat += EnumChatFormatting.DARK_GREEN + "mood.variable." + entry.getKey() + ".name" + "+;";
+                    stat += EnumChatFormatting.DARK_GREEN + StatCollector.translateToLocal("mood.variable." + entry.getKey() + ".name") + "+;";
                 }
                 //If less, show that's decreased
                 else if (newValue < oldValue) {
-                    stat += EnumChatFormatting.DARK_RED + "mood.variable." + entry.getKey() + ".name" + "-;";
+                    stat += EnumChatFormatting.DARK_RED + StatCollector.translateToLocal("mood.variable." + entry.getKey() + ".name") + "-;";
                 }
             }
             //If any stats have changed, show them
