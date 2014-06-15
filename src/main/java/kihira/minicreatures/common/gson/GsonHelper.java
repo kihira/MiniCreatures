@@ -16,30 +16,23 @@ package kihira.minicreatures.common.gson;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.stream.JsonReader;
 import kihira.minicreatures.common.personality.Mood;
-import kihira.minicreatures.common.personality.MoodTest;
-import kihira.minicreatures.common.personality.Personality;
 
 public class GsonHelper {
 
     public static Gson createGson() {
         GsonBuilder gsonBuilder = new GsonBuilder();
-        gsonBuilder.registerTypeAdapter(Mood.class, new MoodAdapter<Mood>()); //
-        gsonBuilder.registerTypeAdapter(Mood.class, new MoodAdapter<MoodTest>());
+        gsonBuilder.serializeNulls();
+        gsonBuilder.registerTypeAdapter(Mood.class, new SubClassDeserializer<Mood>());
 
         return gsonBuilder.create();
     }
 
-    public static String toJson(Personality personality) {
-        return createGson().toJson(personality);
+    public static String toJson(Object object) {
+        return createGson().toJson(object);
     }
 
-    public static Personality fromJsonToPersonality(String json) {
-        return createGson().fromJson(json, Personality.class);
-    }
-
-    public static Mood fromJsonToMood(JsonReader json) {
-        return createGson().fromJson(json, Mood.class);
+    public static <T> T fromJson(String json, Class<T> clazz) {
+        return createGson().fromJson(json, clazz);
     }
 }

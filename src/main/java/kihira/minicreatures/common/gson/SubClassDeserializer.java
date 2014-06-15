@@ -18,16 +18,12 @@ import com.google.gson.*;
 
 import java.lang.reflect.Type;
 
-/**
- * Based on code from https://stackoverflow.com/questions/5800433/polymorphism-with-gson
- */
-public class MoodAdapter<T> implements JsonDeserializer<T> {
+public class SubClassDeserializer<T> implements JsonDeserializer<T> {
 
     @Override
     public T deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
         JsonObject jsonObject = json.getAsJsonObject();
         String className = jsonObject.get("type").getAsString();
-        //String
 
         Class<?> clazz;
         try {
@@ -36,8 +32,6 @@ public class MoodAdapter<T> implements JsonDeserializer<T> {
             e.printStackTrace();
             throw new JsonParseException(e.getMessage());
         }
-        //return context.deserialize(jsonObject.get(INSTANCE), clazz);
-        //System.out.println(jsonObject.get(INSTANCE).toString());
         return (T) new Gson().fromJson(jsonObject.toString(), clazz);
     }
 }
