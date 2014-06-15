@@ -15,8 +15,6 @@
 package kihira.minicreatures.common.entity;
 
 import com.google.common.base.Strings;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -24,6 +22,7 @@ import kihira.minicreatures.MiniCreatures;
 import kihira.minicreatures.common.customizer.EnumPartCategory;
 import kihira.minicreatures.common.entity.ai.EntityAIIdleBlockChat;
 import kihira.minicreatures.common.entity.ai.EntityAIIdleEntityChat;
+import kihira.minicreatures.common.gson.GsonHelper;
 import kihira.minicreatures.common.personality.IPersonality;
 import kihira.minicreatures.common.personality.MoodVariable;
 import kihira.minicreatures.common.personality.Personality;
@@ -116,8 +115,7 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
         super.writeEntityToNBT(tagCompound);
 
         //Save personality
-        Gson gson = new GsonBuilder().setVersion(1.0).create();
-        tagCompound.setString("Personality", gson.toJson(this.personality));
+        tagCompound.setString("Personality", GsonHelper.toJson(this.personality));
 
         //Save parts list
         NBTTagList nbttaglist = new NBTTagList();
@@ -132,11 +130,10 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
         super.readEntityFromNBT(tagCompound);
 
         //Load Personality
-        Gson gson = new GsonBuilder().setVersion(1.0).create();
-        Personality personality = gson.fromJson(tagCompound.getString("Personality"), Personality.class);
+        Personality personality = GsonHelper.fromJsonToPersonality(tagCompound.getString("Personality"));
         if (personality != null) {
             this.personality = personality;
-            //System.out.println(this.personality);
+            System.out.println(this.personality);
         }
 
         //Load parts list

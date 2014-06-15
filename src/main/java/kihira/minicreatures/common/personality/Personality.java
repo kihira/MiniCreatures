@@ -1,8 +1,7 @@
 package kihira.minicreatures.common.personality;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import kihira.minicreatures.MiniCreatures;
+import kihira.minicreatures.common.gson.GsonHelper;
 import kihira.minicreatures.common.network.PersonalityMessage;
 
 import java.io.Serializable;
@@ -67,6 +66,9 @@ public class Personality implements Serializable {
             this.currentMoodTime++;
         }
 
+        //Check here for modifiers that might affect mood changes TODO make this use json and a system like that?
+
+
         //Minute
         if (theEntity.theEntity().worldObj.getTotalWorldTime() % 1200 == 0) {
             for (MoodVariable moodVariable : this.moodVariables.values()) {
@@ -117,8 +119,7 @@ public class Personality implements Serializable {
     }
 
     private void updateClient(IPersonality theEntity) {
-        Gson gson = new GsonBuilder().setVersion(1.0).create();
-        MiniCreatures.proxy.simpleNetworkWrapper.sendToDimension(new PersonalityMessage(theEntity.theEntity().getEntityId(), gson.toJson(this)), theEntity.theEntity().dimension);
+        MiniCreatures.proxy.simpleNetworkWrapper.sendToDimension(new PersonalityMessage(theEntity.theEntity().getEntityId(), GsonHelper.toJson(this)), theEntity.theEntity().dimension);
     }
 
     @Override

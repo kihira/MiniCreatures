@@ -15,7 +15,6 @@
 package kihira.minicreatures;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import cpw.mods.fml.common.Mod;
@@ -31,8 +30,10 @@ import kihira.minicreatures.common.entity.EntityFox;
 import kihira.minicreatures.common.entity.EntityMiniPlayer;
 import kihira.minicreatures.common.entity.EntityMiniShark;
 import kihira.minicreatures.common.entity.EntityTRex;
+import kihira.minicreatures.common.gson.GsonHelper;
 import kihira.minicreatures.common.item.ItemCustomizer;
 import kihira.minicreatures.common.personality.Mood;
+import kihira.minicreatures.common.personality.MoodTest;
 import kihira.minicreatures.common.personality.MoodVariable;
 import kihira.minicreatures.common.personality.Personality;
 import kihira.minicreatures.proxy.CommonProxy;
@@ -117,7 +118,7 @@ public class MiniCreatures {
         File personalityTypesFile = new File(configDir, File.separator + "MiniCreatures" + File.separator + "PersonalityTypes.json");
 
         try {
-            Gson gson = new GsonBuilder().setVersion(1.0).create();
+            Gson gson = GsonHelper.createGson();
             if (!personalityTypesFile.exists()) {
                 //Create files/directories
                 new File(configDir, File.separator + "MiniCreatures").mkdirs();
@@ -146,6 +147,7 @@ public class MiniCreatures {
                     put("happiness", new MoodVariable(-50, 0));
                     put("hostility", new MoodVariable(-10, 10));
                 }})), jsonWriter);
+                gson.toJson(gson.toJsonTree(new MoodTest("test")), jsonWriter);
                 jsonWriter.endArray();
                 jsonWriter.close();
             }
@@ -156,6 +158,7 @@ public class MiniCreatures {
             while (reader.hasNext()) {
                 Mood mood = gson.fromJson(reader, Mood.class);
                 Personality.moodList.add(mood);
+                System.out.println(mood);
             }
             reader.endArray();
         } catch (IOException e1) {

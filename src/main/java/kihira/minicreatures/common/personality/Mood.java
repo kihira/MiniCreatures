@@ -8,6 +8,7 @@ import java.util.Map;
 
 public class Mood implements Serializable {
 
+    private String type = this.getClass().getCanonicalName();
     public String name = "";
     public List<String> validClassNames = new ArrayList<String>();
     /**
@@ -40,7 +41,12 @@ public class Mood implements Serializable {
         return false;
     }
 
-    private MoodVariable getMoodVariable(String name) {
+    public MoodVariable getMoodVariable(String name) {
         return this.moodVariablesLimits.containsKey(name) ? this.moodVariablesLimits.get(name) : new MoodVariable();
+    }
+
+    @Override
+    public String toString() {
+        return String.format("Name: %s, Max Time: %s, Min Time: %s, Valid Classes: [%s], Mood Variables: [%s]", this.name, this.maxMoodTime, this.minMoodTime, this.validClassNames, this.moodVariablesLimits);
     }
 }
