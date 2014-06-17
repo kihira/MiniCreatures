@@ -22,7 +22,6 @@ public class GsonHelper {
 
     public static Gson createGson() {
         GsonBuilder gsonBuilder = new GsonBuilder();
-        gsonBuilder.serializeNulls();
         gsonBuilder.registerTypeAdapter(Mood.class, new SubClassDeserializer<Mood>());
 
         return gsonBuilder.create();
