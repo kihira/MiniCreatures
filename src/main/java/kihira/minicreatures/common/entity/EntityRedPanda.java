@@ -1,15 +1,15 @@
 /*
  * Copyright (C) 2014  Kihira
  *
- *     This program is free software; you can redistribute it and/or modify
- *     it under the terms of the GNU General Public License as published by
- *     the Free Software Foundation; either version 2 of the License, or
- *     (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- *     This program is distributed in the hope that it will be useful,
- *     but WITHOUT ANY WARRANTY; without even the implied warranty of
- *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *     GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  */
 
 package kihira.minicreatures.common.entity;
@@ -36,15 +36,14 @@ import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.nbt.NBTTagString;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 
-public class EntityFox extends EntityTameable implements IMiniCreature {
+public class EntityRedPanda extends EntityTameable implements IMiniCreature {
 
     private final IInventory inventory = new InventoryBasic(this.getCommandSenderName(), false, 18);
 
-    public EntityFox(World par1World) {
+    public EntityRedPanda(World par1World) {
         super(par1World);
         this.setSize(0.3f, 0.25f);
         this.getNavigator().setAvoidsWater(true);
@@ -70,7 +69,6 @@ public class EntityFox extends EntityTameable implements IMiniCreature {
         super.entityInit();
         this.dataWatcher.addObject(18, 0); //Has chest
         this.dataWatcher.addObject(19, (byte) BlockColored.func_150032_b(1)); //Collar colour
-        this.dataWatcher.addObject(20, ""); //Parts list
     }
 
     public boolean hasChest() {
@@ -105,8 +103,8 @@ public class EntityFox extends EntityTameable implements IMiniCreature {
             if (itemstack != null) {
                 if (itemstack.getItem() instanceof ItemFood) {
                     ItemFood itemfood = (ItemFood)itemstack.getItem();
-                    if (itemfood.isWolfsFavoriteMeat() && this.getMaxHealth() < this.getEntityAttribute(SharedMonsterAttributes.maxHealth).getAttributeValue()) {
-                        this.heal((float)itemfood.func_150905_g(itemstack));
+                    if (itemfood.isWolfsFavoriteMeat() && this.getHealth() < this.getEntityAttribute(SharedMonsterAttributes.maxHealth).getAttributeValue()) {
+                        this.heal((float) itemfood.func_150905_g(itemstack));
                         if (!player.capabilities.isCreativeMode && --itemstack.stackSize <= 0) player.inventory.setInventorySlotContents(player.inventory.currentItem, null);
                         return true;
                     }
@@ -138,7 +136,7 @@ public class EntityFox extends EntityTameable implements IMiniCreature {
                 this.setAttackTarget(null);
             }
         }
-        else if (itemstack != null && itemstack.getItem() == Items.bone) {
+        else if (itemstack != null && itemstack.getItem() == Items.reeds) {
             if (!player.capabilities.isCreativeMode) --itemstack.stackSize;
             if (itemstack.stackSize <= 0) player.inventory.setInventorySlotContents(player.inventory.currentItem, null);
             if (!this.worldObj.isRemote) {
@@ -192,12 +190,6 @@ public class EntityFox extends EntityTameable implements IMiniCreature {
             }
             tag.setTag("Items", nbttaglist);
         }
-        //Save parts list
-        NBTTagList nbttaglist = new NBTTagList();
-        for (String part : this.dataWatcher.getWatchableObjectString(20).split(",")) {
-            if (part != null) nbttaglist.appendTag(new NBTTagString(part));
-        }
-        tag.setTag("Parts", nbttaglist);
     }
 
     @Override
@@ -214,13 +206,6 @@ public class EntityFox extends EntityTameable implements IMiniCreature {
             }
         }
         if (tag.hasKey("CollarColor", 99)) this.setCollarColor(tag.getByte("CollarColor"));
-        //Load parts list
-        NBTTagList tagList = tag.getTagList("Parts", 8);
-        String s = "";
-        for (int i = 0; i < tagList.tagCount(); i++) {
-            s += tagList.getStringTagAt(i) + ",";
-        }
-        this.dataWatcher.updateObject(20, s);
     }
 
     @Override
@@ -286,15 +271,15 @@ public class EntityFox extends EntityTameable implements IMiniCreature {
     }
 
     @Override
-    public EntityFox createChild(EntityAgeable entityageable) {
-        EntityFox entityFox = new EntityFox(this.worldObj);
+    public EntityRedPanda createChild(EntityAgeable entityageable) {
+        EntityRedPanda entityRedPanda = new EntityRedPanda(this.worldObj);
         String s = this.getOwnerName();
 
         if (!Strings.isNullOrEmpty(s)) {
-            entityFox.setOwner(s);
-            entityFox.setTamed(true);
+            entityRedPanda.setOwner(s);
+            entityRedPanda.setTamed(true);
         }
-        return entityFox;
+        return entityRedPanda;
     }
 
     @Override
@@ -305,10 +290,12 @@ public class EntityFox extends EntityTameable implements IMiniCreature {
 
     @Override
     public boolean canMateWith(EntityAnimal par1EntityAnimal) {
-        if (par1EntityAnimal == this || !this.isTamed() || !(par1EntityAnimal instanceof EntityFox)) return false;
+        if (par1EntityAnimal == this || !this.isTamed() || !(par1EntityAnimal instanceof EntityRedPanda)) {
+            return false;
+        }
         else {
-            EntityFox entityFox = (EntityFox)par1EntityAnimal;
-            return entityFox.isTamed() && (!entityFox.isSitting() && this.isInLove() && entityFox.isInLove());
+            EntityRedPanda entityRedPanda = (EntityRedPanda) par1EntityAnimal;
+            return entityRedPanda.isTamed() && (!entityRedPanda.isSitting() && this.isInLove() && entityRedPanda.isInLove());
         }
     }
 

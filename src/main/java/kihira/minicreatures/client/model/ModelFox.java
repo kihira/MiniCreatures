@@ -82,47 +82,34 @@ public class ModelFox extends ModelBase {
 
     public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
         super.render(entity, f, f1, f2, f3, f4, f5);
-        setRotationAngles(f, f1, f2, f3, f4, f5, entity);
+        this.setRotationAngles(f, f1, f2, f3, f4, f5, entity);
         EntityFox entityFox = (EntityFox)entity;
+        GL11.glPushMatrix();
         if (entityFox.isSitting()) {
-            GL11.glPushMatrix();
             GL11.glTranslatef(0.0f, f5 + 0.06f, 0f);
-            LBLeg.render(f5);
-            head.renderWithRotation(f5);
-            tailMid.render(f5);
-            RBLeg.render(f5);
-            RFLeg.render(f5);
-            LFLeg.render(f5);
-            Body.render(f5);
-            tailTip.render(f5);
-            tailBase.render(f5);
-            if (entityFox.hasChest()) {
-                GL11.glPushMatrix();
-                GL11.glScalef(1f, 0.5f, 0.5f);
+        }
+        LBLeg.render(f5);
+        head.renderWithRotation(f5);
+        tailMid.render(f5);
+        RBLeg.render(f5);
+        RFLeg.render(f5);
+        LFLeg.render(f5);
+        Body.render(f5);
+        tailTip.render(f5);
+        tailBase.render(f5);
+        if (entityFox.hasChest()) {
+            GL11.glPushMatrix();
+            GL11.glScalef(1f, 0.5f, 0.5f);
+            if (entityFox.isSitting()) {
                 GL11.glTranslatef(0.0f, 16F * f5,  f5 - 0.3f);
-                chest.render(f5);
-                GL11.glPopMatrix();
             }
+            else {
+                GL11.glTranslatef(0.0f, 18F * f5,  f5 - 0.15f);
+            }
+            chest.render(f5);
             GL11.glPopMatrix();
         }
-        else {
-            LBLeg.render(f5);
-            head.renderWithRotation(f5);
-            tailMid.render(f5);
-            RBLeg.render(f5);
-            RFLeg.render(f5);
-            LFLeg.render(f5);
-            Body.render(f5);
-            tailTip.render(f5);
-            tailBase.render(f5);
-            if (entityFox.hasChest()) {
-                GL11.glPushMatrix();
-                GL11.glScalef(1f, 0.5f, 0.5f);
-                GL11.glTranslatef(0.0f, 18F * f5,  f5 - 0.15f);
-                chest.render(f5);
-                GL11.glPopMatrix();
-            }
-        }
+        GL11.glPopMatrix();
     }
 
     private void setTailRotationPoints(float x, float y, float z) {
@@ -172,6 +159,7 @@ public class ModelFox extends ModelBase {
         model.rotateAngleZ = z;
     }
 
+    @Override
     public void setRotationAngles(float par1, float par2, float par3, float par4, float par5, float par6, Entity entity) {
         super.setRotationAngles(par1, par2, par3, par4, par5, par6, entity);
         this.head.rotateAngleX = par5 / (180F / (float)Math.PI);

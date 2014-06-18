@@ -26,10 +26,7 @@ import cpw.mods.fml.common.registry.EntityRegistry;
 import kihira.minicreatures.common.CommandSpawnEntity;
 import kihira.minicreatures.common.EventHandler;
 import kihira.minicreatures.common.GuiHandler;
-import kihira.minicreatures.common.entity.EntityFox;
-import kihira.minicreatures.common.entity.EntityMiniPlayer;
-import kihira.minicreatures.common.entity.EntityMiniShark;
-import kihira.minicreatures.common.entity.EntityTRex;
+import kihira.minicreatures.common.entity.*;
 import kihira.minicreatures.common.gson.GsonHelper;
 import kihira.minicreatures.common.item.ItemCustomizer;
 import kihira.minicreatures.common.personality.Mood;
@@ -70,6 +67,7 @@ public class MiniCreatures {
     public static boolean enableMiniTRex;
     public static boolean enableMiniPlayers;
     public static boolean enableMiniShark;
+    public static boolean enableMiniRedPandas;
     public static boolean enableCustomizer;
 
     @Mod.EventHandler
@@ -105,6 +103,8 @@ public class MiniCreatures {
         property = configuration.get(Configuration.CATEGORY_GENERAL, "Enable Mini Sharks", false);
         property.comment = "THIS ENTITY IS NOT YET COMPLETE. Enabling it might cause some strange issues";
         enableMiniShark = property.getBoolean(false);
+        property = configuration.get(Configuration.CATEGORY_GENERAL, "Enable Mini Red Pandas", true);
+        enableMiniRedPandas = property.getBoolean(true);
         property = configuration.get(Configuration.CATEGORY_GENERAL, "Enable Customizer", true);
         property.comment = "This feature is still in development and may cause issues";
         enableCustomizer = property.getBoolean(true);
@@ -179,6 +179,10 @@ public class MiniCreatures {
         if (enableMiniShark) {
             EntityRegistry.registerModEntity(EntityMiniShark.class, "MiniShark", 3, this, 64, 1, true);
             EntityRegistry.addSpawn(EntityTRex.class, 10, 2, 4, EnumCreatureType.waterCreature, BiomeGenBase.ocean, BiomeGenBase.deepOcean);
+        }
+        if (enableMiniRedPandas) {
+            EntityRegistry.registerModEntity(EntityRedPanda.class, "MiniRedPanda", 4, this, 64, 1, true);
+            EntityRegistry.addSpawn(EntityRedPanda.class, 6, 2, 4, EnumCreatureType.creature, BiomeGenBase.forest, BiomeGenBase.forestHills, BiomeGenBase.birchForest, BiomeGenBase.birchForestHills);
         }
     }
 }
