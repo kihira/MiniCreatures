@@ -24,7 +24,7 @@ import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.*;
 import net.minecraft.entity.passive.EntityAnimal;
-import net.minecraft.entity.passive.EntityChicken;
+import net.minecraft.entity.passive.EntityPig;
 import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -60,7 +60,7 @@ public class EntityFox extends EntityTameable implements IMiniCreature {
         this.targetTasks.addTask(1, new EntityAIOwnerHurtByTarget(this));
         this.targetTasks.addTask(2, new EntityAIOwnerHurtTarget(this));
         this.targetTasks.addTask(3, new EntityAIHurtByTarget(this, true));
-        this.targetTasks.addTask(4, new EntityAITargetNonTamed(this, EntityChicken.class, 750, false));
+        this.targetTasks.addTask(4, new EntityAITargetNonTamed(this, EntityPig.class, 750, false));
         this.setTamed(false);
         this.renderDistanceWeight = 4D;
     }
