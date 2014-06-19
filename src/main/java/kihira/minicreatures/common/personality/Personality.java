@@ -53,7 +53,7 @@ public class Personality implements Serializable {
         if (this.currentMood == neturalMood || this.currentMood == null) {
             if (!moodList.isEmpty()) {
                 for (Mood mood : moodList) {
-                    if (mood.isValidMood(this, theEntity)) {
+                    if (mood.equals(this.currentMood) && mood.isValidMood(this, theEntity)) {
                         this.currentMood = mood;
                         this.currentMoodTime = 0;
                         this.updateClient(theEntity);

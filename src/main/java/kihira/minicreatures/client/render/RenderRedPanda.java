@@ -26,7 +26,7 @@ import org.lwjgl.opengl.GL11;
 public class RenderRedPanda extends RenderLiving {
 
     private final ResourceLocation redPandaTexture = new ResourceLocation("minicreatures", "textures/entity/redpanda.png");
-    private final ResourceLocation redPandaCollarTexture = new ResourceLocation("minicreatures", "textures/entity/redpandcollar.png");
+    private final ResourceLocation redPandaCollarTexture = new ResourceLocation("minicreatures", "textures/entity/redpandacollar.png");
 
     public RenderRedPanda() {
         super(new ModelRedPanda(), 0.4F);
