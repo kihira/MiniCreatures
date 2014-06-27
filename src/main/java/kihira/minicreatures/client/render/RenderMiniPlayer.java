@@ -165,7 +165,7 @@ public class RenderMiniPlayer extends RenderBiped {
         ResourceLocation resourcelocation = AbstractClientPlayer.locationStevePng;
         EntityMiniPlayer entityMiniPlayer = (EntityMiniPlayer)entity;
         if (entityMiniPlayer.hasCustomNameTag()) {
-            resourcelocation = AbstractClientPlayer.getLocationSkull(entityMiniPlayer.getCustomNameTag());
+            resourcelocation = AbstractClientPlayer.getLocationSkin(entityMiniPlayer.getCustomNameTag());
             AbstractClientPlayer.getDownloadImageSkin(resourcelocation, entityMiniPlayer.getCustomNameTag());
         }
         return resourcelocation;

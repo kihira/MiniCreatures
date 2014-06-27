@@ -68,7 +68,7 @@ public class EventHandler {
                 EntityFox entityFox = (EntityFox) event.target;
                 if (entityFox.riddenByEntity == null && entityFox.ridingEntity == null) {
                     double d0 = 7.0D;
-                    List list = entityFox.worldObj.getEntitiesWithinAABB(EntityMiniPlayer.class, AxisAlignedBB.getAABBPool().getAABB(entityFox.posX - d0, entityFox.posY - d0, entityFox.posZ - d0, entityFox.posX + d0, entityFox.posY + d0, entityFox.posZ + d0));
+                    List list = entityFox.worldObj.getEntitiesWithinAABB(EntityMiniPlayer.class, AxisAlignedBB.getBoundingBox(entityFox.posX - d0, entityFox.posY - d0, entityFox.posZ - d0, entityFox.posX + d0, entityFox.posY + d0, entityFox.posZ + d0));
 
                     if (list != null) {
                         for (Object aList : list) {
@@ -111,7 +111,7 @@ public class EventHandler {
                         EntityMiniPlayer miniPlayer = new EntityMiniPlayer(event.entityPlayer.worldObj);
                         miniPlayer.copyLocationAndAnglesFrom(entityZombie);
                         miniPlayer.setCustomNameTag(entityZombie.getCustomNameTag());
-                        miniPlayer.setOwner(event.entityPlayer.getCommandSenderName());
+                        miniPlayer.func_152115_b(event.entityPlayer.getUniqueID().toString());
                         miniPlayer.setTamed(true);
                         for (int i = 0; i < 5; i++) {
                             miniPlayer.setCurrentItemOrArmor(i, entityZombie.getEquipmentInSlot(i));

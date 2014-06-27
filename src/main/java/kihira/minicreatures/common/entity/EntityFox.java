@@ -130,7 +130,7 @@ public class EntityFox extends EntityTameable implements IMiniCreature {
                 //Send Entity ID as x coord. Inspired by OpenBlocks
                 player.openGui(MiniCreatures.instance, 0, player.worldObj, this.getEntityId(), 0, 0);
             }
-            else if (player.getCommandSenderName().equalsIgnoreCase(this.getOwnerName()) && !this.worldObj.isRemote && !this.isBreedingItem(itemstack)) {
+            else if (player.isEntityEqual(this.getOwner()) && !this.worldObj.isRemote && !this.isBreedingItem(itemstack)) {
                 this.aiSit.setSitting(!this.isSitting());
                 this.isJumping = false;
                 this.setPathToEntity(null);
@@ -148,7 +148,7 @@ public class EntityFox extends EntityTameable implements IMiniCreature {
                     this.setAttackTarget(null);
                     this.aiSit.setSitting(true);
                     this.setHealth(20.0F);
-                    this.setOwner(player.getCommandSenderName());
+                    this.func_152115_b(player.getUniqueID().toString());
                     this.playTameEffect(true);
                     this.worldObj.setEntityState(this, (byte)7);
                 }
@@ -288,10 +288,10 @@ public class EntityFox extends EntityTameable implements IMiniCreature {
     @Override
     public EntityFox createChild(EntityAgeable entityageable) {
         EntityFox entityFox = new EntityFox(this.worldObj);
-        String s = this.getOwnerName();
+        String s = this.func_152113_b(); //Get owner UUID
 
         if (!Strings.isNullOrEmpty(s)) {
-            entityFox.setOwner(s);
+            entityFox.func_152115_b(s);
             entityFox.setTamed(true);
         }
         return entityFox;

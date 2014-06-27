@@ -158,7 +158,7 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
         if (!this.worldObj.isRemote) {
             //Allow taming in creative mode without items
             if (!this.isTamed() && player.capabilities.isCreativeMode) {
-                this.setOwner(player.getCommandSenderName());
+                this.func_152115_b(player.getUniqueID().toString()); //Set owner UUID
                 this.setTamed(true);
             }
             //If tamed
@@ -209,7 +209,7 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
                     if (Block.getBlockFromItem(this.getHeldItem().getItem()) == Blocks.chest) player.openGui(MiniCreatures.instance, 0, player.worldObj, this.getEntityId(), 0, 0);
                     else if (Block.getBlockFromItem(this.getHeldItem().getItem()) == Blocks.anvil) player.openGui(MiniCreatures.instance, 1, player.worldObj, (int) this.posX, (int) this.posY, (int) this.posZ);
                 }
-                else if (player.getCommandSenderName().equalsIgnoreCase(this.getOwnerName()) && !this.worldObj.isRemote) {
+                else if (player.isEntityEqual(this.getOwner()) && !this.worldObj.isRemote) {
                     if (this.isRiding()) {
                         EntityTameable ridingEntity = (EntityTameable) this.ridingEntity;
                         ridingEntity.func_70907_r().setSitting(!ridingEntity.isSitting());

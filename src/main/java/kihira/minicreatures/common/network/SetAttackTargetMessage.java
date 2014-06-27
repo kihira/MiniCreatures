@@ -35,7 +35,7 @@ public class SetAttackTargetMessage implements IMessage {
         @Override
         public IMessage onMessage(SetAttackTargetMessage message, MessageContext ctx) {
             EntityPlayer entityPlayer = ctx.getServerHandler().playerEntity;
-            AxisAlignedBB axisalignedbb = AxisAlignedBB.getAABBPool().getAABB(entityPlayer.posX, entityPlayer.posY, entityPlayer.posZ, entityPlayer.posX, entityPlayer.posY, entityPlayer.posZ).expand(10, 10, 10);
+            AxisAlignedBB axisalignedbb = AxisAlignedBB.getBoundingBox(entityPlayer.posX, entityPlayer.posY, entityPlayer.posZ, entityPlayer.posX, entityPlayer.posY, entityPlayer.posZ).expand(10, 10, 10);
             List entityList = entityPlayer.worldObj.getEntitiesWithinAABB(EntityMiniPlayer.class, axisalignedbb);
 
             if (entityList != null) {
