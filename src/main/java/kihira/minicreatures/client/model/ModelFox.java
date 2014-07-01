@@ -14,6 +14,8 @@
 
 package kihira.minicreatures.client.model;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import kihira.minicreatures.common.entity.EntityFox;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
@@ -22,6 +24,10 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.MathHelper;
 import org.lwjgl.opengl.GL11;
 
+/**
+ * The model for {@link kihira.minicreatures.common.entity.EntityFox}
+ */
+@SideOnly(Side.CLIENT)
 public class ModelFox extends ModelBase {
 
     ModelRenderer LBLeg;
@@ -80,6 +86,17 @@ public class ModelFox extends ModelBase {
         setRotation(tailTip, 1.029744F, 0F, 0F);
     }
 
+    /**
+     * Renders the model based off the parameters provided. Sets rotations then calls
+     * {@link net.minecraft.client.model.ModelRenderer#render(float)}
+     * @param entity The entity this model is used by
+     * @param f
+     * @param f1
+     * @param f2
+     * @param f3
+     * @param f4
+     * @param f5 A mystery number
+     */
     public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
         super.render(entity, f, f1, f2, f3, f4, f5);
         this.setRotationAngles(f, f1, f2, f3, f4, f5, entity);
@@ -112,12 +129,26 @@ public class ModelFox extends ModelBase {
         GL11.glPopMatrix();
     }
 
+    /**
+     * Sets the tails rotation point
+     * @param x The x position
+     * @param y The y position
+     * @param z The z position
+     */
     private void setTailRotationPoints(float x, float y, float z) {
         this.tailBase.setRotationPoint(x, y, z);
         this.tailMid.setRotationPoint(x, y, z);
         this.tailTip.setRotationPoint(x, y, z);
     }
 
+    /**
+     * This is called in {@link net.minecraft.client.renderer.entity.RenderLiving} to set the various angles for the
+     * various {@link net.minecraft.client.model.ModelRenderer}s on this model.
+     * @param entityLivingBase The entity
+     * @param par2
+     * @param par3
+     * @param par4
+     */
     public void setLivingAnimations(EntityLivingBase entityLivingBase, float par2, float par3, float par4) {
         EntityFox entityFox = (EntityFox)entityLivingBase;
 
@@ -153,12 +184,29 @@ public class ModelFox extends ModelBase {
         }
     }
 
+    /**
+     * Sets the rotation for the {@link net.minecraft.client.model.ModelRenderer} provided
+     * @param model The {@link net.minecraft.client.model.ModelRenderer}
+     * @param x The x angle in radians
+     * @param y The y angle in radians
+     * @param z The z angle in radians
+     */
     private void setRotation(ModelRenderer model, float x, float y, float z) {
         model.rotateAngleX = x;
         model.rotateAngleY = y;
         model.rotateAngleZ = z;
     }
 
+    /**
+     * Sets the models various rotation angles
+     * @param par1 Swing speed/time
+     * @param par2 Maximum swing angle
+     * @param par3
+     * @param par4 Head rotation angle y
+     * @param par5 Head rotation angle x
+     * @param par6
+     * @param entity The entity
+     */
     @Override
     public void setRotationAngles(float par1, float par2, float par3, float par4, float par5, float par6, Entity entity) {
         super.setRotationAngles(par1, par2, par3, par4, par5, par6, entity);

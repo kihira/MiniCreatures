@@ -22,6 +22,9 @@ import net.minecraft.entity.EntityList;
 
 import java.util.List;
 
+/**
+ * The command for spawning entities that has support for mod added entities
+ */
 public class CommandSpawnEntity extends CommandBase {
 
     @Override
@@ -50,6 +53,7 @@ public class CommandSpawnEntity extends CommandBase {
     }
 
     public List addTabCompletionOptions(ICommandSender par1ICommandSender, String[] par2ArrayOfStr) {
+        //Gather a list of the entity names
         String[] entityNameList = (String[]) EntityList.stringToClassMapping.keySet().toArray(new String[EntityList.stringToClassMapping.size()]);
         return par2ArrayOfStr.length > 0 ? getListOfStringsMatchingLastWord(par2ArrayOfStr, entityNameList) : null;
     }

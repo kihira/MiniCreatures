@@ -32,47 +32,101 @@ public class MoodVariable implements Serializable {
         this.maxValue = maxValue;
     }
 
+    /**
+     * This changes the {@link #currentValue} by the specified amount. This also ensures that the value remains within
+     * the {@link #minValue} and {@link #maxValue} range
+     *
+     * Note that it <i>does not</i> set it to the passed param but increases/decreases it by the amount specified.
+     *
+     * @param change The amount to change the current value by
+     */
     public void changeValue(float change) {
         MathHelper.clamp_int(this.currentValue += change, this.minValue, this.maxValue);
     }
 
+    /**
+     * Checks if the passed value is within the {@link #minValue} and {@link #maxValue} range
+     * @param value The value
+     * @return Whether it is in range or not
+     */
     public boolean isWithinBounds(int value) {
         return value >= this.getMinValue() && value <= this.getMaxValue();
     }
 
-    //Setters
+    /**
+     * Sets current value.
+     *
+     * @param value the value
+     * @return the current instance
+     */
     public MoodVariable setCurrentValue(int value) {
         MathHelper.clamp_int(this.currentValue = value, this.minValue, this.maxValue);
         return this;
     }
 
+    /**
+     * Sets max value.
+     *
+     * @param value the value
+     * @return the current instance
+     */
     public MoodVariable setMaxValue(int value) {
         this.maxValue = value;
         return this;
     }
 
+    /**
+     * Sets min value.
+     *
+     * @param value the value
+     * @return the current instance
+     */
     public MoodVariable setMinValue(int value) {
         this.minValue = value;
         return this;
     }
 
+    /**
+     * Sets resting value.
+     *
+     * @param restingValue the resting value
+     */
     public void setRestingValue(int restingValue) {
         this.restingValue = restingValue;
     }
 
-    //Getters
+    /**
+     * Gets current value.
+     *
+     * @return the current value
+     */
     public int getCurrentValue() {
         return this.currentValue;
     }
 
+    /**
+     * Gets max value.
+     *
+     * @return the max value
+     */
     public int getMaxValue() {
         return this.maxValue;
     }
 
+    /**
+     * Gets min value.
+     *
+     * @return the min value
+     */
     public int getMinValue() {
         return this.minValue;
     }
 
+    /**
+     * Gets resting value.
+     *
+     * @return the resting value
+     */
     public int getRestingValue() {
         return restingValue;
     }

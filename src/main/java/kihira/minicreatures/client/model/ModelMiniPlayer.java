@@ -28,6 +28,9 @@ import net.minecraft.init.Items;
 import net.minecraft.item.ItemBlock;
 import org.lwjgl.opengl.GL11;
 
+/**
+ * The model for {@link kihira.minicreatures.common.entity.EntityMiniPlayer}
+ */
 public class ModelMiniPlayer extends ModelBiped {
 
     public ModelMiniPlayer() {
@@ -46,13 +49,25 @@ public class ModelMiniPlayer extends ModelBiped {
         this.bipedHeadwear.rotationPointY = 0.0F;
     }
 
-    public void render(Entity par1Entity, float par2, float par3, float par4, float par5, float par6, float par7) {
-        ICustomisable miniPlayer = (ICustomisable)par1Entity;
+    /**
+     * Renders the model based off the parameters provided. Sets rotations then calls
+     * {@link net.minecraft.client.model.ModelRenderer#render(float)}
+     * @param entity The entity this model is used by
+     * @param f
+     * @param f1
+     * @param f2
+     * @param f3
+     * @param f4
+     * @param f5 A mystery number
+     */
+    @Override
+    public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
+        ICustomisable miniPlayer = (ICustomisable)entity;
         GL11.glPushMatrix();
-        this.setRotationAngles(par2, par3, par4, par5, par6, par7, par1Entity);
+        this.setRotationAngles(f, f1, f2, f3, f4, f5, entity);
         float f6 = 2.0F;
         /*
-        if (par1Entity.getCommandSenderName().equals("ArashiDragon")) {
+        if (entity.getCommandSenderName().equals("ArashiDragon")) {
             GL11.glEnable(GL11.GL_BLEND);
             GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
             GL11.glColor4d(1.0, 1.0, 1.0, 0.8);
@@ -60,29 +75,40 @@ public class ModelMiniPlayer extends ModelBiped {
         */
         GL11.glPushMatrix();
         GL11.glScalef(1.5F / f6, 1.5F / f6, 1.5F / f6);
-        GL11.glTranslatef(0.0F, 16.0F * par7, 0.0F);
-        this.bipedHead.render(par7);
-        this.bipedHeadwear.render(par7);
+        GL11.glTranslatef(0.0F, 16.0F * f5, 0.0F);
+        this.bipedHead.render(f5);
+        this.bipedHeadwear.render(f5);
         GL11.glPopMatrix();
         GL11.glPushMatrix();
         GL11.glScalef(1.0F / f6, 1.0F / f6, 1.0F / f6);
-        GL11.glTranslatef(0.0F, 24.0F * par7, 0.0F);
-        this.bipedBody.render(par7);
-        this.bipedRightArm.render(par7);
-        this.bipedLeftArm.render(par7);
-        this.bipedRightLeg.render(par7);
-        this.bipedLeftLeg.render(par7);
+        GL11.glTranslatef(0.0F, 24.0F * f5, 0.0F);
+        this.bipedBody.render(f5);
+        this.bipedRightArm.render(f5);
+        this.bipedLeftArm.render(f5);
+        this.bipedRightLeg.render(f5);
+        this.bipedLeftLeg.render(f5);
         GL11.glPopMatrix();
 
         for (String partName : miniPlayer.getCurrentParts(Minecraft.getMinecraft().currentScreen instanceof GuiCustomizer)) {
             ICustomizerPart part = CustomizerRegistry.getPart(partName);
-            if (part != null) part.render(par1Entity, this, par2, par3, par4, par5, par6, par7);
+            if (part != null) part.render(entity, this, f, f1, f2, f3, f4, f5);
         }
         GL11.glPopMatrix();
     }
 
-    public void setRotationAngles(float par1, float par2, float par3, float par4, float par5, float par6, Entity par7Entity) {
-        EntityMiniPlayer miniPlayer = (EntityMiniPlayer) par7Entity;
+    /**
+     * Sets the models various rotation angles
+     * @param par1 Swing speed/time
+     * @param par2 Maximum swing angle
+     * @param par3
+     * @param par4 Head rotation angle y
+     * @param par5 Head rotation angle x
+     * @param par6
+     * @param entity The entity
+     */
+    @Override
+    public void setRotationAngles(float par1, float par2, float par3, float par4, float par5, float par6, Entity entity) {
+        EntityMiniPlayer miniPlayer = (EntityMiniPlayer) entity;
         super.setRotationAngles(par1, par2, par3, par4, par5, par6, miniPlayer);
 
         if (this.isRiding) {
@@ -108,9 +134,17 @@ public class ModelMiniPlayer extends ModelBiped {
         }
     }
 
-    public void setLivingAnimations(EntityLivingBase par1EntityLivingBase, float par2, float par3, float par4) {
-        EntityMiniPlayer miniPlayer = (EntityMiniPlayer) par1EntityLivingBase;
+    /**
+     * This is called in {@link net.minecraft.client.renderer.entity.RenderLiving} to set the various angles for the
+     * various {@link net.minecraft.client.model.ModelRenderer}s on this model.
+     * @param entityLivingBase The entity
+     * @param par2
+     * @param par3
+     * @param par4
+     */
+    public void setLivingAnimations(EntityLivingBase entityLivingBase, float par2, float par3, float par4) {
+        EntityMiniPlayer miniPlayer = (EntityMiniPlayer) entityLivingBase;
         this.aimedBow = !miniPlayer.isSitting() && (miniPlayer.getHeldItem() != null) && (miniPlayer.getHeldItem().getItem() == Items.bow);
-        super.setLivingAnimations(par1EntityLivingBase, par2, par3, par4);
+        super.setLivingAnimations(entityLivingBase, par2, par3, par4);
     }
 }

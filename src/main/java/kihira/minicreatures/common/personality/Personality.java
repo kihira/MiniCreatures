@@ -40,6 +40,18 @@ public class Personality implements Serializable {
         this.moodVariables.put("hostility", new MoodVariable());
     }
 
+    /**
+     * This should be called every tick by the entity that has the personality. In this, the current mood timer is
+     * decreased and if it goes above the {@link kihira.minicreatures.common.personality.Mood#maxMoodTime} then the
+     * {@link #currentMood} is set to {@link #neturalMood} and the mood time is reset to 0
+     *
+     * If the current mood is neutral or null, we attempt to find a new mood instead.
+     *
+     * The {@link #moodVariables} are looped over every minute (600 ticks) and are modified to be closer to their
+     * {@link kihira.minicreatures.common.personality.MoodVariable#restingValue} if they are not currently sitting on it
+     *
+     * @param theEntity the entity
+     */
     public void onUpdate(IPersonality theEntity) {
         if (this.currentMood != null) {
             //If current mood has exceeded its max limit, reset it
@@ -109,6 +121,12 @@ public class Personality implements Serializable {
         this.updateClient(theEntity);
     }
 
+    /**
+     * Gets mood variable value. If one does not exist by the specified name, a new one is returned
+     *
+     * @param name the name
+     * @return the mood variable value
+     */
     public int getMoodVariableValue(String name) {
         MoodVariable moodVariable = new MoodVariable();
         if (this.moodVariables.containsKey(name)) {
@@ -118,6 +136,10 @@ public class Personality implements Serializable {
         return moodVariable.getCurrentValue();
     }
 
+    /**
+     * Serialises the current instance and dispatches a packet to all clients within the current dimension
+     * @param theEntity The entity which this instance belongs to
+     */
     private void updateClient(IPersonality theEntity) {
         MiniCreatures.proxy.simpleNetworkWrapper.sendToDimension(new PersonalityMessage(theEntity.theEntity().getEntityId(), GsonHelper.toJson(this)), theEntity.theEntity().dimension);
     }

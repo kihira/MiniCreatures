@@ -21,6 +21,9 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.MathHelper;
 
+/**
+ * The model for {@link kihira.minicreatures.common.entity.EntityRedPanda}
+ */
 public class ModelRedPanda extends ModelBase {
 
     //fields
@@ -91,6 +94,17 @@ public class ModelRedPanda extends ModelBase {
         this.rightEarTip.setRotationPoint(0F, 20F, -3F);
     }
 
+    /**
+     * Renders the model based off the parameters provided. Sets rotations then calls
+     * {@link net.minecraft.client.model.ModelRenderer#render(float)}
+     * @param entity The entity this model is used by
+     * @param f
+     * @param f1
+     * @param f2
+     * @param f3
+     * @param f4
+     * @param f5 A mystery number
+     */
     @Override
     public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
         super.render(entity, f, f1, f2, f3, f4, f5);
@@ -110,18 +124,34 @@ public class ModelRedPanda extends ModelBase {
         this.backRightLeg.render(f5);
     }
 
+    /**
+     * Sets the rotation for the {@link net.minecraft.client.model.ModelRenderer} provided
+     * @param model The {@link net.minecraft.client.model.ModelRenderer}
+     * @param x The x angle in radians
+     * @param y The y angle in radians
+     * @param z The z angle in radians
+     */
     private void setRotation(ModelRenderer model, float x, float y, float z) {
         model.rotateAngleX = x;
         model.rotateAngleY = y;
         model.rotateAngleZ = z;
     }
 
+    /**
+     * This is called in {@link net.minecraft.client.renderer.entity.RenderLiving} to set the various angles for the
+     * various {@link net.minecraft.client.model.ModelRenderer}s on this model.
+     * @param entityLivingBase The entity
+     * @param par2
+     * @param par3
+     * @param par4
+     */
     @Override
     public void setLivingAnimations(EntityLivingBase entityLivingBase, float par2, float par3, float par4) {
-        EntityRedPanda entityFox = (EntityRedPanda) entityLivingBase;
+        EntityRedPanda entityRedPanda = (EntityRedPanda) entityLivingBase;
 
-        if (entityFox.isSitting()) {
-/*            this.body.setRotationPoint(0F, 19F, -1F);
+        //TODO Fix rotation points and angles
+        if (entityRedPanda.isSitting()) {
+            this.body.setRotationPoint(0F, 19F, -1F);
             this.body.rotateAngleX = -(float)Math.PI / 5F;
             //this.chest.setRotationPoint(0F, 19F, -1F);
             //this.chest.rotateAngleX = -(float)Math.PI / 5F;
@@ -133,7 +163,7 @@ public class ModelRedPanda extends ModelBase {
             this.frontRightLeg.rotateAngleX = -1F;
             this.backLeftLeg.rotateAngleX = -1.5F;
             this.backRightLeg.rotateAngleX = -1.5F;
-            //this.tail.setRotationPoint(0F, 19F, 1.5F);*/
+            this.tail.setRotationPoint(0F, 19F, 1.5F);
         }
         else {
             this.body.setRotationPoint(0F, 20F, 0F);
@@ -153,10 +183,20 @@ public class ModelRedPanda extends ModelBase {
         }
     }
 
+    /**
+     * Sets the models various rotation angles
+     * @param par1 Swing speed/time
+     * @param par2 Maximum swing angle
+     * @param par3
+     * @param par4 Head rotation angle y
+     * @param par5 Head rotation angle x
+     * @param par6
+     * @param entity The entity
+     */
     @Override
-    public void setRotationAngles(float f, float f1, float f2, float f3, float f4, float f5, Entity entity) {
-        super.setRotationAngles(f, f1, f2, f3, f4, f5, null);
-        this.head.rotateAngleX = this.nose.rotateAngleX = this.leftEar.rotateAngleX = this.leftEarTip.rotateAngleX = this.rightEar.rotateAngleX = this.rightEarTip.rotateAngleX = f4 / (180F / (float)Math.PI);
-        this.head.rotateAngleY = this.nose.rotateAngleY = this.leftEar.rotateAngleY = this.leftEarTip.rotateAngleY = this.rightEar.rotateAngleY = this.rightEarTip.rotateAngleY = f3 / (180F / (float)Math.PI);
+    public void setRotationAngles(float par1, float par2, float par3, float par4, float par5, float par6, Entity entity) {
+        super.setRotationAngles(par1, par2, par3, par4, par5, par6, entity);
+        this.head.rotateAngleX = this.nose.rotateAngleX = this.leftEar.rotateAngleX = this.leftEarTip.rotateAngleX = this.rightEar.rotateAngleX = this.rightEarTip.rotateAngleX = par5 / (180F / (float)Math.PI);
+        this.head.rotateAngleY = this.nose.rotateAngleY = this.leftEar.rotateAngleY = this.leftEarTip.rotateAngleY = this.rightEar.rotateAngleY = this.rightEarTip.rotateAngleY = par4 / (180F / (float)Math.PI);
     }
 }

@@ -15,15 +15,23 @@
 package kihira.minicreatures.proxy;
 
 import cpw.mods.fml.client.registry.RenderingRegistry;
+import cpw.mods.fml.relauncher.Side;
 import kihira.minicreatures.MiniCreatures;
 import kihira.minicreatures.client.render.*;
 import kihira.minicreatures.common.entity.*;
+import kihira.minicreatures.common.network.PersonalityMessage;
 import net.minecraft.util.ResourceLocation;
 
+/**
+ * This class is loaded as the {@link kihira.minicreatures.MiniCreatures#proxy} only on the client
+ */
 public class ClientProxy extends CommonProxy {
 
     public static final ResourceLocation specialTextures = new ResourceLocation("minicreatures", "textures/model/specials.png");
 
+    /**
+     * Registers the renderers for the various entities
+     */
     @Override
     public void registerRenderers() {
         if (MiniCreatures.enableMiniFoxes) RenderingRegistry.registerEntityRenderingHandler(EntityFox.class, new RenderFox());
@@ -31,5 +39,11 @@ public class ClientProxy extends CommonProxy {
         if (MiniCreatures.enableMiniPlayers) RenderingRegistry.registerEntityRenderingHandler(EntityMiniPlayer.class, new RenderMiniPlayer());
         if (MiniCreatures.enableMiniShark) RenderingRegistry.registerEntityRenderingHandler(EntityMiniShark.class, new RenderMiniShark());
         if (MiniCreatures.enableMiniRedPandas) RenderingRegistry.registerEntityRenderingHandler(EntityRedPanda.class, new RenderRedPanda());
+    }
+
+    @Override
+    public void registerMessages() {
+        super.registerMessages();
+        this.simpleNetworkWrapper.registerMessage(PersonalityMessage.PersonalityMessageHandler.class, PersonalityMessage.class, 0, Side.CLIENT);
     }
 }

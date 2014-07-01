@@ -19,6 +19,9 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.ContainerRepair;
 import net.minecraft.world.World;
 
+/**
+ * This Container is just used to allow the carried anvil to be used as we don't use distance
+ */
 public class ContainerCarriedAnvil extends ContainerRepair {
 
     public ContainerCarriedAnvil(InventoryPlayer par1InventoryPlayer, World par2World, int par3, int par4, int par5, EntityPlayer par6EntityPlayer) {

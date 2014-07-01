@@ -18,6 +18,11 @@ import com.google.gson.*;
 
 import java.lang.reflect.Type;
 
+/**
+ * A sub-class deserializer for use in Googles Gson. This is generic code that can work with most sub-classes so long as
+ * the super class has the field <i>type</i> specified as the current class name (as returned by {@link Class#getName()}
+ * @param <T>
+ */
 public class SubClassDeserializer<T> implements JsonDeserializer<T> {
 
     @Override
