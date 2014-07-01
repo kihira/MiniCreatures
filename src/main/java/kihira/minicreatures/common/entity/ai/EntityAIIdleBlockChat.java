@@ -97,16 +97,12 @@ public class EntityAIIdleBlockChat extends EntityAIChat {
                 }
             }
         }
-
-        //Look at the block
-        this.miniPlayer.getLookHelper().setLookPosition(this.targetX, this.targetY, this.targetZ, 3, 3);
     }
 
     @Override
     public void updateTask() {
         //Look at the block just incase view has changed
-        this.miniPlayer.getLookHelper().setLookPosition(this.targetX, this.targetY, this.targetZ, 6, 6);
-
+        this.miniPlayer.getLookHelper().setLookPosition(this.targetX, this.targetY, this.targetZ, 10F, this.miniPlayer.getVerticalFaceSpeed());
         super.updateTask();
     }
 

@@ -91,17 +91,13 @@ public class EntityAIIdleEntityChat extends EntityAIChat {
                 }
             }
         }
-
-        //Look at the entity
-        this.miniPlayer.faceEntity(this.target, 3, 3);
     }
 
     @Override
     public void updateTask() {
-        super.updateTask();
-
         //Look at the entity
-        this.miniPlayer.faceEntity(this.target, 3, 3);
+        this.miniPlayer.faceEntity(this.target, 3F, 3F);
+        super.updateTask();
     }
 
     @Override

@@ -28,7 +28,7 @@ public class EntityAIChat extends EntityAIBase {
 
     EntityAIChat(EntityMiniPlayer miniPlayer) {
         this.miniPlayer = miniPlayer;
-        this.setMutexBits(10);
+        this.setMutexBits(2);
     }
 
     @Override
