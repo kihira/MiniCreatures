@@ -14,7 +14,7 @@ public class Mood implements Serializable {
     /**
      * This is used for serialization so we know if it's a sub-class or not
      */
-    private String type = this.getClass().getCanonicalName();
+    private String clazz = this.getClass().getCanonicalName();
     public String name = "";
     /**
      * A list of class names (As returned by {@link Class#getName()}) of entities that can use this mood

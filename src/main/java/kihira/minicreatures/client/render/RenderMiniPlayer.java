@@ -16,14 +16,12 @@ package kihira.minicreatures.client.render;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import kihira.foxlib.client.RenderHelper;
 import kihira.minicreatures.client.model.ModelMiniPlayer;
 import kihira.minicreatures.common.entity.EntityMiniPlayer;
 import net.minecraft.block.Block;
 import net.minecraft.client.entity.AbstractClientPlayer;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderBlocks;
-import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderBiped;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -58,17 +56,17 @@ public class RenderMiniPlayer extends RenderBiped {
 
         String chat = miniPlayer.getChat();
         if (chat != null && !chat.isEmpty()) {
-            this.renderMultiLineMessage(miniPlayer, x, y, z, chat, 20);
+            RenderHelper.drawWrappedMessageFacingPlayer(x, y + miniPlayer.height + 0.67F, z, 0.016666668F * 1.1F, 100, 20, chat, -1);
         }
 
         //This is greater then 0 if we have changes to display
         if (miniPlayer.statMessageTime < 60) {
             //Messages floats up over time
-            float yOffset = 0.4F + (miniPlayer.statMessageTime / 150F);
+            float yOffset = miniPlayer.height + 0.67F + (miniPlayer.statMessageTime / 150F);
             //Loop through any changes
             for (String statChange : miniPlayer.statMessage.split(";")) {
                 if (!statChange.isEmpty()) {
-                    this.renderStatChange(miniPlayer, x, y + yOffset, z, statChange, miniPlayer.statMessageTime / 60F);
+                    RenderHelper.drawMultiLineMessageFacingPlayer(x, y + yOffset, z, 0.016666668F, new String[]{statChange}, (int) (-(miniPlayer.statMessageTime / 60F) * 255) << 24, true, false);
                     yOffset += 0.4;
                 }
             }
@@ -96,68 +94,6 @@ public class RenderMiniPlayer extends RenderBiped {
                 super.renderEquippedItems(par1EntityLivingBase, par2);
             }
         }
-    }
-
-    private void renderMultiLineMessage(EntityMiniPlayer miniPlayer, double x, double y, double z, String chat, int xOffset) {
-        FontRenderer fontrenderer = this.getFontRendererFromRenderManager();
-        float scale = 0.016666668F * 1.1F;
-
-        GL11.glPushMatrix();
-        GL11.glTranslated(x + 0.0F, y + miniPlayer.height + 0.27F, z);
-        GL11.glNormal3f(0.0F, 1.0F, 0.0F);
-        GL11.glRotatef(-this.renderManager.playerViewY, 0.0F, 1.0F, 0.0F);
-        GL11.glRotatef(this.renderManager.playerViewX, 1.0F, 0.0F, 0.0F);
-        GL11.glScalef(-scale, -scale, scale);
-        GL11.glDisable(GL11.GL_LIGHTING);
-        GL11.glDepthMask(false);
-        GL11.glDisable(GL11.GL_DEPTH_TEST);
-        GL11.glEnable(GL11.GL_BLEND);
-        OpenGlHelper.glBlendFunc(770, 771, 1, 0);
-        Tessellator tessellator = Tessellator.instance;
-        GL11.glDisable(GL11.GL_TEXTURE_2D);
-        tessellator.startDrawingQuads();
-        int width = 100;
-        int height = fontrenderer.listFormattedStringToWidth(chat, width).size() * fontrenderer.FONT_HEIGHT;
-        tessellator.setColorRGBA_F(0.0F, 0.0F, 0.0F, 0.25F);
-        tessellator.addVertex((double) xOffset - 1, (double)(-1), 0.0D);
-        tessellator.addVertex((double) xOffset - 1, (double)(height), 0.0D);
-        tessellator.addVertex((double) xOffset + width + 1, (double) (height), 0.0D);
-        tessellator.addVertex((double) xOffset + width + 1, (double) (-1), 0.0D);
-        tessellator.draw();
-        GL11.glEnable(GL11.GL_TEXTURE_2D);
-        GL11.glEnable(GL11.GL_DEPTH_TEST);
-        GL11.glDepthMask(true);
-        fontrenderer.drawSplitString(chat, xOffset, 0, width, -1);
-        GL11.glEnable(GL11.GL_LIGHTING);
-        GL11.glDisable(GL11.GL_BLEND);
-        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-        GL11.glPopMatrix();
-    }
-
-    private void renderStatChange(EntityMiniPlayer miniPlayer, double x, double y, double z, String text, float alpha) {
-        FontRenderer fontrenderer = this.getFontRendererFromRenderManager();
-        float scale = 0.016666668F;
-
-        GL11.glPushMatrix();
-        GL11.glTranslated(x + 0.0F, y + miniPlayer.height + 0.27F, z);
-        GL11.glNormal3f(0.0F, 1.0F, 0.0F);
-        GL11.glRotatef(-this.renderManager.playerViewY, 0.0F, 1.0F, 0.0F);
-        GL11.glRotatef(this.renderManager.playerViewX, 1.0F, 0.0F, 0.0F);
-        GL11.glScalef(-scale, -scale, scale);
-        GL11.glDisable(GL11.GL_LIGHTING);
-        GL11.glDepthMask(false);
-        GL11.glDisable(GL11.GL_DEPTH_TEST);
-        GL11.glEnable(GL11.GL_BLEND);
-        OpenGlHelper.glBlendFunc(770, 771, 1, 0);
-        GL11.glDisable(GL11.GL_TEXTURE_2D);
-        GL11.glEnable(GL11.GL_TEXTURE_2D);
-        GL11.glEnable(GL11.GL_DEPTH_TEST);
-        GL11.glDepthMask(true);
-        fontrenderer.drawString(text, -fontrenderer.getStringWidth(text) / 2, 0, (int) (-alpha * 255) << 24);
-        GL11.glEnable(GL11.GL_LIGHTING);
-        GL11.glDisable(GL11.GL_BLEND);
-        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-        GL11.glPopMatrix();
     }
 
     @Override

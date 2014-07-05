@@ -23,11 +23,11 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.EntityRegistry;
+import kihira.foxlib.common.gson.GsonHelper;
 import kihira.minicreatures.common.CommandSpawnEntity;
 import kihira.minicreatures.common.EventHandler;
 import kihira.minicreatures.common.GuiHandler;
 import kihira.minicreatures.common.entity.*;
-import kihira.minicreatures.common.gson.GsonHelper;
 import kihira.minicreatures.common.item.ItemCustomizer;
 import kihira.minicreatures.common.personality.Mood;
 import kihira.minicreatures.common.personality.MoodTest;
@@ -50,7 +50,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-@Mod(modid = "minicreatures", name = "Mini Creatures", version = "${version}", useMetadata = true)
+@Mod(modid = "minicreatures", name = "Mini Creatures", version = "${version}", useMetadata = true, dependencies = "required-after:foxlib@[0.1.0,)")
 public class MiniCreatures {
 
     @SidedProxy(clientSide = "kihira.minicreatures.proxy.ClientProxy", serverSide = "kihira.minicreatures.proxy.CommonProxy")
@@ -100,9 +100,8 @@ public class MiniCreatures {
         enableMiniTRex = property.getBoolean(true);
         property = configuration.get(Configuration.CATEGORY_GENERAL, "Enable Mini Players", true);
         enableMiniPlayers = property.getBoolean(true);
-        property = configuration.get(Configuration.CATEGORY_GENERAL, "Enable Mini Sharks", false);
-        property.comment = "THIS ENTITY IS NOT YET COMPLETE. Enabling it might cause some strange issues";
-        enableMiniShark = property.getBoolean(false);
+        property = configuration.get(Configuration.CATEGORY_GENERAL, "Enable Mini Sharks", true);
+        enableMiniShark = property.getBoolean(true);
         property = configuration.get(Configuration.CATEGORY_GENERAL, "Enable Mini Red Pandas", true);
         enableMiniRedPandas = property.getBoolean(true);
         property = configuration.get(Configuration.CATEGORY_GENERAL, "Enable Customizer", true);
@@ -110,7 +109,9 @@ public class MiniCreatures {
         enableCustomizer = property.getBoolean(true);
 
 
-        if (configuration.hasChanged()) configuration.save();
+        if (configuration.hasChanged()) {
+            configuration.save();
+        }
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
@@ -118,7 +119,7 @@ public class MiniCreatures {
         File personalityTypesFile = new File(configDir, File.separator + "MiniCreatures" + File.separator + "PersonalityTypes.json");
 
         try {
-            Gson gson = GsonHelper.createGson();
+            Gson gson = GsonHelper.createGson(Mood.class);
             if (!personalityTypesFile.exists()) {
                 //Create files/directories
                 new File(configDir, File.separator + "MiniCreatures").mkdirs();
@@ -126,6 +127,7 @@ public class MiniCreatures {
 
                 JsonWriter jsonWriter = new JsonWriter(new FileWriter(personalityTypesFile));
 
+                //TODO just copy a pre-genned file like marker beacons
                 //Create defaults
                 //Create default personalities
                 jsonWriter.beginArray();
@@ -158,7 +160,7 @@ public class MiniCreatures {
             while (reader.hasNext()) {
                 Mood mood = gson.fromJson(reader, Mood.class);
                 Personality.moodList.add(mood);
-                System.out.println(mood);
+                logger.debug("Loaded mood %s", mood.toString());
             }
             reader.endArray();
         } catch (IOException e1) {
