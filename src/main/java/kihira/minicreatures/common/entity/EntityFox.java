@@ -24,7 +24,7 @@ import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.*;
 import net.minecraft.entity.passive.EntityAnimal;
-import net.minecraft.entity.passive.EntityPig;
+import net.minecraft.entity.passive.EntityChicken;
 import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -60,7 +60,7 @@ public class EntityFox extends EntityTameable implements IMiniCreature {
         this.targetTasks.addTask(1, new EntityAIOwnerHurtByTarget(this));
         this.targetTasks.addTask(2, new EntityAIOwnerHurtTarget(this));
         this.targetTasks.addTask(3, new EntityAIHurtByTarget(this, true));
-        this.targetTasks.addTask(4, new EntityAITargetNonTamed(this, EntityPig.class, 750, false));
+        this.targetTasks.addTask(4, new EntityAITargetNonTamed(this, EntityChicken.class, 750, false));
         this.setTamed(false);
         this.renderDistanceWeight = 4D;
     }
@@ -73,10 +73,18 @@ public class EntityFox extends EntityTameable implements IMiniCreature {
         this.dataWatcher.addObject(20, ""); //Parts list
     }
 
+    /**
+     * Returns if the entity has a chest
+     * @return If the entity has a chest
+     */
     public boolean hasChest() {
         return this.dataWatcher.getWatchableObjectInt(18) == 1;
     }
 
+    /**
+     * Sets whether it has a chest
+     * @param hasChest Whether it has a chest
+     */
     public void setHasChest(boolean hasChest) {
         this.dataWatcher.updateObject(18, hasChest ? 1 : 0);
     }
@@ -111,12 +119,14 @@ public class EntityFox extends EntityTameable implements IMiniCreature {
                         return true;
                     }
                 }
+                //Adds a chest
                 else if (Block.getBlockFromItem(itemstack.getItem()) == Blocks.chest && !this.hasChest()) {
                     this.setHasChest(true);
                     this.playSound("mob.chickenplop", 1.0F, (this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F + 1.0F);
                     if (!player.capabilities.isCreativeMode && --itemstack.stackSize <= 0) player.inventory.setInventorySlotContents(player.inventory.currentItem, null);
                     return true;
                 }
+                //Dye the collar
                 else if (itemstack.getItem() == Items.dye) {
                     int i = BlockColored.func_150032_b(itemstack.getItemDamage());
                     if (i != this.getCollarColor()) {
@@ -166,6 +176,7 @@ public class EntityFox extends EntityTameable implements IMiniCreature {
     public void onDeath(DamageSource par1DamageSource) {
         super.onDeath(par1DamageSource);
 
+        //Drops chest inventory on death
         if (!this.worldObj.isRemote && hasChest()) {
             for (int i = 0; i < inventory.getSizeInventory(); ++i) {
                 ItemStack itemstack = inventory.getStackInSlot(i);

@@ -31,7 +31,6 @@ import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.InventoryBasic;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -45,12 +44,13 @@ public class EntityRedPanda extends EntityTameable implements IMiniCreature {
 
     public EntityRedPanda(World par1World) {
         super(par1World);
-        this.setSize(0.3f, 0.25f);
+        this.setSize(0.35f, 0.5f);
         this.getNavigator().setAvoidsWater(true);
         this.getNavigator().setCanSwim(true);
         this.tasks.addTask(1, new EntityAISwimming(this));
         this.tasks.addTask(2, this.aiSit);
         this.tasks.addTask(3, new EntityAIAttackOnCollide(this, 1.0D, true));
+        this.tasks.addTask(4, new EntityAIAvoidEntity(this, EntityPlayer.class, 8F, 0.8D, 1.33D));
         this.tasks.addTask(4, new EntityAIFollowOwner(this, 1.0D, 10.0F, 2.0F));
         this.tasks.addTask(5, new EntityAIMate(this, 1.0D));
         this.tasks.addTask(6, new EntityAIWander(this, 1.0D));
@@ -164,6 +164,7 @@ public class EntityRedPanda extends EntityTameable implements IMiniCreature {
     public void onDeath(DamageSource par1DamageSource) {
         super.onDeath(par1DamageSource);
 
+        //Drop chest contents on death
         if (!this.worldObj.isRemote && hasChest()) {
             for (int i = 0; i < inventory.getSizeInventory(); ++i) {
                 ItemStack itemstack = inventory.getStackInSlot(i);
@@ -210,7 +211,7 @@ public class EntityRedPanda extends EntityTameable implements IMiniCreature {
 
     @Override
     public boolean isBreedingItem(ItemStack itemStack) {
-        return itemStack != null && (itemStack.getItem() instanceof ItemFood);
+        return itemStack != null && (itemStack.getItem() == Items.reeds);
     }
 
     @Override
@@ -248,20 +249,6 @@ public class EntityRedPanda extends EntityTameable implements IMiniCreature {
         return 0.4F;
     }
 
-    @Override
-    protected Item getDropItem() {
-        return Items.leather;
-    }
-
-    @Override
-    protected void dropFewItems(boolean hitByPlayerRecently, int lootingLevel) {
-        int j = this.rand.nextInt(3) + this.rand.nextInt(1 + lootingLevel);
-
-        for (int k = 0; k < j; ++k) {
-            this.dropItem(Items.leather, 1);
-        }
-    }
-
     public int getCollarColor() {
         return this.dataWatcher.getWatchableObjectByte(19) & 15;
     }
@@ -284,18 +271,18 @@ public class EntityRedPanda extends EntityTameable implements IMiniCreature {
 
     @Override
     public boolean attackEntityAsMob(Entity par1Entity) {
-        int i = this.isTamed() ? 4 : 2;
-        return par1Entity.attackEntityFrom(DamageSource.causeMobDamage(this), (float)i);
+        int i = this.isTamed() ? 3 : 2;
+        return par1Entity.attackEntityFrom(DamageSource.causeMobDamage(this), (float) i);
     }
 
     @Override
-    public boolean canMateWith(EntityAnimal par1EntityAnimal) {
-        if (par1EntityAnimal == this || !this.isTamed() || !(par1EntityAnimal instanceof EntityRedPanda)) {
+    public boolean canMateWith(EntityAnimal entityAnimal) {
+        if (entityAnimal.equals(this) || !this.isTamed() || !(entityAnimal instanceof EntityRedPanda)) {
             return false;
         }
         else {
-            EntityRedPanda entityRedPanda = (EntityRedPanda) par1EntityAnimal;
-            return entityRedPanda.isTamed() && (!entityRedPanda.isSitting() && this.isInLove() && entityRedPanda.isInLove());
+            EntityRedPanda entityRedPanda = (EntityRedPanda) entityAnimal;
+            return entityRedPanda.isTamed() && !entityRedPanda.isSitting() && this.isInLove() && entityRedPanda.isInLove();
         }
     }
 

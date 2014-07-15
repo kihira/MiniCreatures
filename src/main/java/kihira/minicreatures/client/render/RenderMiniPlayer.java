@@ -54,11 +54,13 @@ public class RenderMiniPlayer extends RenderBiped {
         EntityMiniPlayer miniPlayer = (EntityMiniPlayer) par1Entity;
         this.doRender(miniPlayer, x, y, z, par8, par9);
 
+        //Draw the chat messages
         String chat = miniPlayer.getChat();
         if (chat != null && !chat.isEmpty()) {
             RenderHelper.drawWrappedMessageFacingPlayer(x, y + miniPlayer.height + 0.67F, z, 0.016666668F * 1.1F, 100, 20, chat, -1);
         }
 
+        //Draw stat changes
         //This is greater then 0 if we have changes to display
         if (miniPlayer.statMessageTime < 60) {
             //Messages floats up over time
@@ -82,12 +84,14 @@ public class RenderMiniPlayer extends RenderBiped {
             IItemRenderer customRenderer = MinecraftForgeClient.getItemRenderer(itemstack, EQUIPPED);
             boolean is3D = (customRenderer != null && customRenderer.shouldUseRenderHelper(EQUIPPED, itemstack, BLOCK_3D));
             if (miniPlayer.isSitting()) GL11.glTranslatef(0F, 0.3F, 0F);
+            //If item is a block or has a custom renderer
             if (itemstack.getItem() instanceof ItemBlock && (is3D || RenderBlocks.renderItemIn3d(Block.getBlockFromItem(itemstack.getItem()).getRenderType()))) {
                 GL11.glTranslatef(0.0F, 0.8875F, -0.3F);
                 GL11.glRotatef(-90.0F, 0.0F, 1.0F, 0.0F);
                 GL11.glScalef(-0.3F, -0.3F, -0.3F);
                 this.renderManager.itemRenderer.renderItem(par1EntityLivingBase, itemstack, 0);
             }
+            //Otherwise render "2D"
             else {
                 GL11.glTranslatef(0F, 0.725F, -0.025F);
                 GL11.glScalef(0.5F, 0.5F, 0.5F);
@@ -98,6 +102,7 @@ public class RenderMiniPlayer extends RenderBiped {
 
     @Override
     protected ResourceLocation getEntityTexture(Entity entity) {
+        //Gets the players skin
         ResourceLocation resourcelocation = AbstractClientPlayer.locationStevePng;
         EntityMiniPlayer entityMiniPlayer = (EntityMiniPlayer)entity;
         if (entityMiniPlayer.hasCustomNameTag()) {
