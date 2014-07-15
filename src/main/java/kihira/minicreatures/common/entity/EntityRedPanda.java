@@ -16,6 +16,7 @@ package kihira.minicreatures.common.entity;
 
 import com.google.common.base.Strings;
 import kihira.minicreatures.MiniCreatures;
+import kihira.minicreatures.common.entity.ai.EntityAIEscapePlayer;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockColored;
 import net.minecraft.entity.Entity;
@@ -41,16 +42,20 @@ import net.minecraft.world.World;
 public class EntityRedPanda extends EntityTameable implements IMiniCreature {
 
     private final IInventory inventory = new InventoryBasic(this.getCommandSenderName(), false, 18);
+    private EntityAIEscapePlayer aiEscapePlayer;
 
     public EntityRedPanda(World par1World) {
         super(par1World);
         this.setSize(0.35f, 0.5f);
         this.getNavigator().setAvoidsWater(true);
         this.getNavigator().setCanSwim(true);
+
+        this.aiEscapePlayer = new EntityAIEscapePlayer(this, 8F, 1.33D);
+
         this.tasks.addTask(1, new EntityAISwimming(this));
         this.tasks.addTask(2, this.aiSit);
         this.tasks.addTask(3, new EntityAIAttackOnCollide(this, 1.0D, true));
-        this.tasks.addTask(4, new EntityAIAvoidEntity(this, EntityPlayer.class, 8F, 0.8D, 1.33D));
+        this.tasks.addTask(4, this.aiEscapePlayer);
         this.tasks.addTask(4, new EntityAIFollowOwner(this, 1.0D, 10.0F, 2.0F));
         this.tasks.addTask(5, new EntityAIMate(this, 1.0D));
         this.tasks.addTask(6, new EntityAIWander(this, 1.0D));
@@ -77,6 +82,13 @@ public class EntityRedPanda extends EntityTameable implements IMiniCreature {
 
     public void setHasChest(boolean hasChest) {
         this.dataWatcher.updateObject(18, hasChest ? 1 : 0);
+    }
+
+    public boolean isOnLadder() {
+        if (this.aiEscapePlayer.isClimbing) {
+            this.isCollidedHorizontally = true;
+        }
+        return this.aiEscapePlayer.isClimbing;
     }
 
     @Override
@@ -158,6 +170,18 @@ public class EntityRedPanda extends EntityTameable implements IMiniCreature {
             return true;
         }
         return super.interact(player);
+    }
+
+    @Override
+    public void moveEntity(double p_70091_1_, double p_70091_3_, double p_70091_5_) {
+        if (this.noClip) {
+            //System.out.println(p_70091_3_);
+            this.boundingBox.offset(p_70091_1_, p_70091_3_, p_70091_5_);
+            this.posX = (this.boundingBox.minX + this.boundingBox.maxX) / 2.0D;
+            this.posY = this.boundingBox.minY + (double) this.yOffset - (double) this.ySize;
+            this.posZ = (this.boundingBox.minZ + this.boundingBox.maxZ) / 2.0D;
+        }
+        else super.moveEntity(p_70091_1_, p_70091_3_, p_70091_5_);
     }
 
     @Override
