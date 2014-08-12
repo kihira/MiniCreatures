@@ -20,6 +20,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 import kihira.minicreatures.MiniCreatures;
 import kihira.minicreatures.common.entity.EntityFox;
 import kihira.minicreatures.common.entity.EntityMiniPlayer;
+import kihira.minicreatures.common.entity.IMiniCreature;
 import kihira.minicreatures.common.network.SetAttackTargetMessage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
@@ -36,12 +37,16 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
 import net.minecraftforge.client.event.MouseEvent;
+import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.EntityInteractEvent;
 
 import java.util.List;
+import java.util.Random;
 
 public class EventHandler {
+
+    public static String[] names;
 
     private long lastTrigger = 0;
 
@@ -59,6 +64,15 @@ public class EventHandler {
                     MiniCreatures.proxy.simpleNetworkWrapper.sendToServer(new SetAttackTargetMessage(target.entityHit.getEntityId()));
                 }
             }
+        }
+    }
+
+    @SubscribeEvent
+    public void onEntitySpawn(EntityEvent.EntityConstructing event) {
+        Random random = event.entity.worldObj.rand;
+        if (names != null && MiniCreatures.randomNameChance != 0 && event.entity instanceof IMiniCreature && random.nextInt(MiniCreatures.randomNameChance) == 0) {
+            EntityLiving entityLiving = ((IMiniCreature) event.entity).getEntity();
+            entityLiving.setCustomNameTag(names[random.nextInt(names.length - 1)]);
         }
     }
 

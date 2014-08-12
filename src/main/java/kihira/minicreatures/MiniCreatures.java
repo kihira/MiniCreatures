@@ -41,10 +41,8 @@ import net.minecraftforge.common.config.Configuration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -68,6 +66,9 @@ public class MiniCreatures {
     public static boolean enableMiniShark;
     public static boolean enableMiniRedPandas;
     public static boolean enableCustomizer;
+    public static int randomNameChance;
+
+    private static boolean hasGottenNames = false;
 
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent e) {
@@ -86,6 +87,31 @@ public class MiniCreatures {
     @Mod.EventHandler
     public void serverStarting(FMLServerStartingEvent e) {
         e.registerServerCommand(new CommandSpawnEntity());
+
+        if (!hasGottenNames) {
+            Runnable getNamesRunnable = new Runnable() {
+                private String namesLoc = "https://raw.github.com/kihira/MiniCreatures/master/src/main/resources/assets/minicreatures/text/names.json";
+
+                @Override
+                public void run() {
+                    try {
+                        Gson gson = GsonHelper.createGson();
+                        Reader reader = new InputStreamReader(new URL(this.namesLoc).openStream());
+                        String[] names = gson.fromJson(reader, String[].class);
+                        reader.close();
+
+                        if (names != null && names.length > 0) {
+                            EventHandler.names = names;
+                        }
+
+                    } catch (Exception e1) {
+                        logger.debug(e1);
+                    }
+                }
+            };
+            getNamesRunnable.run();
+            hasGottenNames = true;
+        }
     }
 
     private void loadConfig(File configFile) {
@@ -97,7 +123,8 @@ public class MiniCreatures {
         enableMiniPlayers = configuration.getBoolean("Enable Mini Players", Configuration.CATEGORY_GENERAL, false, "This feature is still in development and may cause issues");
         enableMiniShark = configuration.getBoolean("Enable Mini Sharks", Configuration.CATEGORY_GENERAL, true, "");
         enableMiniRedPandas = configuration.getBoolean("Enable Mini Red Pandas", Configuration.CATEGORY_GENERAL, true, "");
-        enableCustomizer = configuration.getBoolean( "Enable Customizer", Configuration.CATEGORY_GENERAL, false, "This feature is still in development and may cause issues");
+        enableCustomizer = configuration.getBoolean("Enable Customizer", Configuration.CATEGORY_GENERAL, false, "This feature is still in development and may cause issues");
+        randomNameChance = configuration.getInt("Random Name Chance", Configuration.CATEGORY_GENERAL, 200, 0, 500, "Chance that a Mini Creature will randomly spawn with a name. Higher = lower chance. Set to 0 to disable");
 
         if (configuration.hasChanged()) {
             configuration.save();
