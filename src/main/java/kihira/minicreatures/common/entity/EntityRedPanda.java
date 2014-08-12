@@ -17,6 +17,7 @@ package kihira.minicreatures.common.entity;
 import com.google.common.base.Strings;
 import kihira.minicreatures.MiniCreatures;
 import kihira.minicreatures.common.entity.ai.EntityAIEscapePlayer;
+import kihira.minicreatures.common.entity.ai.EntityAIHappy;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockColored;
 import net.minecraft.entity.Entity;
@@ -61,6 +62,7 @@ public class EntityRedPanda extends EntityTameable implements IMiniCreature {
         this.tasks.addTask(6, new EntityAIWander(this, 1.0D));
         this.tasks.addTask(7, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
         this.tasks.addTask(7, new EntityAILookIdle(this));
+        this.tasks.addTask(8, new EntityAIHappy(this));
         this.targetTasks.addTask(1, new EntityAIOwnerHurtByTarget(this));
         this.targetTasks.addTask(2, new EntityAIOwnerHurtTarget(this));
         this.targetTasks.addTask(3, new EntityAIHurtByTarget(this, true));
@@ -74,6 +76,7 @@ public class EntityRedPanda extends EntityTameable implements IMiniCreature {
         super.entityInit();
         this.dataWatcher.addObject(18, 0); //Has chest
         this.dataWatcher.addObject(19, (byte) BlockColored.func_150032_b(1)); //Collar colour
+        this.dataWatcher.addObject(21, 0); //Is happy. TODO temp until proper AI implementation
     }
 
     public boolean hasChest() {

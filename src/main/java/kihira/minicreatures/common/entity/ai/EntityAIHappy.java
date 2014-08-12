@@ -18,7 +18,7 @@ public class EntityAIHappy extends EntityAIBase {
     }
     @Override
     public boolean shouldExecute() {
-        if (this.theEntity.isTamed() && theEntity.getRNG().nextInt(200) == 0 && !this.theEntity.isSitting()) {
+        if (this.theEntity.isTamed() && !this.theEntity.isSitting() && theEntity.getRNG().nextInt(200) == 0) {
             EntityPlayer player = (EntityPlayer) this.theEntity.getOwner();
             if (player != null && this.theEntity.getDistanceSqToEntity(player) < 32 && !this.theEntity.hasPath()) return true;
         }
@@ -34,7 +34,6 @@ public class EntityAIHappy extends EntityAIBase {
 
     @Override
     public void updateTask() {
-        Random random = this.theEntity.getRNG();
         this.theEntity.getLookHelper().setLookPositionWithEntity(this.theEntity.getOwner(), 10.0F, this.theEntity.getVerticalFaceSpeed());
 
         if (!this.theEntity.hasPath()) {
