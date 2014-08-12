@@ -141,35 +141,26 @@ public class ModelRedPanda extends ModelBase {
      * This is called in {@link net.minecraft.client.renderer.entity.RenderLiving} to set the various angles for the
      * various {@link net.minecraft.client.model.ModelRenderer}s on this model.
      * @param entityLivingBase The entity
-     * @param par2
-     * @param par3
-     * @param par4
      */
     @Override
     public void setLivingAnimations(EntityLivingBase entityLivingBase, float par2, float par3, float par4) {
         EntityRedPanda entityRedPanda = (EntityRedPanda) entityLivingBase;
 
-        //TODO Fix rotation points and angles
         if (entityRedPanda.isSitting()) {
-            this.body.setRotationPoint(0F, 19F, -1F);
-            this.body.rotateAngleX = -(float)Math.PI / 5F;
-            //this.chest.setRotationPoint(0F, 19F, -1F);
-            //this.chest.rotateAngleX = -(float)Math.PI / 5F;
-            this.frontLeftLeg.setRotationPoint(1.5F, 20F, -2F);
-            this.frontRightLeg.setRotationPoint(-1.5F, 20F, -2F);
-            this.backLeftLeg.setRotationPoint(1.6F, 22F, 2.4F);
-            this.backRightLeg.setRotationPoint(-1.5F, 21F, 1.5F);
-            this.frontLeftLeg.rotateAngleX = -1F;
-            this.frontRightLeg.rotateAngleX = -1F;
-            this.backLeftLeg.rotateAngleX = -1.5F;
-            this.backRightLeg.rotateAngleX = -1.5F;
-            this.tail.setRotationPoint(0F, 19F, 1.5F);
+            this.body.setRotationPoint(0F, 21F, -0.3F);
+            this.body.rotateAngleX = -(float)Math.PI / 10F;
+            this.frontLeftLeg.setRotationPoint(1.6F, 22F, -3.4F);
+            this.frontRightLeg.setRotationPoint(-1.6F, 22F, -3.4F);
+            this.backRightLeg.setRotationPoint(-1.6F, 23F, 2.4F);
+            this.backLeftLeg.setRotationPoint(1.6F, 23F, 2.4F);
+            this.tail.setRotationPoint(0F, 21.5F, 3F);
+            this.tail.rotateAngleX = -0.1F;
+            this.backLeftLeg.rotateAngleX = (float) Math.toRadians(-80F);
+            this.backRightLeg.rotateAngleX = (float) Math.toRadians(-80F);
         }
         else {
             this.body.setRotationPoint(0F, 20F, 0F);
             this.body.rotateAngleX = 0;
-            //this.chest.setRotationPoint(0F, 19F, -2F);
-            //this.chest.rotateAngleX = 0;
             this.frontLeftLeg.setRotationPoint(1.6F, 22F, -2.4F);
             this.frontRightLeg.setRotationPoint(-1.6F, 22F, -2.4F);
             this.backRightLeg.setRotationPoint(-1.6F, 22F, 2.4F);
