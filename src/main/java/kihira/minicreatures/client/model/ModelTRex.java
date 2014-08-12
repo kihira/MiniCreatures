@@ -17,6 +17,7 @@ package kihira.minicreatures.client.model;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.MathHelper;
 
 /**
@@ -66,7 +67,8 @@ public class ModelTRex extends ModelBase {
 
         leftLegLower = new ModelRenderer(this, 0, 5);
         leftLegLower.mirror = true;
-        leftLegLower.addBox(-0.5F, 0.8F, -5.2F, 1, 6, 2);
+        //leftLegLower.addBox(-0.5F, 0.8F, -5.2F, 1, 6, 2);
+        leftLegLower.addBox(0, 0, 0, 1, 6, 2);
         leftLegLower.setRotationPoint(2.5F, 15.4F, 1F);
         leftLegLower.setTextureSize(128, 64);
         setRotation(leftLegLower, 0.5759587F, 0F, 0F);
@@ -149,23 +151,24 @@ public class ModelTRex extends ModelBase {
         head.render(f5);
     }
 
-    /*
+
     public void setLivingAnimations(EntityLivingBase entityLivingBase, float par2, float par3, float par4) {
         this.leftLegUpper.rotateAngleX = MathHelper.cos(par2 * 0.6F) * 1.4F * par3 + 0.9599311F;
         this.rightLegUpper.rotateAngleX = MathHelper.cos(par2 * 0.6F + (float) Math.PI) * 1.4F * par3  + 0.9599311F;
 
         //TODO Make this work
-        float x = (float)((5 * Math.sin(this.leftLegUpper.rotateAngleX + Math.toRadians(90))) + 15.4F);
-        float y = (float)((5 * Math.cos(this.leftLegUpper.rotateAngleX + Math.toRadians(90))) + 1F);
+        float x = (float)((5 * Math.sin(this.leftLegUpper.rotateAngleX)) + 15.4F);
+        float y = (float)((5 * Math.cos(this.leftLegUpper.rotateAngleX)) + 1F);
         //System.out.println(Math.toDegrees(this.leftLegUpper.rotateAngleX));
         //this.leftLegLower.setRotationPoint(x, y, (float)-2.3);
         this.leftLegLower.setRotationPoint((float)2.5, x, y);
+        //this.leftLegLower.setRotationPoint(this.leftLegUpper.rotationPointX, this.leftLegUpper.rotationPointY, this.leftLegUpper.rotationPointZ);
         this.leftLegLower.rotateAngleX = 0F;
 
         //this.leftLegLower.rotateAngleX = -MathHelper.cos(par2 * 0.6F + (float)Math.PI) * 1.4F * par3 + 0.5759587F;
         //this.rightLegLower.rotateAngleX = -MathHelper.cos(par2 * 0.6F) * 1.4F * par3 + 0.5759587F;
     }
-    */
+
 
     /**
      * Sets the rotation for the {@link net.minecraft.client.model.ModelRenderer} provided
@@ -196,11 +199,11 @@ public class ModelTRex extends ModelBase {
         this.head.rotateAngleX = par5 / (180F / (float)Math.PI);
         this.head.rotateAngleY = par4 / (180F / (float)Math.PI);
 
-        this.leftLegUpper.rotateAngleX = (MathHelper.cos(par1 * 0.6F) * 1F * par2) / 2 + 0.9599311F;
+/*        this.leftLegUpper.rotateAngleX = (MathHelper.cos(par1 * 0.6F) * 1F * par2) / 2 + 0.9599311F;
         this.leftLegLower.rotateAngleX = (MathHelper.cos(par1 * 0.6F) * 1F * par2) / 2 + 0.5759587F;
         this.leftLegFoot.rotateAngleX = (MathHelper.cos(par1 * 0.6F) * 1F * par2) / 2;
         this.rightLegUpper.rotateAngleX = (MathHelper.cos(par1 * 0.6F + (float) Math.PI) * 1.4F * par2) / 2 + 0.9599311F;
         this.rightLegLower.rotateAngleX = (MathHelper.cos(par1 * 0.6F + (float) Math.PI) * 1.4F * par2) / 2 + 0.5759587F;
-        this.rightLegFoot.rotateAngleX = (MathHelper.cos(par1 * 0.6F + (float) Math.PI) * 1.4F * par2) / 2;
+        this.rightLegFoot.rotateAngleX = (MathHelper.cos(par1 * 0.6F + (float) Math.PI) * 1.4F * par2) / 2;*/
     }
 }

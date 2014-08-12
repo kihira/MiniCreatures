@@ -37,20 +37,24 @@ public class EntityAIEscapePlayer extends EntityAIBase {
         if (this.theEntity instanceof EntityTameable && ((EntityTameable)this.theEntity).isTamed()) {
             return false;
         }
-        this.closestPlayer = this.theEntity.worldObj.getClosestPlayerToEntity(this.theEntity, 18D);
-
-        if (this.closestPlayer == null) return false;
-
+        this.closestPlayer = this.theEntity.worldObj.getClosestPlayerToEntity(this.theEntity, 9D);
+        World world = this.theEntity.worldObj;
         //Search a 6x6 area for a tree
         int searchRadius = 3;
         //We floor the position to prevent issues
         int entityX = MathHelper.floor_double(this.theEntity.posX);
         int entityY = MathHelper.floor_double(this.theEntity.posY);
         int entityZ = MathHelper.floor_double(this.theEntity.posZ);
+
+        if (this.closestPlayer == null) return false;
+        //If we're already on leaves and 3 blocks above the player, we can assume this is a tree and is a safe place
+        if (world.getBlock(entityX, entityY - 1, entityZ) == Blocks.leaves &&
+                entityY - this.closestPlayer.posY >= 3F) return false;
+
         for (int x = -searchRadius; x <= searchRadius; x++) {
             for (int y = -1; y <= 1; y++) {
                 for (int z = -searchRadius; z <= searchRadius; z++) {
-                    Block block = this.theEntity.worldObj.getBlock(entityX + x, entityY + y, entityZ + z);
+                    Block block = world.getBlock(entityX + x, entityY + y, entityZ + z);
                     //If we find a valid target, lets go there
                     if (block == Blocks.log) {
                         //TODO check if valid tree
@@ -65,9 +69,12 @@ public class EntityAIEscapePlayer extends EntityAIBase {
             }
         }
 
-        //Just find a random path away
+        //Just find a random path away instead
         Vec3 vec3 = RandomPositionGenerator.findRandomTargetBlockAwayFrom(this.theEntity, 16, 7, Vec3.createVectorHelper(this.closestPlayer.posX, this.closestPlayer.posY, this.closestPlayer.posZ));
         if (vec3 == null) return false;
+        else if (this.closestPlayer.getDistanceSq(vec3.xCoord, vec3.yCoord, vec3.zCoord) < this.closestPlayer.getDistanceSqToEntity(this.theEntity)) {
+            return false;
+        }
         else {
             PathEntity path = this.theEntity.getNavigator().getPathToXYZ(vec3.xCoord, vec3.yCoord, vec3.zCoord);
             if (path != null) {
@@ -109,7 +116,8 @@ public class EntityAIEscapePlayer extends EntityAIBase {
                 int entityY = MathHelper.floor_double(this.theEntity.posY);
                 int entityZ = MathHelper.floor_double(this.theEntity.posZ);
 
-                if (!(world.isAirBlock(entityX, entityY, entityZ) && world.getBlock(entityX, entityY - 1, entityZ) == Blocks.leaves)) {
+                if (!(world.isAirBlock(entityX, entityY, entityZ) && world.getBlock(entityX, entityY - 1, entityZ) == Blocks.leaves) &&
+                        world.getBlock(entityX - 1, entityY, entityZ) == Blocks.log) {
                     this.isClimbing = true;
                     this.theEntity.noClip = true;
                     this.theEntity.motionY = 0F;
@@ -118,6 +126,7 @@ public class EntityAIEscapePlayer extends EntityAIBase {
                 else {
                     this.isClimbing = false;
                     this.theEntity.noClip = false;
+                    this.theEntity.getNavigator().clearPathEntity();
                 }
             }
         }
