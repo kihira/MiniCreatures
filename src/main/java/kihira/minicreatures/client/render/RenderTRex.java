@@ -29,6 +29,6 @@ public class RenderTRex extends RenderLiving {
 
     @Override
     protected ResourceLocation getEntityTexture(Entity entity) {
-        return trexTexture;
+        return this.trexTexture;
     }
 }
