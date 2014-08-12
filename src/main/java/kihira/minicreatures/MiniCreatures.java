@@ -47,7 +47,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-@Mod(modid = "minicreatures", name = "Mini Creatures", version = "${version}", useMetadata = true, dependencies = "required-after:foxlib@[0.2,)")
+@Mod(modid = "minicreatures", name = "Mini Creatures", version = "${version}", useMetadata = true, dependencies = "required-after:foxlib@[0.2.0,)")
 public class MiniCreatures {
 
     @SidedProxy(clientSide = "kihira.minicreatures.proxy.ClientProxy", serverSide = "kihira.minicreatures.proxy.CommonProxy")
@@ -97,6 +97,7 @@ public class MiniCreatures {
                     try {
                         Gson gson = GsonHelper.createGson();
                         Reader reader = new InputStreamReader(new URL(this.namesLoc).openStream());
+                        //Reader reader = new InputStreamReader(MiniCreatures.class.getResourceAsStream("/assets/minicreatures/text/names.json"));
                         String[] names = gson.fromJson(reader, String[].class);
                         reader.close();
 
