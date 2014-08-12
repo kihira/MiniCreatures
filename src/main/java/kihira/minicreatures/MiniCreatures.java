@@ -25,9 +25,9 @@ import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.EntityRegistry;
 import kihira.foxlib.common.gson.GsonHelper;
 import kihira.minicreatures.common.CommandSpawnEntity;
-import kihira.minicreatures.common.EventHandler;
-import kihira.minicreatures.common.GuiHandler;
 import kihira.minicreatures.common.entity.*;
+import kihira.minicreatures.common.handler.EventHandler;
+import kihira.minicreatures.common.handler.GuiHandler;
 import kihira.minicreatures.common.item.ItemCustomizer;
 import kihira.minicreatures.common.personality.Mood;
 import kihira.minicreatures.common.personality.MoodTest;
@@ -38,7 +38,6 @@ import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
-import net.minecraftforge.common.config.Property;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -50,13 +49,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-@Mod(modid = "minicreatures", name = "Mini Creatures", version = "${version}", useMetadata = true, dependencies = "required-after:foxlib@[0.1.0,)")
+@Mod(modid = "minicreatures", name = "Mini Creatures", version = "${version}", useMetadata = true, dependencies = "required-after:foxlib@[0.2,)")
 public class MiniCreatures {
 
     @SidedProxy(clientSide = "kihira.minicreatures.proxy.ClientProxy", serverSide = "kihira.minicreatures.proxy.CommonProxy")
     public static CommonProxy proxy;
 
-    @Mod.Instance(value = "minicreatures")
+    @Mod.Instance()
     public static MiniCreatures instance;
     public static final Logger logger = LogManager.getLogger("MiniCreatues");
 
@@ -91,23 +90,14 @@ public class MiniCreatures {
 
     private void loadConfig(File configFile) {
         Configuration configuration = new Configuration(configFile);
-        Property property;
         configuration.load();
 
-        property = configuration.get(Configuration.CATEGORY_GENERAL, "Enable Mini Fox", true);
-        enableMiniFoxes = property.getBoolean(true);
-        property = configuration.get(Configuration.CATEGORY_GENERAL, "Enable Mini T-Rex", true);
-        enableMiniTRex = property.getBoolean(true);
-        property = configuration.get(Configuration.CATEGORY_GENERAL, "Enable Mini Players", true);
-        enableMiniPlayers = property.getBoolean(true);
-        property = configuration.get(Configuration.CATEGORY_GENERAL, "Enable Mini Sharks", true);
-        enableMiniShark = property.getBoolean(true);
-        property = configuration.get(Configuration.CATEGORY_GENERAL, "Enable Mini Red Pandas", true);
-        enableMiniRedPandas = property.getBoolean(true);
-        property = configuration.get(Configuration.CATEGORY_GENERAL, "Enable Customizer", true);
-        property.comment = "This feature is still in development and may cause issues";
-        enableCustomizer = property.getBoolean(true);
-
+        enableMiniFoxes = configuration.getBoolean("Enable Mini Fox", Configuration.CATEGORY_GENERAL, true, "");
+        enableMiniTRex = configuration.getBoolean("Enable Mini T-Rex", Configuration.CATEGORY_GENERAL, true, "");
+        enableMiniPlayers = configuration.getBoolean("Enable Mini Players", Configuration.CATEGORY_GENERAL, false, "This feature is still in development and may cause issues");
+        enableMiniShark = configuration.getBoolean("Enable Mini Sharks", Configuration.CATEGORY_GENERAL, true, "");
+        enableMiniRedPandas = configuration.getBoolean("Enable Mini Red Pandas", Configuration.CATEGORY_GENERAL, true, "");
+        enableCustomizer = configuration.getBoolean( "Enable Customizer", Configuration.CATEGORY_GENERAL, false, "This feature is still in development and may cause issues");
 
         if (configuration.hasChanged()) {
             configuration.save();

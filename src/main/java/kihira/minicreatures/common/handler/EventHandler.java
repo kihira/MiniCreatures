@@ -12,9 +12,11 @@
  *     GNU General Public License for more details.
  */
 
-package kihira.minicreatures.common;
+package kihira.minicreatures.common.handler;
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import kihira.minicreatures.MiniCreatures;
 import kihira.minicreatures.common.entity.EntityFox;
 import kihira.minicreatures.common.entity.EntityMiniPlayer;
@@ -45,6 +47,7 @@ public class EventHandler {
 
     //TODO Overhaul this? Make it so it can be calculated server side
     @SubscribeEvent
+    @SideOnly(Side.CLIENT)
     public void leftClick(MouseEvent interactEvent) {
         //Only trigger if it has been more then 5 seconds
         if ((System.currentTimeMillis() - this.lastTrigger > 5000) && Minecraft.getMinecraft().gameSettings.keyBindAttack.getIsKeyPressed()) {

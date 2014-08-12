@@ -12,10 +12,11 @@
  *     GNU General Public License for more details.
  */
 
-package kihira.minicreatures.common;
+package kihira.minicreatures.common.handler;
 
 import cpw.mods.fml.common.network.IGuiHandler;
 import kihira.minicreatures.client.gui.GuiCustomizer;
+import kihira.minicreatures.common.ContainerCarriedAnvil;
 import kihira.minicreatures.common.entity.ICustomisable;
 import kihira.minicreatures.common.entity.IMiniCreature;
 import net.minecraft.client.gui.GuiRepair;
