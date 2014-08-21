@@ -16,7 +16,7 @@ package kihira.minicreatures.client.render;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import kihira.foxlib.client.RenderHelper;
+import kihira.foxlib.client.TextHelper;
 import kihira.minicreatures.client.model.ModelMiniPlayer;
 import kihira.minicreatures.common.entity.EntityMiniPlayer;
 import net.minecraft.block.Block;
@@ -57,7 +57,7 @@ public class RenderMiniPlayer extends RenderBiped {
         //Draw the chat messages
         String chat = miniPlayer.getChat();
         if (chat != null && !chat.isEmpty()) {
-            RenderHelper.drawWrappedMessageFacingPlayer(x, y + miniPlayer.height + 0.67F, z, 0.016666668F * 1.1F, 100, 20, chat, -1);
+            TextHelper.drawWrappedMessageFacingPlayer(x, y + miniPlayer.height + 0.67F, z, 0.016666668F * 1.1F, 100, 20, chat, -1);
         }
 
         //Draw stat changes
@@ -68,7 +68,7 @@ public class RenderMiniPlayer extends RenderBiped {
             //Loop through any changes
             for (String statChange : miniPlayer.statMessage.split(";")) {
                 if (!statChange.isEmpty()) {
-                    RenderHelper.drawMultiLineMessageFacingPlayer(x, y + yOffset, z, 0.016666668F, new String[]{statChange}, (int) (-(miniPlayer.statMessageTime / 60F) * 255) << 24, true, false);
+                    TextHelper.drawMultiLineMessageFacingPlayer(x, y + yOffset, z, 0.016666668F, new String[]{statChange}, (int) (-(miniPlayer.statMessageTime / 60F) * 255) << 24, true, false);
                     yOffset += 0.4;
                 }
             }
