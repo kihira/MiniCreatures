@@ -62,6 +62,7 @@ public class Personality implements Serializable {
         }
 
         //Find new mood
+        //TODO switch to a weighted system. Each mood has a weight that it will be the next one
         if (this.currentMood == neturalMood || this.currentMood == null) {
             if (!moodList.isEmpty()) {
                 for (Mood mood : moodList) {
