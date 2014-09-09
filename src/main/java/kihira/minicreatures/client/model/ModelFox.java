@@ -20,6 +20,7 @@ import kihira.minicreatures.common.entity.EntityFox;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.MathHelper;
 import org.lwjgl.opengl.GL11;
@@ -53,6 +54,7 @@ public class ModelFox extends ModelBase {
         head.setTextureOffset(36, 6).addBox(1.5F, -6F, -3F, 1, 1, 1); //Left Ear Tip
         head.setTextureOffset(20, 6).addBox(-2.5F, -5F, -3F, 2, 2, 1); //Right Ear
         head.setTextureOffset(26, 6).addBox(-2.5F, -6F, -3F, 1, 1, 1); //Right Ear Tip
+
         LBLeg = new ModelRenderer(this, 42, 5);
         LBLeg.addBox(-1F, 0F, -1F, 2, 3, 2);
         LBLeg.setRotationPoint(1.5F, 21F, 2.5F);
@@ -65,6 +67,7 @@ public class ModelFox extends ModelBase {
         LFLeg = new ModelRenderer(this, 42, 5);
         LFLeg.addBox(-1F, 0F, -1F, 2, 3, 2);
         LFLeg.setRotationPoint(1.5F, 21F, -1.5F);
+
         Body = new ModelRenderer(this, 32, 10);
         Body.addBox(-2F, -2F, -2F, 4, 4, 5);
         Body.setRotationPoint(0F, 19F, 0F);
@@ -76,14 +79,19 @@ public class ModelFox extends ModelBase {
         tailBase.addBox(-1F, -1F, 0F, 2, 2, 3);
         tailBase.setRotationPoint(0F, 18F, 2F);
         setRotation(tailBase, 0.3316126F, 0F, 0F);
+
         tailMid = new ModelRenderer(this, 0, 10);
-        tailMid.addBox(-1.5F, -1F, 2F, 3, 3, 4);
-        tailMid.setRotationPoint(0F, 18F, 2F);
+        tailMid.addBox(-1.5F, -1F, 0F, 3, 3, 4);
+        tailMid.setRotationPoint(0F, -0.25F, 2F);
         setRotation(tailMid, 0.5934119F, 0F, 0F);
+
         tailTip = new ModelRenderer(this, 24, 10);
-        tailTip.addBox(-1F, 2F, 4.5F, 2, 2, 2);
-        tailTip.setRotationPoint(0F, 18F, 2F);
+        tailTip.addBox(-1F, 2F, 0F, 2, 2, 2);
+        tailTip.setRotationPoint(0F, -0.25F, 0.9F);
         setRotation(tailTip, 1.029744F, 0F, 0F);
+
+        tailMid.addChild(tailTip);
+        tailBase.addChild(tailMid);
     }
 
     /**
@@ -98,21 +106,20 @@ public class ModelFox extends ModelBase {
      * @param f5 A mystery number
      */
     public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
-        super.render(entity, f, f1, f2, f3, f4, f5);
         this.setRotationAngles(f, f1, f2, f3, f4, f5, entity);
+
         EntityFox entityFox = (EntityFox)entity;
         GL11.glPushMatrix();
         if (entityFox.isSitting()) {
             GL11.glTranslatef(0.0f, f5 + 0.06f, 0f);
         }
+
         LBLeg.render(f5);
         head.renderWithRotation(f5);
-        tailMid.render(f5);
         RBLeg.render(f5);
         RFLeg.render(f5);
         LFLeg.render(f5);
         Body.render(f5);
-        tailTip.render(f5);
         tailBase.render(f5);
         if (entityFox.hasChest()) {
             GL11.glPushMatrix();
@@ -127,18 +134,6 @@ public class ModelFox extends ModelBase {
             GL11.glPopMatrix();
         }
         GL11.glPopMatrix();
-    }
-
-    /**
-     * Sets the tails rotation point
-     * @param x The x position
-     * @param y The y position
-     * @param z The z position
-     */
-    private void setTailRotationPoints(float x, float y, float z) {
-        this.tailBase.setRotationPoint(x, y, z);
-        this.tailMid.setRotationPoint(x, y, z);
-        this.tailTip.setRotationPoint(x, y, z);
     }
 
     /**
@@ -165,7 +160,7 @@ public class ModelFox extends ModelBase {
             this.RFLeg.rotateAngleX = -1F;
             this.LBLeg.rotateAngleX = -1.5F;
             this.RBLeg.rotateAngleX = -1.5F;
-            this.setTailRotationPoints(0F, 19F, 1.5F);
+            this.tailBase.setRotationPoint(0F, 19F, 1.5F);
         }
         else {
             this.Body.setRotationPoint(0F, 19F, 0F);
@@ -180,7 +175,7 @@ public class ModelFox extends ModelBase {
             this.RFLeg.rotateAngleX = MathHelper.cos(par2 * 1.5F + (float)Math.PI) * 1.4F * par3;
             this.LBLeg.rotateAngleX = MathHelper.cos(par2 * 1.5F + (float)Math.PI) * 1.4F * par3;
             this.RBLeg.rotateAngleX = MathHelper.cos(par2 * 1.5F) * 1.4F * par3;
-            this.setTailRotationPoints(0F, 18F, 2F);
+            this.tailBase.setRotationPoint(0F, 18F, 2F);
         }
     }
 
@@ -210,7 +205,12 @@ public class ModelFox extends ModelBase {
     @Override
     public void setRotationAngles(float par1, float par2, float par3, float par4, float par5, float par6, Entity entity) {
         super.setRotationAngles(par1, par2, par3, par4, par5, par6, entity);
+        EntityLiving entityLiving = (EntityLiving) entity;
+        float health = entityLiving.getHealth() / entityLiving.getMaxHealth(); //Grab this here to reduce data watcher calls
+
         this.head.rotateAngleX = par5 / (180F / (float)Math.PI);
         this.head.rotateAngleY = par4 / (180F / (float)Math.PI);
+        this.tailBase.rotateAngleX = health / 3F;
+        this.tailMid.rotateAngleX = health / 1.5F;
     }
 }
