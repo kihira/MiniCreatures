@@ -20,8 +20,8 @@ import kihira.minicreatures.common.entity.EntityFox;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.MathHelper;
 import org.lwjgl.opengl.GL11;
 
@@ -205,12 +205,18 @@ public class ModelFox extends ModelBase {
     @Override
     public void setRotationAngles(float par1, float par2, float par3, float par4, float par5, float par6, Entity entity) {
         super.setRotationAngles(par1, par2, par3, par4, par5, par6, entity);
-        EntityLiving entityLiving = (EntityLiving) entity;
+        EntityFox entityLiving = (EntityFox) entity;
+        EntityPlayer owner = (EntityPlayer) entityLiving.getOwner();
         float health = entityLiving.getHealth() / entityLiving.getMaxHealth(); //Grab this here to reduce data watcher calls
 
         this.head.rotateAngleX = par5 / (180F / (float)Math.PI);
         this.head.rotateAngleY = par4 / (180F / (float)Math.PI);
         this.tailBase.rotateAngleX = health / 3F;
         this.tailMid.rotateAngleX = health / 1.5F;
+
+        //Tail
+        //We can't use a number / distanceToOwner cause sometimes owner returns null even though the owner is there
+        double speedModifier = health * (owner != null && entityLiving.getDistanceToEntity(owner) < 28D ? 1.5D : 0.5D);
+        this.tailBase.rotateAngleY = (float) Math.cos((par3 / 2F) * speedModifier) / (2.5F / health);
     }
 }
