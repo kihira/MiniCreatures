@@ -15,25 +15,46 @@ buildscript {
     }
 }
 
+repositories {
+    mavenCentral()
+    maven {
+        name = 'Kihira Repo'
+        url = 'http://maven.kihirakreations.co.uk'
+    }
+}
+
 apply plugin: 'forge'
 
-version = "0.1.0"
-group= "kihira.minicreatures" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = "MiniCreatures"
+project.ext {
+    massive = "0"
+    major = "2"
+    minor = "0"
+    mcVersion = "1.7.10"
+    forgeVersion = "10.13.0.1180"
+    foxlibVersion = "1.7.10-0.4.1.28"
+}
 
-minecraft {
-    version = "1.7.10-10.13.0.1180"
+configurations {
+    deployerJars
 }
 
 dependencies {
-    compile files (
-            'libs/FoxLib-0.1.0-deobf.jar'
-    )
+    deployerJars "org.apache.maven.wagon:wagon-ftp:2.2"
+    compile "kihira:FoxLib:"+project.foxlibVersion+":dev"
 }
+
+version = "${project.ext.mcVersion}-${project.ext.massive}.${project.ext.major}.${project.minor}.${System.getenv("BUILD_NUMBER") ?: 0}"
+group= "kihira"
+archivesBaseName = "MiniCreatures"
+
+minecraft {
+    version = "${project.ext.mcVersion}-${project.ext.forgeVersion}"
+}
+
 processResources {
-    // replace render in mcmod.info, nothing else
+    // replace stuff in mcmod.info, nothing else
     from(sourceSets.main.resources.srcDirs) {
-        include '**/*.info'
+        include 'mcmod.info'
 
         // replace version and mcversion
         expand 'version':project.version, 'mcversion':project.minecraft.version
@@ -41,18 +62,20 @@ processResources {
 
     // copy everything else, thats not the mcmod.info
     from(sourceSets.main.resources.srcDirs) {
-        exclude '**/*.info'
+        exclude 'mcmod.info'
     }
 }
 
 task sourceJar(type: Jar) {
     from sourceSets.main.allSource
+    from sourceSets.api.allSource
     classifier = 'src'
 }
 
 task deobfJar(type: Jar) {
     from sourceSets.main.output
-    classifier = 'deobf'
+    from sourceSets.api.output
+    classifier = 'dev'
 }
 
 artifacts {
@@ -60,9 +83,13 @@ artifacts {
     archives deobfJar
 }
 
-jar.doFirst {
-    version = project.minecraft.version + "-" + version;
-    if (System.getenv().BUILD_NUMBER != null) {
-        version += "-" + "${System.getenv().BUILD_NUMBER}"
+uploadArchives {
+    dependsOn 'reobf'
+
+    repositories.mavenDeployer {
+        configuration = configurations.deployerJars
+        repository(url: teamcity["maven_url"]) {
+            authentication(userName: teamcity["maven_username"], password: teamcity["maven_password"])
+        }
     }
 }
