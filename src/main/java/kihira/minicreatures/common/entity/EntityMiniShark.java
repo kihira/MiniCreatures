@@ -35,7 +35,7 @@ public class EntityMiniShark extends EntityWaterMob {
 
     public EntityMiniShark(World par1World) {
         super(par1World);
-        //this.setSize(0.9F, 0.3F);
+        this.setSize(0.3F, 0.3F);
         this.renderDistanceWeight = 4D;
     }
 
@@ -51,14 +51,13 @@ public class EntityMiniShark extends EntityWaterMob {
     }
 
     @Override
-    protected boolean canTriggerWalking()
-    {
+    protected boolean canTriggerWalking() {
         return false;
     }
 
     @Override
-    public boolean attackEntityAsMob(Entity par1Entity) {
-        return par1Entity.attackEntityFrom(DamageSource.causeMobDamage(this), 3);
+    public boolean attackEntityAsMob(Entity entity) {
+        return entity.attackEntityFrom(DamageSource.causeMobDamage(this), worldObj.difficultySetting.getDifficultyId() * 2);
     }
 
     @SuppressWarnings("SuspiciousNameCombination")
@@ -69,41 +68,42 @@ public class EntityMiniShark extends EntityWaterMob {
 
         if (this.attackTick > 0) this.attackTick--;
 
-        double d0 = this.waypointX - this.posX;
-        double d1 = this.waypointY - this.posY;
-        double d2 = this.waypointZ - this.posZ;
-        double d3 = d0 * d0 + d1 * d1 + d2 * d2;
+        if (this.isInWater()) {
+            double xDist = this.waypointX - this.posX;
+            double yDist = this.waypointY - this.posY;
+            double zDist = this.waypointZ - this.posZ;
+            double d3 = xDist * xDist + yDist * yDist + zDist * zDist;
 
-        if ((d3 < 1D || d3 > 3600D) && this.rand.nextInt() > 30) {
-            this.waypointX = this.posX + (double)((this.rand.nextFloat() * 2.0F - 1.0F) * 16F);
-            this.waypointY = this.posY + (double)((this.rand.nextFloat() * 2.0F - 1.0F) * 2F);
-            this.waypointZ = this.posZ + (double)((this.rand.nextFloat() * 2.0F - 1.0F) * 16F);
+            if ((d3 < 1D || d3 > 3600D) && this.rand.nextInt() > 30) {
+                this.waypointX = this.posX + (double)((this.rand.nextFloat() * 2.0F - 1.0F) * 16F);
+                this.waypointY = this.posY + (double)((this.rand.nextFloat() * 2.0F - 1.0F) * 2F);
+                this.waypointZ = this.posZ + (double)((this.rand.nextFloat() * 2.0F - 1.0F) * 16F);
 
-            if (!(this.worldObj.getBlock((int) this.waypointX, (int) this.waypointY, (int) this.waypointZ) instanceof BlockLiquid)) {
+                if (!(this.worldObj.getBlock((int) this.waypointX, (int) this.waypointY, (int) this.waypointZ) instanceof BlockLiquid)) {
+                    this.waypointX = this.posX;
+                    this.waypointY = this.posY;
+                    this.waypointZ = this.posZ;
+                }
+            }
+
+            d3 = (double) MathHelper.sqrt_double(d3);
+
+            if (this.isCourseTraversable(d3)) {
+                this.motionX += xDist / d3 * (this.targetedEntity != null ? 0.02D : 0.01D);
+                this.motionY += yDist / d3 * (this.targetedEntity != null ? 0.02D : 0.01D);
+                this.motionZ += zDist / d3 * (this.targetedEntity != null ? 0.02D : 0.01D);
+            }
+            else {
                 this.waypointX = this.posX;
                 this.waypointY = this.posY;
                 this.waypointZ = this.posZ;
             }
         }
-
-        d3 = (double) MathHelper.sqrt_double(d3);
-
-        if (this.isCourseTraversable(d3)) {
-            this.motionX += d0 / d3 * (this.targetedEntity != null ? 0.02D : 0.01D);
-            this.motionY += d1 / d3 * (this.targetedEntity != null ? 0.02D : 0.01D);
-            this.motionZ += d2 / d3 * (this.targetedEntity != null ? 0.02D : 0.01D);
-        }
         else {
-            this.waypointX = this.posX;
-            this.waypointY = this.posY;
-            this.waypointZ = this.posZ;
-        }
-
-        if (!this.isInWater()) {
-            //this.motionX = 0D;
+            this.motionX = 0D;
             this.motionY -= 0.08D;
-            //this.motionY *= 0.9800000190734863D;
-            //this.motionZ = 0D;
+            this.motionY *= 0.9800000190734863D;
+            this.motionZ = 0D;
         }
 
         if (this.targetedEntity != null && this.targetedEntity.isDead) this.targetedEntity = null;
@@ -129,14 +129,14 @@ public class EntityMiniShark extends EntityWaterMob {
         }
     }
 
-    private boolean isCourseTraversable(double par7) {
-        double d4 = (this.waypointX - this.posX) / par7;
-        double d5 = (this.waypointY - this.posY) / par7;
-        double d6 = (this.waypointZ - this.posZ) / par7;
+    private boolean isCourseTraversable(double dist) {
+        double x = (this.waypointX - this.posX) / dist;
+        double y = (this.waypointY - this.posY) / dist;
+        double z = (this.waypointZ - this.posZ) / dist;
         AxisAlignedBB axisalignedbb = this.boundingBox.copy();
 
-        for (int i = 1; (double)i < par7; ++i) {
-            axisalignedbb.offset(d4, d5, d6);
+        for (int i = 1; (double)i < dist; ++i) {
+            axisalignedbb.offset(x, y, z);
             if (!this.worldObj.getCollidingBoundingBoxes(this, axisalignedbb).isEmpty()) return false;
         }
 
@@ -166,12 +166,11 @@ public class EntityMiniShark extends EntityWaterMob {
         else {
             this.moveFlying(par1, par2, 0.02F);
             this.moveEntity(this.motionX, this.motionY, this.motionZ);
-            this.motionX = 0D;
-            this.motionY *= 0.5D;
-            this.motionZ = 0D;
         }
     }
 
     @Override
-    protected void jump() {}
+    protected void jump() {
+        super.jump();
+    }
 }
