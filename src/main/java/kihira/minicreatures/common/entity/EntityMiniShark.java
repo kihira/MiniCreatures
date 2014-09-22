@@ -91,6 +91,7 @@ public class EntityMiniShark extends EntityWaterMob {
 
             d3 = (double) MathHelper.sqrt_double(d3);
 
+            //If we can move there, do so. Otherwise reset
             if (this.isCourseTraversable(d3)) {
                 this.motionX += xDist / d3 * (this.targetedEntity != null ? 0.02D : 0.01D);
                 this.motionY += yDist / d3 * (this.targetedEntity != null ? 0.02D : 0.01D);
@@ -156,6 +157,18 @@ public class EntityMiniShark extends EntityWaterMob {
             this.motionZ *= 0.95F;
         }
         this.moveEntity(this.motionX, this.motionY, this.motionZ);
+
+        this.prevLimbSwingAmount = this.limbSwingAmount;
+        double xDiff = this.posX - this.prevPosX;
+        double zDiff = this.posZ - this.prevPosZ;
+        float limbSwing = MathHelper.sqrt_double(xDiff * xDiff + zDiff * zDiff) * 4.0F;
+
+        if (limbSwing > 1.0F) {
+            limbSwing = 1.0F;
+        }
+
+        this.limbSwingAmount += (limbSwing - this.limbSwingAmount) * 0.4F;
+        this.limbSwing += this.limbSwingAmount;
     }
 
     @Override
