@@ -22,6 +22,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
+import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
 
 public class EntityMiniShark extends EntityWaterMob {
@@ -35,7 +36,6 @@ public class EntityMiniShark extends EntityWaterMob {
     public EntityMiniShark(World par1World) {
         super(par1World);
         this.setSize(0.8F, 0.4F);
-        //this.setSize(0.95F, 0.95F);
         this.renderDistanceWeight = 4D;
     }
 
@@ -84,13 +84,15 @@ public class EntityMiniShark extends EntityWaterMob {
                 this.motionY -= 0.08D;
                 this.motionY *= 0.9800000190734863D;
                 this.motionZ *= 0.9D;
+/*                System.out.println((int) Math.floor(posX) + " " + (int) Math.floor(posY) + " " + (int) Math.floor(posZ));
+                System.out.println(worldObj.getBlock((int) Math.floor(posX), (int) Math.floor(posY), (int) Math.floor(posZ)).getUnlocalizedName());*/
             }
 
             if (this.targetedEntity != null) {
                 this.faceEntity(this.targetedEntity, 5F, 5F);
 
                 double distToTarget = this.getDistanceSq(this.targetedEntity.posX, this.targetedEntity.boundingBox.minY, this.targetedEntity.posZ);
-                double d10 = (double)(this.width * 5F * this.width * 5F + this.targetedEntity.width);
+                double d10 = (double)(this.width + this.targetedEntity.width);
                 if (distToTarget <= d10 && this.attackTick <= 0) {
                     this.attackTick = 20;
                     this.attackEntityAsMob(this.targetedEntity);
@@ -133,10 +135,8 @@ public class EntityMiniShark extends EntityWaterMob {
             }
         }
 
-        if (targetedEntity != null && (targetedEntity.isDead || !targetedEntity.isInWater() || this.targetedEntity.getDistanceSqToEntity(this) < 4096D || !canEntityBeSeen(this.targetedEntity))) {
-            targetedEntity = null;
-        }
         if (targetedEntity == null) targetedEntity = worldObj.getClosestVulnerablePlayerToEntity(this, 64D);
+        checkTargetValid();
         if (targetedEntity != null) {
             this.waypointX = this.targetedEntity.posX;
             this.waypointY = this.targetedEntity.posY;
@@ -144,6 +144,12 @@ public class EntityMiniShark extends EntityWaterMob {
         }
 
         despawnEntity();
+    }
+
+    private void checkTargetValid() {
+        if (targetedEntity != null && (targetedEntity.isDead || !targetedEntity.isInWater() || this.targetedEntity.getDistanceSqToEntity(this) > 3600D || !canEntityBeSeen(this.targetedEntity))) {
+            targetedEntity = null;
+        }
     }
 
     private void resetWaypoints() {
@@ -192,5 +198,20 @@ public class EntityMiniShark extends EntityWaterMob {
     @Override
     public boolean isInWater() {
         return this.worldObj.getBlock(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.boundingBox.minY + 0.25), MathHelper.floor_double(this.posZ)).getMaterial() == Material.water;
+    }
+
+    @Override
+    public void applyEntityCollision(Entity entity){
+        super.applyEntityCollision(entity);
+        if (targetedEntity != null && entity.equals(targetedEntity) && attackTick <= 0){
+            targetedEntity.attackEntityAsMob(targetedEntity);
+            attackTick = 20;
+        }
+    }
+
+    @Override
+    protected void despawnEntity() {
+        if (worldObj.difficultySetting == EnumDifficulty.PEACEFUL) setDead();
+        else super.despawnEntity();
     }
 }
