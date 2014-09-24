@@ -32,10 +32,11 @@ public class EntityMiniShark extends EntityWaterMob {
     private double waypointZ;
     private EntityPlayer targetedEntity;
     private int attackTick;
+    private float verticalSpeedModifier = 0.75F;
 
     public EntityMiniShark(World par1World) {
         super(par1World);
-        this.setSize(0.8F, 0.4F);
+        this.setSize(0.8F, 0.3F);
         this.renderDistanceWeight = 4D;
     }
 
@@ -76,7 +77,7 @@ public class EntityMiniShark extends EntityWaterMob {
                 d3 = Math.sqrt(d3);
 
                 this.motionX += xDist / d3 * (this.targetedEntity != null ? 0.02D : 0.01D);
-                this.motionY += yDist / d3 * (this.targetedEntity != null ? 0.02D : 0.01D);
+                this.motionY += yDist / d3 * (this.targetedEntity != null ? 0.02D : 0.01D) * verticalSpeedModifier;
                 this.motionZ += zDist / d3 * (this.targetedEntity != null ? 0.02D : 0.01D);
             }
             else {
@@ -116,15 +117,15 @@ public class EntityMiniShark extends EntityWaterMob {
         double d3 = xDist * xDist + yDist * yDist + zDist * zDist;
 
         if (this.isInWater()) {
-            if (this.targetedEntity == null && ((d3 < 4D || d3 > 3600D) || !isCourseTraversable(d3))) {
+            if (this.targetedEntity == null && ((d3 < 1D || d3 > 3600D) || !isCourseTraversable(d3))) {
                 for (int i = 0; i < 3; i++) {
                     double targetX = posX + MathHelper.getRandomDoubleInRange(rand, -8F, 8F);
-                    double targetY = posY + MathHelper.getRandomDoubleInRange(rand, -1F, 1F);
+                    double targetY = MathHelper.floor_double(posY + MathHelper.getRandomDoubleInRange(rand, -1F, 1F));
                     double targetZ = posZ + MathHelper.getRandomDoubleInRange(rand, -8F, 8F);
 
                     if ((worldObj.getBlock((int) targetX, (int) targetY, (int) targetZ).getMaterial() == Material.water) && isCourseTraversable(MathHelper.sqrt_double(d3))) {
                         waypointX = targetX;
-                        waypointY = targetY;
+                        waypointY = targetY + height;
                         waypointZ = targetZ;
                         break;
                     }
@@ -197,7 +198,8 @@ public class EntityMiniShark extends EntityWaterMob {
 
     @Override
     public boolean isInWater() {
-        return this.worldObj.getBlock(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.boundingBox.minY + 0.25), MathHelper.floor_double(this.posZ)).getMaterial() == Material.water;
+        this.inWater = this.worldObj.getBlock(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.boundingBox.minY + 0.25), MathHelper.floor_double(this.posZ)).getMaterial() == Material.water;
+        return this.inWater;
     }
 
     @Override
