@@ -14,7 +14,7 @@
 
 package kihira.minicreatures.common.entity;
 
-import net.minecraft.block.BlockLiquid;
+import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.passive.EntityWaterMob;
@@ -32,10 +32,11 @@ public class EntityMiniShark extends EntityWaterMob {
     private double waypointZ;
     private EntityPlayer targetedEntity;
     private int attackTick;
+    private float verticalSpeedModifier = 0.75F;
 
     public EntityMiniShark(World par1World) {
         super(par1World);
-        //this.setSize(0.9F, 0.3F);
+        this.setSize(0.8F, 0.3F);
         this.renderDistanceWeight = 4D;
     }
 
@@ -51,127 +52,168 @@ public class EntityMiniShark extends EntityWaterMob {
     }
 
     @Override
-    protected boolean canTriggerWalking()
-    {
+    protected boolean canTriggerWalking() {
         return false;
     }
 
     @Override
-    public boolean attackEntityAsMob(Entity par1Entity) {
-        return par1Entity.attackEntityFrom(DamageSource.causeMobDamage(this), 3);
+    public boolean attackEntityAsMob(Entity entity) {
+        return entity.attackEntityFrom(DamageSource.causeMobDamage(this), worldObj.difficultySetting.getDifficultyId() * 2);
     }
 
+
+    @Override
     @SuppressWarnings("SuspiciousNameCombination")
-    protected void updateEntityActionState() {
-        if (!this.worldObj.isRemote && this.worldObj.difficultySetting == EnumDifficulty.PEACEFUL) {
-            this.setDead();
-        }
+    public void onLivingUpdate() {
+        super.onLivingUpdate();
+        if (!this.worldObj.isRemote) {
+            if (this.attackTick > 0) this.attackTick--;
 
-        if (this.attackTick > 0) this.attackTick--;
+            if (this.isInWater()) {
+                double xDist = this.waypointX - this.posX;
+                double yDist = this.waypointY - this.posY;
+                double zDist = this.waypointZ - this.posZ;
+                double d3 = xDist * xDist + yDist * yDist + zDist * zDist;
+                d3 = Math.sqrt(d3);
 
-        double d0 = this.waypointX - this.posX;
-        double d1 = this.waypointY - this.posY;
-        double d2 = this.waypointZ - this.posZ;
-        double d3 = d0 * d0 + d1 * d1 + d2 * d2;
-
-        if ((d3 < 1D || d3 > 3600D) && this.rand.nextInt() > 30) {
-            this.waypointX = this.posX + (double)((this.rand.nextFloat() * 2.0F - 1.0F) * 16F);
-            this.waypointY = this.posY + (double)((this.rand.nextFloat() * 2.0F - 1.0F) * 2F);
-            this.waypointZ = this.posZ + (double)((this.rand.nextFloat() * 2.0F - 1.0F) * 16F);
-
-            if (!(this.worldObj.getBlock((int) this.waypointX, (int) this.waypointY, (int) this.waypointZ) instanceof BlockLiquid)) {
-                this.waypointX = this.posX;
-                this.waypointY = this.posY;
-                this.waypointZ = this.posZ;
+                this.motionX += xDist / d3 * (this.targetedEntity != null ? 0.02D : 0.01D);
+                this.motionY += yDist / d3 * (this.targetedEntity != null ? 0.02D : 0.01D) * verticalSpeedModifier;
+                this.motionZ += zDist / d3 * (this.targetedEntity != null ? 0.02D : 0.01D);
             }
-        }
+            else {
+                this.motionX *= 0.9D;
+                this.motionY -= 0.08D;
+                this.motionY *= 0.9800000190734863D;
+                this.motionZ *= 0.9D;
+/*                System.out.println((int) Math.floor(posX) + " " + (int) Math.floor(posY) + " " + (int) Math.floor(posZ));
+                System.out.println(worldObj.getBlock((int) Math.floor(posX), (int) Math.floor(posY), (int) Math.floor(posZ)).getUnlocalizedName());*/
+            }
 
-        d3 = (double) MathHelper.sqrt_double(d3);
+            if (this.targetedEntity != null) {
+                this.faceEntity(this.targetedEntity, 5F, 5F);
 
-        if (this.isCourseTraversable(d3)) {
-            this.motionX += d0 / d3 * (this.targetedEntity != null ? 0.02D : 0.01D);
-            this.motionY += d1 / d3 * (this.targetedEntity != null ? 0.02D : 0.01D);
-            this.motionZ += d2 / d3 * (this.targetedEntity != null ? 0.02D : 0.01D);
-        }
-        else {
-            this.waypointX = this.posX;
-            this.waypointY = this.posY;
-            this.waypointZ = this.posZ;
-        }
-
-        if (!this.isInWater()) {
-            //this.motionX = 0D;
-            this.motionY -= 0.08D;
-            //this.motionY *= 0.9800000190734863D;
-            //this.motionZ = 0D;
-        }
-
-        if (this.targetedEntity != null && this.targetedEntity.isDead) this.targetedEntity = null;
-        if (this.targetedEntity == null) this.targetedEntity = this.worldObj.getClosestVulnerablePlayerToEntity(this, 64D);
-        if (this.targetedEntity != null && this.targetedEntity.getDistanceSqToEntity(this) < 4096D) {
-            this.faceEntity(this.targetedEntity, 2F, 2F);
-
-            if (this.canEntityBeSeen(this.targetedEntity) && this.targetedEntity.isInWater()) {
-                this.waypointX = this.targetedEntity.posX;
-                this.waypointY = this.targetedEntity.posY;
-                this.waypointZ = this.targetedEntity.posZ;
-
-                double d9 = this.getDistanceSq(this.targetedEntity.posX, this.targetedEntity.boundingBox.minY, this.targetedEntity.posZ);
-                double d10 = (double)(this.width * 2.0F * this.width * 2.0F + this.targetedEntity.width);
-                if (d9 <= d10 && this.attackTick <= 20) {
+                double distToTarget = this.getDistanceSq(this.targetedEntity.posX, this.targetedEntity.boundingBox.minY, this.targetedEntity.posZ);
+                double d10 = (double)(this.width + this.targetedEntity.width);
+                if (distToTarget <= d10 && this.attackTick <= 0) {
                     this.attackTick = 20;
                     this.attackEntityAsMob(this.targetedEntity);
                 }
             }
-        }
-        else {
-            this.renderYawOffset = this.rotationYaw = -((float)Math.atan2(this.motionX, this.motionZ)) * 180.0F / (float)Math.PI;
+            else {
+                this.renderYawOffset = this.rotationYaw = -((float)Math.atan2(this.motionX, this.motionZ)) * 180.0F / (float)Math.PI;
+            }
         }
     }
 
-    private boolean isCourseTraversable(double par7) {
-        double d4 = (this.waypointX - this.posX) / par7;
-        double d5 = (this.waypointY - this.posY) / par7;
-        double d6 = (this.waypointZ - this.posZ) / par7;
-        AxisAlignedBB axisalignedbb = this.boundingBox.copy();
+    @Override
+    protected void updateEntityActionState() {
+        moveStrafing = 0.0F;
+        moveForward = 0.0F;
+        entityAge++;
 
-        for (int i = 1; (double)i < par7; ++i) {
-            axisalignedbb.offset(d4, d5, d6);
-            if (!this.worldObj.getCollidingBoundingBoxes(this, axisalignedbb).isEmpty()) return false;
+        double xDist = waypointX - posX;
+        double yDist = waypointY - posY;
+        double zDist = waypointZ - posZ;
+        double d3 = xDist * xDist + yDist * yDist + zDist * zDist;
+
+        if (this.isInWater()) {
+            if (this.targetedEntity == null && ((d3 < 1D || d3 > 3600D) || !isCourseTraversable(d3))) {
+                for (int i = 0; i < 3; i++) {
+                    double targetX = Math.floor(posX + MathHelper.getRandomDoubleInRange(rand, -8F, 8F));
+                    double targetY = Math.floor(posY + MathHelper.getRandomDoubleInRange(rand, -1F, 1F));
+                    double targetZ = Math.floor(posZ + MathHelper.getRandomDoubleInRange(rand, -8F, 8F));
+
+                    if ((worldObj.getBlock((int) targetX, (int) targetY, (int) targetZ).getMaterial() == Material.water) && isCourseTraversable(MathHelper.sqrt_double(d3))) {
+                        waypointX = targetX;
+                        waypointY = targetY + height;
+                        waypointZ = targetZ;
+                        break;
+                    }
+                    else {
+                        resetWaypoints();
+                    }
+                }
+            }
+        }
+
+        if (targetedEntity == null) targetedEntity = worldObj.getClosestVulnerablePlayerToEntity(this, 64D);
+        checkTargetValid();
+        if (targetedEntity != null) {
+            this.waypointX = this.targetedEntity.posX;
+            this.waypointY = this.targetedEntity.posY;
+            this.waypointZ = this.targetedEntity.posZ;
+        }
+
+        despawnEntity();
+    }
+
+    private void checkTargetValid() {
+        if (targetedEntity != null && (targetedEntity.isDead || !targetedEntity.isInWater() || this.targetedEntity.getDistanceSqToEntity(this) > 3600D || !canEntityBeSeen(this.targetedEntity))) {
+            targetedEntity = null;
+        }
+    }
+
+    private void resetWaypoints() {
+        this.waypointX = this.posX;
+        this.waypointY = this.posY;
+        this.waypointZ = this.posZ;
+    }
+
+    private boolean isCourseTraversable(double dist) {
+        double x = (this.waypointX - this.posX) / dist;
+        double y = (this.waypointY - this.posY) / dist;
+        double z = (this.waypointZ - this.posZ) / dist;
+        AxisAlignedBB axisalignedbb = this.boundingBox.getOffsetBoundingBox(x, y, z);
+
+        for (int i = 1; (double)i < dist; ++i) {
+            if (!this.worldObj.getCollidingBoundingBoxes(this, axisalignedbb).isEmpty()) {
+                return false;
+            }
         }
 
         return true;
     }
 
     @Override
-    public void moveEntityWithHeading(float par1, float par2) {
-        if (this.isInWater()) {
-            float f2 = 0.91F;
-            float f3 = 0.16277136F / (f2 * f2 * f2);
-            this.moveFlying(par1, par2, this.onGround ? 0.1F * f3 : 0.02F);
-            f2 = 0.91F;
+    public void moveEntityWithHeading(float p_70612_1_, float p_70612_2_) {
+        if (isInWater()) {
+            this.motionX *= 0.95F;
+            this.motionY *= 0.95F;
+            this.motionZ *= 0.95F;
+        }
+        this.moveEntity(this.motionX, this.motionY, this.motionZ);
 
-            this.moveEntity(this.motionX, this.motionY, this.motionZ);
-            this.motionX *= (double)f2;
-            this.motionY *= (double)f2;
-            this.motionZ *= (double)f2;
+        this.prevLimbSwingAmount = this.limbSwingAmount;
+        double xDiff = this.posX - this.prevPosX;
+        double zDiff = this.posZ - this.prevPosZ;
+        float limbSwing = MathHelper.sqrt_double(xDiff * xDiff + zDiff * zDiff) * 4.0F;
+
+        if (limbSwing > 1.0F) {
+            limbSwing = 1.0F;
         }
-        else if (this.handleLavaMovement()) {
-            this.moveFlying(par1, par2, 0.02F);
-            this.moveEntity(this.motionX, this.motionY, this.motionZ);
-            this.motionX *= 0.5D;
-            this.motionY *= 0.5D;
-            this.motionZ *= 0.5D;
-        }
-        else {
-            this.moveFlying(par1, par2, 0.02F);
-            this.moveEntity(this.motionX, this.motionY, this.motionZ);
-            this.motionX = 0D;
-            this.motionY *= 0.5D;
-            this.motionZ = 0D;
+
+        this.limbSwingAmount += (limbSwing - this.limbSwingAmount) * 0.4F;
+        this.limbSwing += this.limbSwingAmount;
+    }
+
+    @Override
+    public boolean isInWater() {
+        this.inWater = this.worldObj.getBlock(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.boundingBox.minY + 0.25), MathHelper.floor_double(this.posZ)).getMaterial() == Material.water;
+        return this.inWater;
+    }
+
+    @Override
+    public void applyEntityCollision(Entity entity){
+        super.applyEntityCollision(entity);
+        if (targetedEntity != null && entity.equals(targetedEntity) && attackTick <= 0){
+            targetedEntity.attackEntityAsMob(targetedEntity);
+            attackTick = 20;
         }
     }
 
     @Override
-    protected void jump() {}
+    protected void despawnEntity() {
+        if (worldObj.difficultySetting == EnumDifficulty.PEACEFUL) setDead();
+        else super.despawnEntity();
+    }
 }

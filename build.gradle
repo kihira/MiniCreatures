@@ -45,12 +45,12 @@ configurations {
 
 dependencies {
     deployerJars "org.apache.maven.wagon:wagon-ftp:2.2"
-    compile "kihira:FoxLib:"+project.foxlibVersion+":dev"
+    compile "kihira:FoxLib:"+project.foxlibDevVersion+":dev"
 }
 
 project.version = "${project.ext.mcVersion}-${project.ext.massive}.${project.ext.major}.${project.minor}"
 if (project.hasProperty("teamcity") && project.ext.buildVersion != null && teamcity["maven_release"] == null) {
-    version = version + ".${System.getenv("BUILD_NUMBER")}"
+    version = version + "-${System.getenv("BUILD_NUMBER")}"
 }
 
 group= "kihira"
