@@ -24,6 +24,7 @@ import kihira.minicreatures.common.customizer.EnumPartCategory;
 import kihira.minicreatures.common.entity.ai.EntityAIIdleBlockChat;
 import kihira.minicreatures.common.entity.ai.EntityAIIdleEntityChat;
 import kihira.minicreatures.common.personality.IPersonality;
+import kihira.minicreatures.common.personality.Mood;
 import kihira.minicreatures.common.personality.MoodVariable;
 import kihira.minicreatures.common.personality.Personality;
 import net.minecraft.block.Block;
@@ -130,7 +131,7 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
         super.readEntityFromNBT(tagCompound);
 
         //Load Personality
-        Personality personality = GsonHelper.fromJson(tagCompound.getString("Personality"), Personality.class);
+        Personality personality = GsonHelper.createGson(Mood.class).fromJson(tagCompound.getString("Personality"), Personality.class);
         if (personality != null) {
             this.personality = personality;
             System.out.println(this.personality);
@@ -195,6 +196,9 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
                             }
                             inventory.setInventorySlotContents(i, null);
                         }
+                    }
+                    else if (itemstack.getItem() == Items.diamond) {
+                        personality.changeMoodVariableLevel(this, "happiness", 5);
                     }
                     else if (this.getHeldItem() == null) {
                         ItemStack newItemStack = itemstack.copy();

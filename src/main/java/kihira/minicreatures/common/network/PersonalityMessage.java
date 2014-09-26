@@ -9,6 +9,7 @@ import io.netty.buffer.ByteBuf;
 import kihira.foxlib.common.gson.GsonHelper;
 import kihira.minicreatures.MiniCreatures;
 import kihira.minicreatures.common.personality.IPersonality;
+import kihira.minicreatures.common.personality.Mood;
 import kihira.minicreatures.common.personality.Personality;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
@@ -45,7 +46,7 @@ public class PersonalityMessage implements IMessage {
             Entity entity = Minecraft.getMinecraft().theWorld.getEntityByID(message.entityID);
             if (entity instanceof IPersonality) {
                 try {
-                    Personality newPersonality = GsonHelper.fromJson(message.personalityJson, Personality.class);
+                    Personality newPersonality = GsonHelper.createGson(Mood.class).fromJson(message.personalityJson, Personality.class);
                     if (newPersonality != null) {
                         ((IPersonality) entity).setPersonality(newPersonality);
                     }
