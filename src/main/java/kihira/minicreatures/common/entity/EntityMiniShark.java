@@ -32,7 +32,7 @@ public class EntityMiniShark extends EntityWaterMob {
     private double waypointZ;
     private EntityPlayer targetedEntity;
     private int attackTick;
-    private float verticalSpeedModifier = 0.75F;
+    private int healCooldown;
 
     public EntityMiniShark(World par1World) {
         super(par1World);
@@ -43,7 +43,7 @@ public class EntityMiniShark extends EntityWaterMob {
     @Override
     protected void applyEntityAttributes() {
         super.applyEntityAttributes();
-        this.getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(10.0D);
+        this.getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(10D);
     }
 
     @Override
@@ -58,7 +58,12 @@ public class EntityMiniShark extends EntityWaterMob {
 
     @Override
     public boolean attackEntityAsMob(Entity entity) {
-        return entity.attackEntityFrom(DamageSource.causeMobDamage(this), worldObj.difficultySetting.getDifficultyId() * 2);
+        boolean attack = entity.attackEntityFrom(DamageSource.causeMobDamage(this), worldObj.difficultySetting.getDifficultyId() * 2);
+        if (attack && healCooldown <= 0) {
+            heal(worldObj.difficultySetting.getDifficultyId());
+            healCooldown = 60;
+        }
+        return attack;
     }
 
 
@@ -66,10 +71,12 @@ public class EntityMiniShark extends EntityWaterMob {
     @SuppressWarnings("SuspiciousNameCombination")
     public void onLivingUpdate() {
         super.onLivingUpdate();
-        if (!this.worldObj.isRemote) {
-            if (this.attackTick > 0) this.attackTick--;
+        if (!worldObj.isRemote) {
+            if (attackTick > 0) attackTick--;
+            if (healCooldown > 0) healCooldown--;
 
             if (this.isInWater()) {
+                float verticalSpeedModifier = 0.75F;
                 double xDist = this.waypointX - this.posX;
                 double yDist = this.waypointY - this.posY;
                 double zDist = this.waypointZ - this.posZ;
