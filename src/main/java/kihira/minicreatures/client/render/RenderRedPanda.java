@@ -30,7 +30,7 @@ public class RenderRedPanda extends RenderLiving {
 
     public RenderRedPanda() {
         super(new ModelRedPanda(), 0.4F);
-        this.setRenderPassModel(new ModelRedPanda());
+        this.setRenderPassModel(this.mainModel);
     }
 
     @Override

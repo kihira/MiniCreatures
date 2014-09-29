@@ -30,7 +30,7 @@ public class RenderFox extends RenderLiving {
 
     public RenderFox() {
         super(new ModelFox(), 0.4F);
-        this.setRenderPassModel(new ModelFox());
+        this.setRenderPassModel(this.mainModel);
     }
 
     @Override

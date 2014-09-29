@@ -25,6 +25,7 @@ public class RenderTRex extends RenderLiving {
 
     public RenderTRex() {
         super(new ModelTRex(), 0.5F);
+        this.setRenderPassModel(this.mainModel);
     }
 
     @Override

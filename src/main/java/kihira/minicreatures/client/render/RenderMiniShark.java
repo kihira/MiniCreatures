@@ -25,7 +25,7 @@ public class RenderMiniShark extends RenderLiving {
 
     public RenderMiniShark() {
         super(new ModelMiniShark(), 0.4F);
-        this.setRenderPassModel(new ModelMiniShark());
+        this.setRenderPassModel(this.mainModel);
     }
 
     @Override
