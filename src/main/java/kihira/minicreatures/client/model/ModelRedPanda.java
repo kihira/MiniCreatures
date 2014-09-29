@@ -20,13 +20,13 @@ import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.MathHelper;
+import org.lwjgl.opengl.GL11;
 
 /**
  * The model for {@link kihira.minicreatures.common.entity.EntityRedPanda}
  */
 public class ModelRedPanda extends ModelBase {
 
-    //fields
     ModelRenderer body;
     ModelRenderer frontLeftLeg;
     ModelRenderer frontRightLeg;
@@ -39,6 +39,7 @@ public class ModelRedPanda extends ModelBase {
     ModelRenderer leftEarTip;
     ModelRenderer rightEar;
     ModelRenderer rightEarTip;
+    ModelRenderer chest;
 
     public ModelRedPanda() {
         this.textureWidth = 64;
@@ -47,6 +48,10 @@ public class ModelRedPanda extends ModelBase {
         this.body = new ModelRenderer(this, 0, 0);
         this.body.addBox(-2F, -2F, -3F, 4, 4, 6);
         this.body.setRotationPoint(0F, 20F, 0F);
+
+        this.chest = new ModelRenderer(this, 20, 18);
+        this.chest.addBox(-3F, -1.5F, 0.5F, 6, 6, 8);
+        this.chest.setRotationPoint(0F, 19F, -2F);
 
         this.frontLeftLeg = new ModelRenderer(this, 0, 10);
         this.frontLeftLeg.addBox(-1F, 0F, -1F, 2, 2, 2);
@@ -122,6 +127,14 @@ public class ModelRedPanda extends ModelBase {
         this.rightEar.render(f5);
         this.rightEarTip.render(f5);
         this.backRightLeg.render(f5);
+
+        if (((EntityRedPanda) entity).hasChest()) {
+            GL11.glPushMatrix();
+            GL11.glScalef(1F, 0.5F, 0.5F);
+            GL11.glTranslatef(0.0f, 18F * f5,  f5 - 0.3f);
+            this.chest.render(f5);
+            GL11.glPopMatrix();
+        }
     }
 
     /**
@@ -149,6 +162,8 @@ public class ModelRedPanda extends ModelBase {
         if (entityRedPanda.isSitting()) {
             this.body.setRotationPoint(0F, 21F, -0.3F);
             this.body.rotateAngleX = -(float)Math.PI / 10F;
+            this.chest.setRotationPoint(0F, 21F, 0F);
+            this.chest.rotateAngleX = -(float)Math.PI / 10F;
             this.frontLeftLeg.setRotationPoint(1.6F, 22F, -3.4F);
             this.frontRightLeg.setRotationPoint(-1.6F, 22F, -3.4F);
             this.backRightLeg.setRotationPoint(-1.6F, 23F, 2.4F);
@@ -161,6 +176,8 @@ public class ModelRedPanda extends ModelBase {
         else {
             this.body.setRotationPoint(0F, 20F, 0F);
             this.body.rotateAngleX = 0;
+            this.chest.setRotationPoint(0F, 20F, 0F);
+            this.chest.rotateAngleX = 0;
             this.frontLeftLeg.setRotationPoint(1.6F, 22F, -2.4F);
             this.frontRightLeg.setRotationPoint(-1.6F, 22F, -2.4F);
             this.backRightLeg.setRotationPoint(-1.6F, 22F, 2.4F);
