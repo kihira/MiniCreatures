@@ -47,7 +47,7 @@ public class EntityRedPanda extends EntityTameable implements IMiniCreature {
 
     public EntityRedPanda(World par1World) {
         super(par1World);
-        this.setSize(0.35f, 0.5f);
+        this.setSize(0.5F, 0.5F);
         this.getNavigator().setAvoidsWater(true);
         this.getNavigator().setCanSwim(true);
 

@@ -73,7 +73,7 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
 
     public EntityMiniPlayer(World par1World) {
         super(par1World);
-        this.setSize(0.8F, 0.95F);
+        this.setSize(0.4F, 1F);
         this.getNavigator().setAvoidsWater(true);
         this.getNavigator().setCanSwim(true);
         this.tasks.addTask(1, new EntityAISwimming(this));

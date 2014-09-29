@@ -47,7 +47,7 @@ public class EntityFox extends EntityTameable implements IMiniCreature {
 
     public EntityFox(World par1World) {
         super(par1World);
-        this.setSize(0.3f, 0.25f);
+        this.setSize(0.5F, 0.5F);
         this.getNavigator().setAvoidsWater(true);
         this.getNavigator().setCanSwim(true);
         this.tasks.addTask(1, new EntityAISwimming(this));
