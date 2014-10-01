@@ -69,10 +69,12 @@ public class EventHandler {
 
     @SubscribeEvent
     public void onEntitySpawn(EntityEvent.EntityConstructing event) {
-        Random random = event.entity.worldObj.rand;
-        if (names != null && MiniCreatures.randomNameChance != 0 && event.entity instanceof IMiniCreature && random.nextInt(MiniCreatures.randomNameChance) == 0) {
-            EntityLiving entityLiving = ((IMiniCreature) event.entity).getEntity();
-            entityLiving.setCustomNameTag(names[random.nextInt(names.length - 1)]);
+        if (event.entity.worldObj != null) {
+            Random random = event.entity.worldObj.rand;
+            if (names != null && MiniCreatures.randomNameChance != 0 && event.entity instanceof IMiniCreature && random.nextInt(MiniCreatures.randomNameChance) == 0) {
+                EntityLiving entityLiving = ((IMiniCreature) event.entity).getEntity();
+                entityLiving.setCustomNameTag(names[random.nextInt(names.length - 1)]);
+            }
         }
     }
 

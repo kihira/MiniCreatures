@@ -66,13 +66,6 @@ public class ModelMiniPlayer extends ModelBiped {
         GL11.glPushMatrix();
         this.setRotationAngles(f, f1, f2, f3, f4, f5, entity);
         float f6 = 2.0F;
-        /*
-        if (entity.getCommandSenderName().equals("ArashiDragon")) {
-            GL11.glEnable(GL11.GL_BLEND);
-            GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-            GL11.glColor4d(1.0, 1.0, 1.0, 0.8);
-        }
-        */
         GL11.glPushMatrix();
         GL11.glScalef(1.5F / f6, 1.5F / f6, 1.5F / f6);
         GL11.glTranslatef(0.0F, 16.0F * f5, 0.0F);

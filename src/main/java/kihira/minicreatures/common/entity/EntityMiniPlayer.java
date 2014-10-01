@@ -21,6 +21,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 import kihira.foxlib.common.gson.GsonHelper;
 import kihira.minicreatures.MiniCreatures;
 import kihira.minicreatures.common.customizer.EnumPartCategory;
+import kihira.minicreatures.common.entity.ai.EntityAIHeal;
 import kihira.minicreatures.common.entity.ai.EntityAIIdleBlockChat;
 import kihira.minicreatures.common.entity.ai.EntityAIIdleEntityChat;
 import kihira.minicreatures.common.personality.IPersonality;
@@ -79,6 +80,7 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
         this.tasks.addTask(1, new EntityAISwimming(this));
         this.tasks.addTask(2, this.aiSit);
         this.tasks.addTask(4, new EntityAIFollowOwner(this, 1.0D, 10.0F, 2.0F));
+        this.tasks.addTask(4, new EntityAIHeal(this, 150, 1, true));
         this.tasks.addTask(5, new EntityAIWander(this, 1.0D));
         this.tasks.addTask(6, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
         this.tasks.addTask(6, new EntityAILookIdle(this));

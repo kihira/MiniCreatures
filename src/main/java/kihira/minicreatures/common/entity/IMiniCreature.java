@@ -19,6 +19,7 @@ import net.minecraft.inventory.IInventory;
 
 public interface IMiniCreature {
 
+    //TODO this should be in its own interface?
     public IInventory getInventory();
 
     public EntityLiving getEntity();
