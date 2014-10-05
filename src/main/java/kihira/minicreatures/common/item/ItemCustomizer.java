@@ -32,7 +32,8 @@ public class ItemCustomizer extends Item {
 
     public boolean onLeftClickEntity(ItemStack stack, EntityPlayer player, Entity entity) {
         if (entity instanceof ICustomisable) {
-            player.openGui(MiniCreatures.instance, 2, player.worldObj, entity.getEntityId(), 0, 0);
+            //player.openGui(MiniCreatures.instance, 2, player.worldObj, entity.getEntityId(), 0, 0);
+            player.openGui(MiniCreatures.instance, 3, player.worldObj, entity.getEntityId(), 0, 0);
             return true;
         }
         return false;

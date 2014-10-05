@@ -21,7 +21,10 @@ import cpw.mods.fml.relauncher.SideOnly;
 import kihira.foxlib.common.gson.GsonHelper;
 import kihira.minicreatures.MiniCreatures;
 import kihira.minicreatures.common.customizer.EnumPartCategory;
-import kihira.minicreatures.common.entity.ai.*;
+import kihira.minicreatures.common.entity.ai.EntityAIHeal;
+import kihira.minicreatures.common.entity.ai.EntityAIIdleBlockChat;
+import kihira.minicreatures.common.entity.ai.EntityAIIdleEntityChat;
+import kihira.minicreatures.common.entity.ai.EnumRole;
 import kihira.minicreatures.common.personality.IPersonality;
 import kihira.minicreatures.common.personality.Mood;
 import kihira.minicreatures.common.personality.MoodVariable;
@@ -79,7 +82,6 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
         this.tasks.addTask(2, this.aiSit);
         this.tasks.addTask(4, new EntityAIFollowOwner(this, 1.0D, 10.0F, 2.0F));
         this.tasks.addTask(4, new EntityAIHeal(this, 150, 1, true));
-        this.tasks.addTask(5, new EntityAIUsePotion(this, 0.5F, 2, 100));
         this.tasks.addTask(5, new EntityAIWander(this, 1.0D));
         this.tasks.addTask(6, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
         this.tasks.addTask(6, new EntityAILookIdle(this));
@@ -126,6 +128,9 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
             if (part != null) nbttaglist.appendTag(new NBTTagString(part));
         }
         tagCompound.setTag("Parts", nbttaglist);
+
+        //Role
+        tagCompound.setInteger("Role", getRole().ordinal());
     }
 
     @Override
@@ -146,6 +151,10 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
             s += tagList.getStringTagAt(i) + ",";
         }
         this.dataWatcher.updateObject(18, s);
+
+        //Role
+        setRole(EnumRole.values()[tagCompound.getInteger("Role")]);
+
         this.setCombatAI();
         this.inventory.func_110133_a(this.getCommandSenderName());
     }
@@ -347,6 +356,8 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
     }
 
     public void setRole(EnumRole role) {
+        EnumRole.resetAI(this);
+        role.applyAI(this);
         this.dataWatcher.updateObject(21, role.ordinal());
     }
 
@@ -368,8 +379,8 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
 
     @Override
     public void setCustomNameTag(String par1Str) {
-        this.inventory.func_110133_a(par1Str);
         super.setCustomNameTag(par1Str);
+        this.inventory.func_110133_a(par1Str);
     }
 
     @Override

@@ -23,6 +23,7 @@ import kihira.minicreatures.client.model.parts.PartModelFairy;
 import kihira.minicreatures.client.model.parts.PartModelHorns;
 import kihira.minicreatures.client.model.parts.PartModelTail;
 import kihira.minicreatures.common.customizer.CustomizerRegistry;
+import kihira.minicreatures.common.network.RoleMessage;
 import kihira.minicreatures.common.network.SetAttackTargetMessage;
 import kihira.minicreatures.common.network.UpdateEntityMessage;
 
@@ -51,6 +52,7 @@ public class CommonProxy {
     public void registerMessages() {
         this.simpleNetworkWrapper.registerMessage(UpdateEntityMessage.UpdateEntityMessageHandler.class, UpdateEntityMessage.class, 1, Side.SERVER);
         this.simpleNetworkWrapper.registerMessage(SetAttackTargetMessage.SetAttackTargetMessageHandler.class, SetAttackTargetMessage.class, 2, Side.SERVER);
+        this.simpleNetworkWrapper.registerMessage(RoleMessage.RoleMessageHandler.class, RoleMessage.class, 3, Side.SERVER);
     }
 
     public void registerItems() {

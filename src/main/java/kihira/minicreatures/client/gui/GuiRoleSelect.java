@@ -8,8 +8,10 @@
 
 package kihira.minicreatures.client.gui;
 
+import kihira.minicreatures.MiniCreatures;
 import kihira.minicreatures.common.entity.EntityMiniPlayer;
 import kihira.minicreatures.common.entity.ai.EnumRole;
+import kihira.minicreatures.common.network.RoleMessage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
@@ -72,8 +74,7 @@ public class GuiRoleSelect extends GuiScreen {
     @Override
     protected void actionPerformed(GuiButton button) {
         if (button instanceof GuiRoleSelectButton) {
-            //TODO this might need to be a packet?
-            miniPlayer.setRole(((GuiRoleSelectButton) button).role);
+            MiniCreatures.proxy.simpleNetworkWrapper.sendToServer(new RoleMessage(miniPlayer.getEntityId(), ((GuiRoleSelectButton) button).role));
             mc.displayGuiScreen(null);
         }
         super.actionPerformed(button);

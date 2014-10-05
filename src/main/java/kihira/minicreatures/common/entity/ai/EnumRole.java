@@ -10,16 +10,19 @@ package kihira.minicreatures.common.entity.ai;
 
 import kihira.minicreatures.common.entity.EntityMiniPlayer;
 import net.minecraft.entity.ai.EntityAIBase;
+import net.minecraft.entity.ai.EntityAITasks;
 
 public enum EnumRole {
     NONE,
     MINER,
     COMBAT;
 
-    public void resetAI(EntityMiniPlayer miniPlayer) {
+    public static void resetAI(EntityMiniPlayer miniPlayer) {
+        //TODO CME
         for (Object obj : miniPlayer.tasks.taskEntries) {
-            if (obj instanceof IRole) {
-                miniPlayer.tasks.removeTask((EntityAIBase) obj);
+            EntityAIBase ai = obj instanceof EntityAITasks.EntityAITaskEntry ? ((EntityAITasks.EntityAITaskEntry) obj).action : (EntityAIBase) obj;
+            if (ai instanceof IRole) {
+                miniPlayer.tasks.removeTask(ai);
             }
         }
     }
@@ -30,6 +33,7 @@ public enum EnumRole {
                 break;
             }
             case COMBAT: {
+                miniPlayer.tasks.addTask(5, new EntityAIUsePotion(miniPlayer, 0.5F, 2, 100));
                 break;
             }
         }
