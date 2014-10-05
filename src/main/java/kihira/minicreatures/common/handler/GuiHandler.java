@@ -16,7 +16,9 @@ package kihira.minicreatures.common.handler;
 
 import cpw.mods.fml.common.network.IGuiHandler;
 import kihira.minicreatures.client.gui.GuiCustomizer;
+import kihira.minicreatures.client.gui.GuiRoleSelect;
 import kihira.minicreatures.common.ContainerCarriedAnvil;
+import kihira.minicreatures.common.entity.EntityMiniPlayer;
 import kihira.minicreatures.common.entity.ICustomisable;
 import kihira.minicreatures.common.entity.IMiniCreature;
 import net.minecraft.client.gui.GuiRepair;
@@ -43,6 +45,7 @@ public class GuiHandler implements IGuiHandler {
             case (0): return new GuiChest(player.inventory, ((IMiniCreature)world.getEntityByID(x)).getInventory());
             case (1): return new GuiRepair(player.inventory, world, x, y, z);
             case (2): return new GuiCustomizer((ICustomisable) world.getEntityByID(x));
+            case (3): return new GuiRoleSelect((EntityMiniPlayer) world.getEntityByID(x));
             default: return null;
         }
     }

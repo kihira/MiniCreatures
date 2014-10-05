@@ -21,7 +21,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import java.util.Arrays;
 import java.util.List;
 
-public class EntityAIUsePotion extends EntityAIBase {
+public class EntityAIUsePotion extends EntityAIBase implements IRole {
 
     private final IMiniCreature miniCreature;
     private final float healthThreshold;
