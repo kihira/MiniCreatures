@@ -14,9 +14,7 @@ import net.minecraft.entity.ai.EntityAIBase;
 public enum EnumRole {
     NONE,
     MINER,
-    COMBAT,
-    TEST1,
-    TEST2;
+    COMBAT;
 
     public void resetAI(EntityMiniPlayer miniPlayer) {
         for (Object obj : miniPlayer.tasks.taskEntries) {

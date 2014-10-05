@@ -21,10 +21,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 import kihira.foxlib.common.gson.GsonHelper;
 import kihira.minicreatures.MiniCreatures;
 import kihira.minicreatures.common.customizer.EnumPartCategory;
-import kihira.minicreatures.common.entity.ai.EntityAIHeal;
-import kihira.minicreatures.common.entity.ai.EntityAIIdleBlockChat;
-import kihira.minicreatures.common.entity.ai.EntityAIIdleEntityChat;
-import kihira.minicreatures.common.entity.ai.EntityAIUsePotion;
+import kihira.minicreatures.common.entity.ai.*;
 import kihira.minicreatures.common.personality.IPersonality;
 import kihira.minicreatures.common.personality.Mood;
 import kihira.minicreatures.common.personality.MoodVariable;
@@ -104,6 +101,7 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
         this.dataWatcher.addObject(18, ""); //Parts list
         this.dataWatcher.addObject(19, 0); //Has Mind Control device
         this.dataWatcher.addObject(20, ""); //Chat
+        this.dataWatcher.addObject(21, 0); //Role ID
     }
 
     @Override
@@ -346,6 +344,16 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
 
     public boolean isMindControlled() {
         return this.dataWatcher.getWatchableObjectInt(19) == 1;
+    }
+
+    public void setRole(EnumRole role) {
+        this.dataWatcher.updateObject(21, role.ordinal());
+    }
+
+    public EnumRole getRole() {
+        int id = this.dataWatcher.getWatchableObjectInt(21);
+        if (id <= EnumRole.values().length) return EnumRole.values()[id];
+        else return EnumRole.NONE;
     }
 
     @Override
