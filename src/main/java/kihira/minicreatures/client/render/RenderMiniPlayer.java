@@ -25,6 +25,7 @@ import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.entity.RenderBiped;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -84,6 +85,8 @@ public class RenderMiniPlayer extends RenderBiped {
             IItemRenderer customRenderer = MinecraftForgeClient.getItemRenderer(itemstack, EQUIPPED);
             boolean is3D = (customRenderer != null && customRenderer.shouldUseRenderHelper(EQUIPPED, itemstack, BLOCK_3D));
             if (miniPlayer.isSitting()) GL11.glTranslatef(0F, 0.3F, 0F);
+            if (miniPlayer.isRiding()) GL11.glTranslatef(0F, 0.25F, 0F);
+            if ((miniPlayer.ridingEntity instanceof EntityTameable) && (((EntityTameable) miniPlayer.ridingEntity).isSitting())) GL11.glTranslatef(0F, 0.1F, 0F);
             //If item is a block or has a custom renderer
             if (itemstack.getItem() instanceof ItemBlock && (is3D || RenderBlocks.renderItemIn3d(Block.getBlockFromItem(itemstack.getItem()).getRenderType()))) {
                 GL11.glTranslatef(0.0F, 0.8875F, -0.3F);

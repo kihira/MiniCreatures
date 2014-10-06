@@ -17,13 +17,13 @@ package kihira.minicreatures.client.model;
 import kihira.minicreatures.client.gui.GuiCustomizer;
 import kihira.minicreatures.common.customizer.CustomizerRegistry;
 import kihira.minicreatures.common.customizer.ICustomizerPart;
-import kihira.minicreatures.common.entity.EntityFox;
 import kihira.minicreatures.common.entity.EntityMiniPlayer;
 import kihira.minicreatures.common.entity.ICustomisable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemBlock;
 import org.lwjgl.opengl.GL11;
@@ -105,8 +105,8 @@ public class ModelMiniPlayer extends ModelBiped {
         super.setRotationAngles(par1, par2, par3, par4, par5, par6, miniPlayer);
 
         if (this.isRiding) {
-            GL11.glTranslatef(0F, 0F, 0.1F);
-            if ((miniPlayer.ridingEntity instanceof EntityFox) && (((EntityFox) miniPlayer.ridingEntity).isSitting())) GL11.glTranslatef(0F, 0.2F, 0F);
+            GL11.glTranslatef(0F, 0.25F, 0F);
+            if ((miniPlayer.ridingEntity instanceof EntityTameable) && (((EntityTameable) miniPlayer.ridingEntity).isSitting())) GL11.glTranslatef(0F, 0.1F, 0F);
         }
 
         if (this.heldItemRight != 0 && (miniPlayer.getHeldItem().getItem() instanceof ItemBlock)) {
