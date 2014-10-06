@@ -28,6 +28,7 @@ public class EntityAIUsePotion extends EntityAIBase implements IRole {
     private final int damageThreshold;
     private final int cooldown;
     private int ticksToNextPotion;
+    private boolean remove = false;
 
     public EntityAIUsePotion(IMiniCreature miniCreature, float healthThreshold, int damageThreshold, int cooldown) {
         this.miniCreature = miniCreature;
@@ -38,7 +39,7 @@ public class EntityAIUsePotion extends EntityAIBase implements IRole {
 
     @Override
     public boolean shouldExecute() {
-        return !miniCreature.getEntity().isDead;
+        return !remove && !miniCreature.getEntity().isDead;
     }
 
     @Override
@@ -73,6 +74,17 @@ public class EntityAIUsePotion extends EntityAIBase implements IRole {
             }
             //TODO sprint potion for fleeing?
         }
+    }
+
+    @Override
+    public void resetTask() {
+        ticksToNextPotion = 0;
+        remove = false;
+    }
+
+    @Override
+    public void markForRemoval() {
+        remove = true;
     }
 
     @SuppressWarnings("unchecked")

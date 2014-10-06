@@ -18,11 +18,11 @@ public enum EnumRole {
     COMBAT;
 
     public static void resetAI(EntityMiniPlayer miniPlayer) {
-        //TODO CME
         for (Object obj : miniPlayer.tasks.taskEntries) {
             EntityAIBase ai = obj instanceof EntityAITasks.EntityAITaskEntry ? ((EntityAITasks.EntityAITaskEntry) obj).action : (EntityAIBase) obj;
             if (ai instanceof IRole) {
-                miniPlayer.tasks.removeTask(ai);
+                //((IRole) ai).markForRemoval();
+                miniPlayer.tasks.removeTask(ai); //TODO CME
             }
         }
     }
@@ -30,6 +30,7 @@ public enum EnumRole {
     public void applyAI(EntityMiniPlayer miniPlayer) {
         switch (this) {
             case MINER: {
+                miniPlayer.tasks.addTask(5, new EntityAICollect(miniPlayer, 1.5F, 1.5F));
                 break;
             }
             case COMBAT: {
