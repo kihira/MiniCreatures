@@ -115,7 +115,7 @@ public class EventHandler {
 
     /**
      * This is used to check if when the player hits a baby zombie with a health potion so we can then spawn a Mini Player
-     * @param event the event
+     * @param event the currentEvent
      */
     @SubscribeEvent
     @SuppressWarnings("unchecked")
