@@ -83,7 +83,7 @@ public class MiniCreatures {
         NetworkRegistry.INSTANCE.registerGuiHandler(instance, new GuiHandler());
         MinecraftForge.EVENT_BUS.register(new EventHandler());
 
-        if (Loader.isModLoaded("Tails")) {
+        if (e.getSide().isClient() && Loader.isModLoaded("Tails")) {
             MinecraftForge.EVENT_BUS.register(new TailsCompatHandler());
         }
 
