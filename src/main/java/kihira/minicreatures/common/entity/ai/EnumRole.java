@@ -15,6 +15,7 @@ import net.minecraft.entity.ai.EntityAITasks;
 public enum EnumRole {
     NONE,
     MINER,
+    FARMER,
     COMBAT;
 
     public static void resetAI(EntityMiniPlayer miniPlayer) {

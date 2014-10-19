@@ -21,7 +21,7 @@ import org.lwjgl.opengl.GL11;
 
 public class GuiRoleSelect extends GuiScreen {
 
-    private final ResourceLocation guiTextures = new ResourceLocation("minicreatures", "textures/gui/roleselect.png");
+    private final ResourceLocation guiTextures = new ResourceLocation("minicreatures", "textures/gui/roleSelect.png");
     private final int guiWidth = 216;
     private final int guiHeight = 153;
     private final EntityMiniPlayer miniPlayer;
@@ -37,9 +37,6 @@ public class GuiRoleSelect extends GuiScreen {
     public void initGui() {
         guiLeft = (width - guiWidth) / 2;
         guiTop = (height - guiHeight) / 2;
-        int guiBottom = guiTop + guiHeight;
-
-        buttonList.add(new GuiButton(0, guiLeft + 8, guiBottom - 33, 50, 20, "Cancel"));
 
         //Roles
         int offset = 0;
@@ -85,7 +82,7 @@ public class GuiRoleSelect extends GuiScreen {
         private final EnumRole role;
 
         public GuiRoleSelectButton(int id, int x, int y, EnumRole role, String tooltip) {
-            super(id, x, y, 21, 21, tooltip);
+            super(id, x, y, 20, 20, tooltip);
             this.role = role;
         }
 
@@ -94,7 +91,7 @@ public class GuiRoleSelect extends GuiScreen {
             if (this.visible) {
                 GL11.glColor3f(1F, 1F, 1F);
                 mc.renderEngine.bindTexture(guiTextures);
-                drawTexturedModalRect(xPosition, yPosition, 44, 169, width, height);
+                drawTexturedModalRect(xPosition, yPosition, (role.ordinal() - 1) * 20, 153, width, height);
             }
         }
     }
