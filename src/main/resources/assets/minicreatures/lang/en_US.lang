@@ -17,6 +17,8 @@ category.RIGHTLEG.part=Right Leg
 
 gui.reset=Reset
 gui.clear=Clear All
+gui.roleselect.select=Select your Mini Players role
+gui.roleselect.selected=Selected
 
 item.customizer.name=Customizer
 
@@ -24,6 +26,11 @@ personality.neutral.name=Neutral
 
 mood.variable.happiness.name=Happiness
 mood.variable.hostility.name=Hostility
+
+role.NONE.name=None
+role.MINER.name=Miner
+role.FARMER.name=Farmer
+role.COMBAT.name=Combat
 
 chat.idle.block.generic.neutral.0=That block is rather...blocky;And this is a new line!
 chat.idle.block.generic.neutral.1=That block is rather...blocky;And this is a new line!

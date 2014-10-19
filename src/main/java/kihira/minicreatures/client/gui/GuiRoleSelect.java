@@ -18,6 +18,7 @@ import kihira.minicreatures.common.network.RoleMessage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiInventory;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
@@ -60,7 +61,7 @@ public class GuiRoleSelect extends GuiBaseScreen {
         mc.renderEngine.bindTexture(guiTextures);
         drawTexturedModalRect(guiLeft, guiTop, 0, 0, guiWidth, guiHeight);
 
-        drawString(fontRendererObj, "Select your Mini Players role", guiLeft + 8, guiTop + 8, 0xFFFFFF);
+        drawString(fontRendererObj, I18n.format("gui.roleselect.select"), guiLeft + 8, guiTop + 8, 0xFFFFFF);
         GuiInventory.func_147046_a(guiLeft + 43, guiTop + 105, 52, guiLeft + 43 - mouseX, guiTop + 65 - mouseY, miniPlayer);
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
@@ -96,7 +97,7 @@ public class GuiRoleSelect extends GuiBaseScreen {
                 colour = colour | 0x33 << 24;
                 drawGradientRect(xPosition, yPosition, xPosition + width - 20, yPosition + height, colour, colour);
                 drawTexturedModalRect(xPosition + width - 20, yPosition + height - 20, (role.ordinal() - 1) * 20, 153, 20, 20);
-                drawString(fontRendererObj, role.name(), xPosition + 3, yPosition + 6, 0xFFFFFF);
+                drawString(fontRendererObj, I18n.format("role." + role.name() + ".name"), xPosition + 3, yPosition + 6, 0xFFFFFF);
             }
         }
 
@@ -104,7 +105,7 @@ public class GuiRoleSelect extends GuiBaseScreen {
         @SuppressWarnings("unchecked")
         public List<String> getTooltip(int mouseX, int mouseY) {
             List<String> list = new ArrayList<String>();
-            if (selected) list.add(EnumChatFormatting.GREEN + "" + EnumChatFormatting.ITALIC + "Selected");
+            if (selected) list.add(EnumChatFormatting.GREEN + "" + EnumChatFormatting.ITALIC + I18n.format("gui.roleselect.selected"));
             if (!Strings.isNullOrEmpty(displayString)) {
                 list.addAll(fontRendererObj.listFormattedStringToWidth(displayString, guiWidth));
             }
