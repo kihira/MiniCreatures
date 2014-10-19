@@ -8,18 +8,24 @@
 
 package kihira.minicreatures.client.gui;
 
+import com.google.common.base.Strings;
+import kihira.foxlib.client.gui.GuiBaseScreen;
+import kihira.foxlib.client.gui.ITooltip;
 import kihira.minicreatures.MiniCreatures;
 import kihira.minicreatures.common.entity.EntityMiniPlayer;
 import kihira.minicreatures.common.entity.ai.EnumRole;
 import kihira.minicreatures.common.network.RoleMessage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiInventory;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
-public class GuiRoleSelect extends GuiScreen {
+import java.util.ArrayList;
+import java.util.List;
+
+public class GuiRoleSelect extends GuiBaseScreen {
 
     private final ResourceLocation guiTextures = new ResourceLocation("minicreatures", "textures/gui/roleSelect.png");
     private final int guiWidth = 216;
@@ -41,7 +47,7 @@ public class GuiRoleSelect extends GuiScreen {
         //Roles
         int offset = 0;
         for (EnumRole role : EnumRole.values()) {
-            buttonList.add(new GuiRoleSelectButton(role.ordinal() + 1, guiLeft + 185, guiTop + 22 + (offset * 22), role, ""));
+            buttonList.add(new GuiRoleSelectButton(role.ordinal() + 1, guiLeft + 85, guiTop + 22 + (offset * 22), role, miniPlayer.getRole() == role, ""));
             offset++;
         }
 
@@ -53,15 +59,6 @@ public class GuiRoleSelect extends GuiScreen {
         //Background
         mc.renderEngine.bindTexture(guiTextures);
         drawTexturedModalRect(guiLeft, guiTop, 0, 0, guiWidth, guiHeight);
-
-        //Roles
-        int offset = 0;
-        for (EnumRole role : EnumRole.values()) {
-            mc.renderEngine.bindTexture(guiTextures);
-            drawGradientRect(guiLeft + 85, guiTop + 22 + (offset * 22), guiLeft + 185, guiTop + 42 + (offset * 22), 0x22000000, 0x22000000);
-            drawString(fontRendererObj, role.name(), guiLeft + 88, guiTop + 22 + (offset * 22) + 6, 0xFFFFFF);
-            offset++;
-        }
 
         drawString(fontRendererObj, "Select your Mini Players role", guiLeft + 8, guiTop + 8, 0xFFFFFF);
         GuiInventory.func_147046_a(guiLeft + 43, guiTop + 105, 52, guiLeft + 43 - mouseX, guiTop + 65 - mouseY, miniPlayer);
@@ -77,13 +74,15 @@ public class GuiRoleSelect extends GuiScreen {
         super.actionPerformed(button);
     }
 
-    private class GuiRoleSelectButton extends GuiButton {
+    private class GuiRoleSelectButton extends GuiButton implements ITooltip {
 
         private final EnumRole role;
+        private boolean selected;
 
-        public GuiRoleSelectButton(int id, int x, int y, EnumRole role, String tooltip) {
-            super(id, x, y, 20, 20, tooltip);
+        public GuiRoleSelectButton(int id, int x, int y, EnumRole role, boolean selected, String tooltip) {
+            super(id, x, y, 120, 20, tooltip);
             this.role = role;
+            this.selected = selected;
         }
 
         @Override
@@ -91,8 +90,25 @@ public class GuiRoleSelect extends GuiScreen {
             if (this.visible) {
                 GL11.glColor3f(1F, 1F, 1F);
                 mc.renderEngine.bindTexture(guiTextures);
-                drawTexturedModalRect(xPosition, yPosition, (role.ordinal() - 1) * 20, 153, width, height);
+                field_146123_n = mouseX >= this.xPosition && mouseY >= this.yPosition && mouseX < this.xPosition + this.width && mouseY < this.yPosition + this.height;
+                int colour = selected ? 0x2200ff00 : 0x22000000;
+                drawGradientRect(xPosition, yPosition, xPosition + width, yPosition + height, colour, colour);
+                colour = colour | 0x33 << 24;
+                drawGradientRect(xPosition, yPosition, xPosition + width - 20, yPosition + height, colour, colour);
+                drawTexturedModalRect(xPosition + width - 20, yPosition + height - 20, (role.ordinal() - 1) * 20, 153, 20, 20);
+                drawString(fontRendererObj, role.name(), xPosition + 3, yPosition + 6, 0xFFFFFF);
             }
+        }
+
+        @Override
+        @SuppressWarnings("unchecked")
+        public List<String> getTooltip(int mouseX, int mouseY) {
+            List<String> list = new ArrayList<String>();
+            if (selected) list.add(EnumChatFormatting.GREEN + "" + EnumChatFormatting.ITALIC + "Selected");
+            if (!Strings.isNullOrEmpty(displayString)) {
+                list.addAll(fontRendererObj.listFormattedStringToWidth(displayString, guiWidth));
+            }
+            return list;
         }
     }
 }
