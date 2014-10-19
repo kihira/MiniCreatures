@@ -104,6 +104,16 @@ public class RenderMiniPlayer extends RenderBiped {
     }
 
     @Override
+    protected void func_96449_a(EntityLivingBase entity, double x, double y, double z, String text, float p_96449_9_, double p_96449_10_) {
+        if (((EntityMiniPlayer) entity).isSitting()) {
+            this.func_147906_a(entity, text, x, y - 0.3D, z, 64);
+        }
+        else {
+            this.func_147906_a(entity, text, x, y, z, 64);
+        }
+    }
+
+    @Override
     protected ResourceLocation getEntityTexture(Entity entity) {
         //Gets the players skin
         ResourceLocation resourcelocation = AbstractClientPlayer.locationStevePng;
