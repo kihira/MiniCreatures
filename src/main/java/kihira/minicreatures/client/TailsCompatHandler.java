@@ -46,7 +46,7 @@ public class TailsCompatHandler {
                     BufferedImage bufferedImage = ObfuscationReflectionHelper.getPrivateValue(ThreadDownloadImageData.class, imageData, "field_110560_d", "bufferedImage");
                     if (bufferedImage != null) {
                         PartsData partsData = new PartsData(uuid);
-                        partsData.setPartInfo(PartsData.PartType.TAIL, TextureHelper.buildTailInfoFromSkin(uuid, bufferedImage));
+                        partsData.setPartInfo(PartsData.PartType.TAIL, TextureHelper.buildPartInfoFromSkin(uuid, PartsData.PartType.TAIL, bufferedImage));
                         Tails.proxy.addPartsData(uuid, partsData);
                     }
                 }

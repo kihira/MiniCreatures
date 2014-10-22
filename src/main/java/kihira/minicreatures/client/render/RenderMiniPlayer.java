@@ -14,6 +14,7 @@
 
 package kihira.minicreatures.client.render;
 
+import com.google.common.base.Strings;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import kihira.foxlib.client.TextHelper;
@@ -57,7 +58,7 @@ public class RenderMiniPlayer extends RenderBiped {
 
         //Draw the chat messages
         String chat = miniPlayer.getChat();
-        if (chat != null && !chat.isEmpty()) {
+        if (!Strings.isNullOrEmpty(chat)) {
             TextHelper.drawWrappedMessageFacingPlayer(x, y + miniPlayer.height + 0.67F, z, 0.016666668F * 1.1F, 100, 20, chat, -1);
         }
 
