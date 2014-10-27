@@ -44,7 +44,7 @@ public class EntityAICollect<T extends EntityTameable & IMiniCreature> extends E
 
     @Override
     public boolean shouldExecute() {
-        return !remove && !entity.isDead && entity.getOwner() != null;
+        return !remove && !entity.isDead && entity.getOwner() != null && entity.getInventory() != null;
     }
 
     @Override

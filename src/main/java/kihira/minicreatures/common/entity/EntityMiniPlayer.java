@@ -42,6 +42,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.InventoryBasic;
+import net.minecraft.item.EnumAction;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -72,6 +73,8 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
     public String statMessage = "";
     @SideOnly(Side.CLIENT)
     public int statMessageTime = 60;
+
+    private int itemUseCount = -1;
 
     public EntityMiniPlayer(World par1World) {
         super(par1World);
@@ -262,6 +265,17 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
         if (this.worldObj.isRemote && this.statMessageTime < 60) {
             this.statMessageTime++;
         }
+        //Use item
+        if (itemUseCount > -1) {
+            if (itemUseCount % 4 == 0) {
+                if (getHeldItem().getItemUseAction() == EnumAction.drink) {
+                    this.playSound("random.drink", 0.3F, this.worldObj.rand.nextFloat() * 0.1F + 0.9F);
+                }
+            }
+            if (itemUseCount-- == 0) {
+                onItemUseFinish();
+            }
+        }
     }
 
     @Override
@@ -365,6 +379,31 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
         int id = this.dataWatcher.getWatchableObjectInt(21);
         if (id <= EnumRole.values().length) return EnumRole.values()[id];
         else return EnumRole.NONE;
+    }
+
+    public void setHeldItemInUse() {
+        if (getHeldItem() != null) {
+            itemUseCount = getHeldItem().getMaxItemUseDuration();
+        }
+    }
+
+    private void onItemUseFinish() {
+        if (getHeldItem() != null) {
+            //TODO Not ideal but all methods require a player so instead we'll just null the current item. Need to fix it to work with stackable items
+            //Maybe a fake player so we can pass them?
+            setCurrentItemOrArmor(0, null);
+            itemUseCount = -1;
+        }
+    }
+
+    @SideOnly(Side.CLIENT)
+    public int getItemUseCount() {
+        return itemUseCount;
+    }
+
+    @SideOnly(Side.CLIENT)
+    public int getItemInUseDuration() {
+        return itemUseCount > -1 ? getHeldItem().getMaxItemUseDuration() - itemUseCount : 0;
     }
 
     @Override

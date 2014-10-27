@@ -18,14 +18,15 @@ import kihira.minicreatures.client.gui.GuiCustomizer;
 import kihira.minicreatures.common.customizer.CustomizerRegistry;
 import kihira.minicreatures.common.customizer.ICustomizerPart;
 import kihira.minicreatures.common.entity.EntityMiniPlayer;
-import kihira.minicreatures.common.entity.ICustomisable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.init.Items;
+import net.minecraft.item.EnumAction;
 import net.minecraft.item.ItemBlock;
+import net.minecraft.util.MathHelper;
 import org.lwjgl.opengl.GL11;
 
 /**
@@ -62,7 +63,7 @@ public class ModelMiniPlayer extends ModelBiped {
      */
     @Override
     public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
-        ICustomisable miniPlayer = (ICustomisable)entity;
+        EntityMiniPlayer miniPlayer = (EntityMiniPlayer) entity;
         GL11.glPushMatrix();
         this.setRotationAngles(f, f1, f2, f3, f4, f5, entity);
         float f6 = 2.0F;
@@ -124,6 +125,18 @@ public class ModelMiniPlayer extends ModelBiped {
             this.bipedLeftLeg.rotateAngleX = -((float)Math.PI * 2.5F / 5F);
             this.bipedRightLeg.rotateAngleY = ((float)Math.PI / 10F);
             this.bipedLeftLeg.rotateAngleY = -((float)Math.PI / 10F);
+        }
+
+        if (miniPlayer.getItemInUseDuration() > 0 && miniPlayer.getHeldItem() != null) {
+            EnumAction action = miniPlayer.getHeldItem().getItemUseAction();
+            if (action == EnumAction.drink || action == EnumAction.eat) {
+                float itemUseCount = (float)miniPlayer.getItemUseCount() + 1F;
+                float timeLeft = 1F - itemUseCount / (float) miniPlayer.getHeldItem().getMaxItemUseDuration();
+                float angle = (float) (1F - Math.pow(1F - timeLeft, 9));
+                bipedRightArm.rotateAngleX += (-angle * (miniPlayer.isSitting() ? 0.6F : 1.2F)) + MathHelper.abs(MathHelper.cos(itemUseCount / 4F * (float) Math.PI) * 0.1F) * (timeLeft > 0.2F ? 1F : 0F);
+                bipedRightArm.rotateAngleY = -angle * 0.3F;
+                bipedRightArm.rotateAngleZ = angle * 0.4F;
+            }
         }
     }
 

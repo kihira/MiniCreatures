@@ -19,6 +19,7 @@ import cpw.mods.fml.relauncher.Side;
 import kihira.minicreatures.MiniCreatures;
 import kihira.minicreatures.client.render.*;
 import kihira.minicreatures.common.entity.*;
+import kihira.minicreatures.common.network.ItemUseMessage;
 import kihira.minicreatures.common.network.PersonalityMessage;
 import net.minecraft.util.ResourceLocation;
 
@@ -45,5 +46,6 @@ public class ClientProxy extends CommonProxy {
     public void registerMessages() {
         super.registerMessages();
         this.simpleNetworkWrapper.registerMessage(PersonalityMessage.PersonalityMessageHandler.class, PersonalityMessage.class, 0, Side.CLIENT);
+        this.simpleNetworkWrapper.registerMessage(ItemUseMessage.ItemUseMessageHandler.class, ItemUseMessage.class, 4, Side.CLIENT);
     }
 }

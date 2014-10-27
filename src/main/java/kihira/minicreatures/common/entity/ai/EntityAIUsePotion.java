@@ -8,7 +8,10 @@
 
 package kihira.minicreatures.common.entity.ai;
 
-import kihira.minicreatures.common.entity.IMiniCreature;
+import cpw.mods.fml.common.network.NetworkRegistry;
+import kihira.minicreatures.MiniCreatures;
+import kihira.minicreatures.common.entity.EntityMiniPlayer;
+import kihira.minicreatures.common.network.ItemUseMessage;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.inventory.IInventory;
@@ -21,17 +24,17 @@ import org.apache.commons.lang3.ArrayUtils;
 import java.util.Arrays;
 import java.util.List;
 
-public class EntityAIUsePotion<T extends EntityLiving & IMiniCreature> extends EntityAIBase implements IRole {
+public class EntityAIUsePotion extends EntityAIBase implements IRole {
 
-    private final T entity;
+    private final EntityMiniPlayer miniPlayer;
     private final float healthThreshold;
     private final int damageThreshold;
     private final int cooldown;
     private int ticksToNextPotion;
     private boolean remove = false;
 
-    public EntityAIUsePotion(T entity, float healthThreshold, int damageThreshold, int cooldown) {
-        this.entity = entity;
+    public EntityAIUsePotion(EntityMiniPlayer miniPlayer, float healthThreshold, int damageThreshold, int cooldown) {
+        this.miniPlayer = miniPlayer;
         this.healthThreshold = healthThreshold;
         this.damageThreshold = damageThreshold;
         this.cooldown = cooldown;
@@ -39,7 +42,7 @@ public class EntityAIUsePotion<T extends EntityLiving & IMiniCreature> extends E
 
     @Override
     public boolean shouldExecute() {
-        return !remove && !entity.getEntity().isDead;
+        return !remove && !miniPlayer.getEntity().isDead;
     }
 
     @Override
@@ -47,29 +50,37 @@ public class EntityAIUsePotion<T extends EntityLiving & IMiniCreature> extends E
         ticksToNextPotion = ticksToNextPotion <= 0 ? 0 : ticksToNextPotion - 1;
 
         if (ticksToNextPotion == 0) {
-            IInventory inventory = entity.getInventory();
+            if (miniPlayer.getHeldItem() != null && miniPlayer.getHeldItem().getItem() instanceof ItemPotion) {
+                miniPlayer.setHeldItemInUse();
+                MiniCreatures.proxy.simpleNetworkWrapper.sendToAllAround(new ItemUseMessage(miniPlayer.getEntityId(), miniPlayer.getHeldItem().getMaxItemUseDuration()),
+                        new NetworkRegistry.TargetPoint(miniPlayer.dimension, miniPlayer.posX, miniPlayer.posY, miniPlayer.posZ, 64));
+                ticksToNextPotion = miniPlayer.getHeldItem().getMaxItemUseDuration() + cooldown;
+                return;
+            }
+
+            IInventory inventory = miniPlayer.getInventory();
             //Fire resistance
-            if (entity.isBurning() && !entity.isPotionActive(Potion.fireResistance)) {
-                applyPotionEffectIfFound(inventory, entity, 12);
+            if (miniPlayer.isBurning() && !miniPlayer.isPotionActive(Potion.fireResistance)) {
+                applyPotionEffectIfFound(inventory, miniPlayer, 12);
             }
             //Heal/regen
-            if (entity.getHealth() / entity.getMaxHealth() <= healthThreshold) {
+            if (miniPlayer.getHealth() / miniPlayer.getMaxHealth() <= healthThreshold) {
                 //If regen is active, just apply healing. Otherwise search for regen too
-                if (entity.isPotionActive(Potion.regeneration)) {
-                    applyPotionEffectIfFound(inventory, entity, 6);
+                if (miniPlayer.isPotionActive(Potion.regeneration)) {
+                    applyPotionEffectIfFound(inventory, miniPlayer, 6);
                 }
                 else {
-                    applyPotionEffectIfFound(inventory, entity, 6, 10);
+                    applyPotionEffectIfFound(inventory, miniPlayer, 6, 10);
                 }
             }
             //Water breathing
-            if (entity.getAir() < 50 && !entity.isPotionActive(Potion.waterBreathing)) {
-                entity.setAir(300);
-                applyPotionEffectIfFound(inventory, entity, 13);
+            if (miniPlayer.getAir() < 50 && !miniPlayer.isPotionActive(Potion.waterBreathing)) {
+                miniPlayer.setAir(300);
+                applyPotionEffectIfFound(inventory, miniPlayer, 13);
             }
             //Only apply resistance if attack attacked within the last second and has lost more then one heart of damage . Should prevent accidental casting.
-            if ((entity.getLastAttackerTime() < 20) && (entity.getMaxHealth() - entity.getHealth() >= damageThreshold) && !entity.isPotionActive(Potion.resistance)) {
-                applyPotionEffectIfFound(inventory, entity, 11);
+            if ((miniPlayer.getLastAttackerTime() < 20) && (miniPlayer.getMaxHealth() - miniPlayer.getHealth() >= damageThreshold) && !miniPlayer.isPotionActive(Potion.resistance)) {
+                applyPotionEffectIfFound(inventory, miniPlayer, 11);
             }
             //TODO sprint potion for fleeing?
         }
@@ -96,10 +107,15 @@ public class EntityAIUsePotion<T extends EntityLiving & IMiniCreature> extends E
                 List<PotionEffect> potionEffects = ((ItemPotion) itemStack.getItem()).getEffects(itemStack);
                 for (PotionEffect effect : potionEffects) {
                     if (ArrayUtils.contains(potionIDs, effect.getPotionID())) {
-                        entity.addPotionEffect(new PotionEffect(effect));
-                        entity.playSound("random.drink", 0.5F, entity.worldObj.rand.nextFloat() * 0.1F + 0.9F);
+                        //Apply all effects
+                        for (PotionEffect effect1 : potionEffects) {
+                            entity.addPotionEffect(new PotionEffect(effect1));
+                        }
+
+                        ticksToNextPotion = itemStack.getMaxItemUseDuration() + cooldown;
+                        miniPlayer.setCurrentItemOrArmor(0, itemStack); //TODO don't override current item, put it in the inventory as a temp storage?
+                        miniPlayer.setHeldItemInUse();
                         inventory.setInventorySlotContents(i, null);
-                        ticksToNextPotion = cooldown;
                         flag = true;
                         break;
                     }
