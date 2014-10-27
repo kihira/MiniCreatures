@@ -17,11 +17,12 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.OreDictionary;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class EntityAICollect extends EntityAIBase implements IRole {
 
-    private final EntityMiniPlayer miniPlayer;
+    private final EntityMiniPlayer entity;
     private final float collectRadius;
     private final float searchRadius;
     private boolean remove = false;
@@ -33,15 +34,16 @@ public class EntityAICollect extends EntityAIBase implements IRole {
         }
     };
 
-    public EntityAICollect(EntityMiniPlayer miniPlayer, float collectRadius, float searchRadius) {
-        this.miniPlayer = miniPlayer;
+    public EntityAICollect(EntityMiniPlayer entity, float collectRadius, float searchRadius) {
+        this.entity = entity;
         this.collectRadius = collectRadius;
         this.searchRadius = searchRadius;
+        setMutexBits(1);
     }
 
     @Override
     public boolean shouldExecute() {
-        return !remove && !miniPlayer.isDead;
+        return !remove && !entity.isDead && entity.getOwner() != null;
     }
 
     @Override
@@ -52,29 +54,32 @@ public class EntityAICollect extends EntityAIBase implements IRole {
     @Override
     @SuppressWarnings("unchecked")
     public void updateTask() {
-        List<Entity> entities = miniPlayer.worldObj.selectEntitiesWithinAABB(EntityItem.class, miniPlayer.boundingBox.expand(collectRadius, 1, collectRadius), itemSelector);
-        if (entities != null && entities.size() > 0) {
-            for (Entity entity : entities) {
-                EntityItem entityItem = (EntityItem) entity;
-                int[] oreIDs = OreDictionary.getOreIDs(entityItem.getEntityItem());
-                if (oreIDs.length > 0) {
-                    for (int oreID : oreIDs) {
-                        String oreName = OreDictionary.getOreName(oreID);
-                        if (oreName.startsWith("gem") || oreName.startsWith("ore")) {
-                            ItemStack itemStack = entityItem.getEntityItem();
-                            int stackSize = itemStack.stackSize;
-                            //Collect
-                            if (addItemStackToInventory(itemStack)) {
-                                miniPlayer.worldObj.playSoundAtEntity(miniPlayer, "random.pop", 0.2F, ((miniPlayer.getRNG().nextFloat() - miniPlayer.getRNG().nextFloat()) * 0.7F + 1.0F) * 2.0F);
-                                miniPlayer.onItemPickup(entityItem, stackSize);
+        List<EntityItem> entityItems = getEntityItemsInRadius(collectRadius, 1);
+        for (EntityItem entityItem : entityItems) {
+            ItemStack itemStack = entityItem.getEntityItem();
+            int stackSize = itemStack.stackSize;
+            //Collect
+            if (addItemStackToInventory(itemStack)) {
+                entity.worldObj.playSoundAtEntity(entity, "random.pop", 0.2F, ((entity.getRNG().nextFloat() - entity.getRNG().nextFloat()) * 0.7F + 1.0F) * 2.0F);
+                entity.onItemPickup(entityItem, stackSize);
 
-                                if (itemStack.stackSize <= 0) {
-                                    entityItem.setDead();
-                                }
-                            }
-                        }
-                    }
+                if (itemStack.stackSize <= 0) {
+                    entityItem.setDead();
                 }
+            }
+        }
+        if (searchRadius > 0 && entity.getNavigator().noPath() && entity.worldObj.getTotalWorldTime() % 20 == 0) {
+            entityItems = getEntityItemsInRadius(searchRadius, 1);
+            EntityItem nearestItem = null;
+            for (EntityItem entityItem : entityItems) {
+                //We want the closest item to the mini creature
+                if (nearestItem == null || (nearestItem.getDistanceSqToEntity(entity) > entityItem.getDistanceSqToEntity(entity) &&
+                        entityItem.getDistanceSqToEntity(entity.getOwner()) < (searchRadius * 2F))) {
+                    nearestItem = entityItem;
+                }
+            }
+            if (nearestItem != null) {
+                entity.getNavigator().tryMoveToEntityLiving(nearestItem, 1.2F);
             }
         }
     }
@@ -89,9 +94,30 @@ public class EntityAICollect extends EntityAIBase implements IRole {
         remove = true;
     }
 
+    @SuppressWarnings("unchecked")
+    private List<EntityItem> getEntityItemsInRadius(float radius, float yRadius) {
+        List<Entity> entities = entity.worldObj.selectEntitiesWithinAABB(EntityItem.class, entity.boundingBox.expand(radius, yRadius, radius), itemSelector);
+        List<EntityItem> entityItems = new ArrayList<EntityItem>();
+        if (entities != null && entities.size() > 0) {
+            for (Entity entity : entities) {
+                EntityItem entityItem = (EntityItem) entity;
+                int[] oreIDs = OreDictionary.getOreIDs(entityItem.getEntityItem());
+                if (oreIDs.length > 0) {
+                    for (int oreID : oreIDs) {
+                        String oreName = OreDictionary.getOreName(oreID);
+                        if (oreName.startsWith("gem") || oreName.startsWith("ore")) {
+                            entityItems.add(entityItem);
+                        }
+                    }
+                }
+            }
+        }
+        return entityItems;
+    }
+
     public boolean addItemStackToInventory(ItemStack itemStackToAdd) {
         if (itemStackToAdd != null && itemStackToAdd.stackSize != 0 && itemStackToAdd.getItem() != null) {
-            IInventory inventory = miniPlayer.getInventory();
+            IInventory inventory = entity.getInventory();
             for (int i = 0; i < inventory.getSizeInventory(); i++) {
                 ItemStack itemStack = inventory.getStackInSlot(i);
                 if (itemStack == null && inventory.isItemValidForSlot(i, itemStackToAdd)) {

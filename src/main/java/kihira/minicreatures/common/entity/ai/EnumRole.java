@@ -31,11 +31,11 @@ public enum EnumRole {
     public void applyAI(EntityMiniPlayer miniPlayer) {
         switch (this) {
             case MINER: {
-                miniPlayer.tasks.addTask(5, new EntityAICollect(miniPlayer, 1.5F, 1.5F));
+                miniPlayer.tasks.addTask(3, new EntityAICollect(miniPlayer, 1.5F, 7.5F));
                 break;
             }
             case COMBAT: {
-                miniPlayer.tasks.addTask(5, new EntityAIUsePotion(miniPlayer, 0.5F, 2, 100));
+                miniPlayer.tasks.addTask(3, new EntityAIUsePotion(miniPlayer, 0.5F, 2, 100));
                 break;
             }
         }
