@@ -21,17 +21,17 @@ import org.apache.commons.lang3.ArrayUtils;
 import java.util.Arrays;
 import java.util.List;
 
-public class EntityAIUsePotion extends EntityAIBase implements IRole {
+public class EntityAIUsePotion<T extends EntityLiving & IMiniCreature> extends EntityAIBase implements IRole {
 
-    private final IMiniCreature miniCreature;
+    private final T entity;
     private final float healthThreshold;
     private final int damageThreshold;
     private final int cooldown;
     private int ticksToNextPotion;
     private boolean remove = false;
 
-    public EntityAIUsePotion(IMiniCreature miniCreature, float healthThreshold, int damageThreshold, int cooldown) {
-        this.miniCreature = miniCreature;
+    public EntityAIUsePotion(T entity, float healthThreshold, int damageThreshold, int cooldown) {
+        this.entity = entity;
         this.healthThreshold = healthThreshold;
         this.damageThreshold = damageThreshold;
         this.cooldown = cooldown;
@@ -39,7 +39,7 @@ public class EntityAIUsePotion extends EntityAIBase implements IRole {
 
     @Override
     public boolean shouldExecute() {
-        return !remove && !miniCreature.getEntity().isDead;
+        return !remove && !entity.getEntity().isDead;
     }
 
     @Override
@@ -47,8 +47,7 @@ public class EntityAIUsePotion extends EntityAIBase implements IRole {
         ticksToNextPotion = ticksToNextPotion <= 0 ? 0 : ticksToNextPotion - 1;
 
         if (ticksToNextPotion == 0) {
-            EntityLiving entity = miniCreature.getEntity();
-            IInventory inventory = miniCreature.getInventory();
+            IInventory inventory = entity.getInventory();
             //Fire resistance
             if (entity.isBurning() && !entity.isPotionActive(Potion.fireResistance)) {
                 applyPotionEffectIfFound(inventory, entity, 12);

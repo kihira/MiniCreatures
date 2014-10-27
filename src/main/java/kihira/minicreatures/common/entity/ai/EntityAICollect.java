@@ -8,11 +8,12 @@
 
 package kihira.minicreatures.common.entity.ai;
 
-import kihira.minicreatures.common.entity.EntityMiniPlayer;
+import kihira.minicreatures.common.entity.IMiniCreature;
 import net.minecraft.command.IEntitySelector;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.OreDictionary;
@@ -20,9 +21,9 @@ import net.minecraftforge.oredict.OreDictionary;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EntityAICollect extends EntityAIBase implements IRole {
+public class EntityAICollect<T extends EntityTameable & IMiniCreature> extends EntityAIBase implements IRole {
 
-    private final EntityMiniPlayer entity;
+    private final T entity;
     private final float collectRadius;
     private final float searchRadius;
     private boolean remove = false;
@@ -34,7 +35,7 @@ public class EntityAICollect extends EntityAIBase implements IRole {
         }
     };
 
-    public EntityAICollect(EntityMiniPlayer entity, float collectRadius, float searchRadius) {
+    public EntityAICollect(T entity, float collectRadius, float searchRadius) {
         this.entity = entity;
         this.collectRadius = collectRadius;
         this.searchRadius = searchRadius;
