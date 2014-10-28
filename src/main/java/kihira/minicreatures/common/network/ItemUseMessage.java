@@ -48,7 +48,8 @@ public class ItemUseMessage implements IMessage {
         public IMessage onMessage(ItemUseMessage message, MessageContext ctx) {
             Entity entity = Minecraft.getMinecraft().theWorld.getEntityByID(message.entityID);
             if (entity instanceof EntityMiniPlayer) {
-                ((EntityMiniPlayer) entity).setHeldItemInUse();
+                EntityMiniPlayer miniPlayer = (EntityMiniPlayer) entity;
+                miniPlayer.setItemInUse(miniPlayer.getHeldItem(), miniPlayer.getHeldItem().getMaxItemUseDuration());
             }
             else {
                 MiniCreatures.logger.warn("Received a personality update for an entity that is not a Mini Player! " + entity);

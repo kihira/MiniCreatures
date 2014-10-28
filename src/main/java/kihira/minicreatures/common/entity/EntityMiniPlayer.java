@@ -15,6 +15,7 @@
 package kihira.minicreatures.common.entity;
 
 import com.google.common.base.Strings;
+import com.mojang.authlib.GameProfile;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -53,6 +54,7 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
+import net.minecraftforge.event.ForgeEventFactory;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -64,6 +66,7 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
     private final EntityAIArrowAttack aiArrowAttack = new EntityAIArrowAttack(this, 1.0D, 20, 50, 15F); //Set par3 and par4 to the same to have a consant firing rate. par5 seems to effect damage output. Higher = more damage falloff
     private final EntityAIAttackOnCollide aiAttackOnCollide = new EntityAIAttackOnCollide(this, 1.0D, true);
     private Personality personality = new Personality();
+    private FakePlayerMC fakePlayer;
 
     //Maintain an array list client side for previewing
     @SideOnly(Side.CLIENT)
@@ -74,6 +77,7 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
     @SideOnly(Side.CLIENT)
     public int statMessageTime = 60;
 
+    private ItemStack itemInUse;
     private int itemUseCount = -1;
 
     public EntityMiniPlayer(World par1World) {
@@ -93,6 +97,7 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
         this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, true));
         this.setTamed(false);
         this.renderDistanceWeight = 4D;
+        this.fakePlayer = new FakePlayerMC(FMLCommonHandler.instance().getMinecraftServerInstance().worldServerForDimension(dimension), new GameProfile(getUniqueID(), null), this);
 
         if (par1World != null && !par1World.isRemote) this.setCombatAI();
     }
@@ -248,6 +253,8 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
                 }
             }
         }
+
+        setCarrying(new ItemStack(Items.potionitem, 1, 16457));
         return super.interact(player);
     }
 
@@ -260,21 +267,46 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
     }
 
     @Override
+    public void onUpdate() {
+        super.onUpdate();
+
+        //Mimic this entity in terms of position
+        fakePlayer.posX = posX;
+        fakePlayer.posY = posY;
+        fakePlayer.posZ = posZ;
+        fakePlayer.rotationPitch = rotationPitch;
+        fakePlayer.rotationYaw = rotationYaw;
+
+        //Use item
+        if (itemInUse == getHeldItem()) {
+            itemUseCount = ForgeEventFactory.onItemUseTick(fakePlayer, getHeldItem(), itemUseCount);
+            if (itemUseCount <= 0) {
+                onItemUseFinish();
+            }
+            else {
+                getHeldItem().getItem().onUsingTick(getHeldItem(), fakePlayer, itemUseCount);
+                if (itemUseCount % 4 == 0) {
+                    //Drink
+                    if (getHeldItem().getItemUseAction() == EnumAction.drink) {
+                        this.playSound("random.drink", 0.3F, this.worldObj.rand.nextFloat() * 0.1F + 0.9F);
+                    }
+                }
+                if (itemUseCount-- == 0 && !this.worldObj.isRemote) {
+                    onItemUseFinish();
+                }
+            }
+        }
+        else {
+            itemInUse = null;
+            itemUseCount = 0;
+        }
+    }
+
+    @Override
     public void onLivingUpdate() {
         super.onLivingUpdate();
         if (this.worldObj.isRemote && this.statMessageTime < 60) {
             this.statMessageTime++;
-        }
-        //Use item
-        if (itemUseCount > -1) {
-            if (itemUseCount % 4 == 0) {
-                if (getHeldItem().getItemUseAction() == EnumAction.drink) {
-                    this.playSound("random.drink", 0.3F, this.worldObj.rand.nextFloat() * 0.1F + 0.9F);
-                }
-            }
-            if (itemUseCount-- == 0) {
-                onItemUseFinish();
-            }
         }
     }
 
@@ -381,18 +413,34 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
         else return EnumRole.NONE;
     }
 
-    public void setHeldItemInUse() {
-        if (getHeldItem() != null) {
-            itemUseCount = getHeldItem().getMaxItemUseDuration();
+    public void setItemInUse(ItemStack itemStack, int itemUseCount) {
+        if (itemStack != this.itemInUse) {
+            itemUseCount = ForgeEventFactory.onItemUseStart(fakePlayer, itemStack, itemUseCount);
+            if (itemUseCount <= 0) return;
+            this.itemInUse = itemStack;
+            this.itemUseCount = itemUseCount;
+
+            if (!this.worldObj.isRemote) {
+                this.setEating(true);
+            }
         }
     }
 
     private void onItemUseFinish() {
-        if (getHeldItem() != null) {
-            //TODO Not ideal but all methods require a player so instead we'll just null the current item. Need to fix it to work with stackable items
-            //Maybe a fake player so we can pass them?
-            setCurrentItemOrArmor(0, null);
-            itemUseCount = -1;
+        if (this.itemInUse != null) {
+            int i = this.itemInUse.stackSize;
+            ItemStack itemstack = this.itemInUse.onFoodEaten(worldObj, fakePlayer);
+            itemstack = ForgeEventFactory.onItemUseFinish(fakePlayer, itemInUse, itemUseCount, itemstack);
+
+            if (itemstack != this.itemInUse || itemstack != null && itemstack.stackSize != i) {
+                setCurrentItemOrArmor(0, itemstack);
+
+                if (itemstack != null && itemstack.stackSize == 0) {
+                    setCurrentItemOrArmor(0, null);
+                }
+            }
+
+            this.clearItemInUse();
         }
     }
 
@@ -403,7 +451,26 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
 
     @SideOnly(Side.CLIENT)
     public int getItemInUseDuration() {
-        return itemUseCount > -1 ? getHeldItem().getMaxItemUseDuration() - itemUseCount : 0;
+        return itemInUse != null ? getHeldItem().getMaxItemUseDuration() - itemUseCount : 0;
+    }
+
+    public void stopUsingItem() {
+        if (itemInUse != null) {
+            if (!ForgeEventFactory.onUseItemStop(fakePlayer, itemInUse, itemUseCount)) {
+                itemInUse.onPlayerStoppedUsing(worldObj, fakePlayer, itemUseCount);
+            }
+        }
+
+        this.clearItemInUse();
+    }
+
+    public void clearItemInUse() {
+        this.itemInUse = null;
+        this.itemUseCount = 0;
+
+        if (!this.worldObj.isRemote) {
+            this.setEating(false);
+        }
     }
 
     @Override

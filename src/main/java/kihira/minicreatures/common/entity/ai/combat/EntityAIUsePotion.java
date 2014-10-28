@@ -9,12 +9,14 @@
 package kihira.minicreatures.common.entity.ai.combat;
 
 import cpw.mods.fml.common.network.NetworkRegistry;
+import kihira.foxlib.common.EntityHelper;
 import kihira.minicreatures.MiniCreatures;
 import kihira.minicreatures.common.entity.EntityMiniPlayer;
 import kihira.minicreatures.common.entity.ai.IRole;
 import kihira.minicreatures.common.network.ItemUseMessage;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.ai.EntityAIBase;
+import net.minecraft.entity.projectile.EntityPotion;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemPotion;
 import net.minecraft.item.ItemStack;
@@ -43,7 +45,7 @@ public class EntityAIUsePotion extends EntityAIBase implements IRole {
 
     @Override
     public boolean shouldExecute() {
-        return !remove && !miniPlayer.getEntity().isDead;
+        return !remove && !miniPlayer.getEntity().isDead && miniPlayer.getOwner() != null;
     }
 
     @Override
@@ -52,10 +54,42 @@ public class EntityAIUsePotion extends EntityAIBase implements IRole {
 
         if (ticksToNextPotion == 0) {
             if (miniPlayer.getHeldItem() != null && miniPlayer.getHeldItem().getItem() instanceof ItemPotion) {
-                miniPlayer.setHeldItemInUse();
-                MiniCreatures.proxy.simpleNetworkWrapper.sendToAllAround(new ItemUseMessage(miniPlayer.getEntityId(), miniPlayer.getHeldItem().getMaxItemUseDuration()),
-                        new NetworkRegistry.TargetPoint(miniPlayer.dimension, miniPlayer.posX, miniPlayer.posY, miniPlayer.posZ, 64));
-                ticksToNextPotion = miniPlayer.getHeldItem().getMaxItemUseDuration() + cooldown;
+                ItemStack heldItemStack = miniPlayer.getHeldItem();
+                //Throw splashes
+                if (ItemPotion.isSplash(heldItemStack.getItemDamage())) {
+                    miniPlayer.worldObj.playSoundAtEntity(miniPlayer, "random.bow", 0.5F, 0.4F / (miniPlayer.getRNG().nextFloat() * 0.4F + 0.8F));
+
+                    if (!miniPlayer.worldObj.isRemote) {
+                        float prevPitch = miniPlayer.rotationPitch;
+                        float prevYaw = miniPlayer.rotationYaw;
+                        //If owner is nearby, try to hit us both with potion
+                        if (miniPlayer.getDistanceSqToEntity(miniPlayer.getOwner()) < 16F) {
+                            float[] pitchYaw = EntityHelper.getPitchYawToEntity(miniPlayer, miniPlayer.getOwner());
+                            miniPlayer.rotationPitch = pitchYaw[0];
+                            miniPlayer.rotationYaw = pitchYaw[1];
+                        }
+                        else {
+                            //Throw on self
+                            miniPlayer.rotationPitch = 90F;
+                        }
+
+                        miniPlayer.worldObj.spawnEntityInWorld(new EntityPotion(miniPlayer.worldObj, miniPlayer, heldItemStack));
+
+                        miniPlayer.rotationPitch = prevPitch;
+                        miniPlayer.rotationYaw = prevYaw;
+                    }
+
+                    if (heldItemStack.stackSize-- <= 0) {
+                        miniPlayer.setCarrying(null);
+                    }
+                    else miniPlayer.setCarrying(heldItemStack);
+                }
+                else {
+                    miniPlayer.setItemInUse(heldItemStack, heldItemStack.getMaxItemUseDuration());
+                    MiniCreatures.proxy.simpleNetworkWrapper.sendToAllAround(new ItemUseMessage(miniPlayer.getEntityId(), heldItemStack.getMaxItemUseDuration()),
+                            new NetworkRegistry.TargetPoint(miniPlayer.dimension, miniPlayer.posX, miniPlayer.posY, miniPlayer.posZ, 64));
+                }
+                ticksToNextPotion = heldItemStack.getMaxItemUseDuration() + cooldown;
                 return;
             }
 
@@ -116,7 +150,7 @@ public class EntityAIUsePotion extends EntityAIBase implements IRole {
                         ticksToNextPotion = itemStack.getMaxItemUseDuration() + cooldown;
                         inventory.setInventorySlotContents(i, miniPlayer.getHeldItem()); //Put away current item
                         miniPlayer.setCurrentItemOrArmor(0, itemStack);
-                        miniPlayer.setHeldItemInUse();
+                        miniPlayer.setItemInUse(itemStack, itemStack.getMaxItemUseDuration());
                         flag = true;
                         break;
                     }
