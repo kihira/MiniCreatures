@@ -8,6 +8,7 @@
 
 package kihira.minicreatures.common.entity.ai;
 
+import com.google.common.collect.Lists;
 import kihira.minicreatures.common.entity.EntityMiniPlayer;
 import kihira.minicreatures.common.entity.IMiniCreature;
 import kihira.minicreatures.common.entity.ai.combat.EntityAIUsePotion;
@@ -15,18 +16,21 @@ import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.ai.EntityAITasks;
 import net.minecraft.entity.passive.EntityTameable;
 
+import java.util.List;
+
 public enum EnumRole {
     NONE,
     MINER,
     FARMER,
     COMBAT;
 
+    //Yeah it's not nice but this won't be called often
     public static <T extends EntityTameable & IMiniCreature> void resetAI(T entity) {
-        for (Object obj : entity.tasks.taskEntries) {
+        List tasks = Lists.newArrayList(entity.tasks.taskEntries); //Copy to help prevent CME
+        for (Object obj : tasks) {
             EntityAIBase ai = obj instanceof EntityAITasks.EntityAITaskEntry ? ((EntityAITasks.EntityAITaskEntry) obj).action : (EntityAIBase) obj;
             if (ai instanceof IRole) {
-                //((IRole) ai).markForRemoval();
-                entity.tasks.removeTask(ai); //TODO CME
+                entity.tasks.removeTask(ai);
             }
         }
     }
