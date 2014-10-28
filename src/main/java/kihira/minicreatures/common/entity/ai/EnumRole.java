@@ -10,6 +10,7 @@ package kihira.minicreatures.common.entity.ai;
 
 import kihira.minicreatures.common.entity.EntityMiniPlayer;
 import kihira.minicreatures.common.entity.IMiniCreature;
+import kihira.minicreatures.common.entity.ai.combat.EntityAIUsePotion;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.ai.EntityAITasks;
 import net.minecraft.entity.passive.EntityTameable;

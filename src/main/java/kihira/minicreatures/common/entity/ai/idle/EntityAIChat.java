@@ -12,7 +12,7 @@
  * GNU General Public License for more details.
  */
 
-package kihira.minicreatures.common.entity.ai;
+package kihira.minicreatures.common.entity.ai.idle;
 
 import kihira.minicreatures.common.entity.EntityMiniPlayer;
 import net.minecraft.entity.ai.EntityAIBase;

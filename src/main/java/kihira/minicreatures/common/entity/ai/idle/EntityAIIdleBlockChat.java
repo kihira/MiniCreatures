@@ -12,7 +12,7 @@
  * GNU General Public License for more details.
  */
 
-package kihira.minicreatures.common.entity.ai;
+package kihira.minicreatures.common.entity.ai.idle;
 
 import com.google.common.collect.Iterators;
 import cpw.mods.fml.common.registry.GameData;

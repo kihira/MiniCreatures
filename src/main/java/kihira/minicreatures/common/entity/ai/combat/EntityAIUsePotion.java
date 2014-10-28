@@ -6,11 +6,12 @@
  * See LICENSE for full License
  */
 
-package kihira.minicreatures.common.entity.ai;
+package kihira.minicreatures.common.entity.ai.combat;
 
 import cpw.mods.fml.common.network.NetworkRegistry;
 import kihira.minicreatures.MiniCreatures;
 import kihira.minicreatures.common.entity.EntityMiniPlayer;
+import kihira.minicreatures.common.entity.ai.IRole;
 import kihira.minicreatures.common.network.ItemUseMessage;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.ai.EntityAIBase;
@@ -113,9 +114,9 @@ public class EntityAIUsePotion extends EntityAIBase implements IRole {
                         }
 
                         ticksToNextPotion = itemStack.getMaxItemUseDuration() + cooldown;
-                        miniPlayer.setCurrentItemOrArmor(0, itemStack); //TODO don't override current item, put it in the inventory as a temp storage?
+                        inventory.setInventorySlotContents(i, miniPlayer.getHeldItem()); //Put away current item
+                        miniPlayer.setCurrentItemOrArmor(0, itemStack);
                         miniPlayer.setHeldItemInUse();
-                        inventory.setInventorySlotContents(i, null);
                         flag = true;
                         break;
                     }
