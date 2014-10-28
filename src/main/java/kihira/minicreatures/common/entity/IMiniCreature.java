@@ -14,6 +14,7 @@
 
 package kihira.minicreatures.common.entity;
 
+import kihira.minicreatures.common.entity.ai.EnumRole;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.inventory.IInventory;
 
@@ -23,4 +24,6 @@ public interface IMiniCreature {
     public IInventory getInventory();
 
     public EntityLiving getEntity();
+
+    public void applyAI(EnumRole role);
 }

@@ -18,6 +18,7 @@ import com.google.common.base.Strings;
 import kihira.minicreatures.MiniCreatures;
 import kihira.minicreatures.common.entity.ai.EntityAIHappy;
 import kihira.minicreatures.common.entity.ai.EntityAIHeal;
+import kihira.minicreatures.common.entity.ai.EnumRole;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockColored;
 import net.minecraft.entity.Entity;
@@ -54,7 +55,7 @@ public class EntityFox extends EntityTameable implements IMiniCreature {
         this.tasks.addTask(1, new EntityAISwimming(this));
         this.tasks.addTask(2, this.aiSit);
         this.tasks.addTask(3, new EntityAIAttackOnCollide(this, 1.0D, true));
-        this.tasks.addTask(4, new EntityAIHeal(this, 200, 1, false));
+        this.tasks.addTask(4, new EntityAIHeal(this, 200, 1));
         this.tasks.addTask(4, new EntityAIFollowOwner(this, 1.0D, 10.0F, 2.0F));
         this.tasks.addTask(5, new EntityAIMate(this, 1.0D));
         this.tasks.addTask(6, new EntityAIWander(this, 1.0D));
@@ -353,4 +354,7 @@ public class EntityFox extends EntityTameable implements IMiniCreature {
     public EntityLiving getEntity() {
         return this;
     }
+
+    @Override
+    public void applyAI(EnumRole role) {}
 }

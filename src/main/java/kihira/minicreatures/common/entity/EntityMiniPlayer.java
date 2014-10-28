@@ -24,6 +24,7 @@ import kihira.minicreatures.MiniCreatures;
 import kihira.minicreatures.common.customizer.EnumPartCategory;
 import kihira.minicreatures.common.entity.ai.EntityAIHeal;
 import kihira.minicreatures.common.entity.ai.EnumRole;
+import kihira.minicreatures.common.entity.ai.combat.EntityAIUsePotion;
 import kihira.minicreatures.common.entity.ai.idle.EntityAIIdleBlockChat;
 import kihira.minicreatures.common.entity.ai.idle.EntityAIIdleEntityChat;
 import kihira.minicreatures.common.personality.IPersonality;
@@ -63,8 +64,8 @@ import java.util.Map;
 public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, ICustomisable, IRangedAttackMob, IPersonality {
 
     private final InventoryBasic inventory = new InventoryBasic(this.getCommandSenderName(), false, 18);
-    private final EntityAIArrowAttack aiArrowAttack = new EntityAIArrowAttack(this, 1.0D, 20, 50, 15F); //Set par3 and par4 to the same to have a consant firing rate. par5 seems to effect damage output. Higher = more damage falloff
-    private final EntityAIAttackOnCollide aiAttackOnCollide = new EntityAIAttackOnCollide(this, 1.0D, true);
+    private final EntityAIArrowAttack aiArrowAttack = new EntityAIArrowAttack(this, 1D, 20, 50, 15F); //Set par3 and par4 to the same to have a consant firing rate. par5 seems to effect damage output. Higher = more damage falloff
+    private final EntityAIAttackOnCollide aiAttackOnCollide = new EntityAIAttackOnCollide(this, 1D, true);
     private Personality personality = new Personality();
     private FakePlayerMC fakePlayer;
 
@@ -85,19 +86,10 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
         this.setSize(0.4F, 1F);
         this.getNavigator().setAvoidsWater(true);
         this.getNavigator().setCanSwim(true);
-        this.tasks.addTask(1, new EntityAISwimming(this));
-        this.tasks.addTask(2, this.aiSit);
-        this.tasks.addTask(4, new EntityAIFollowOwner(this, 1.0D, 10.0F, 2.0F));
-        this.tasks.addTask(4, new EntityAIHeal(this, 150, 1, true));
-        this.tasks.addTask(5, new EntityAIWander(this, 1.0D));
-        this.tasks.addTask(6, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
-        this.tasks.addTask(6, new EntityAILookIdle(this));
-        this.tasks.addTask(7, new EntityAIIdleBlockChat(this, 6));
-        this.tasks.addTask(7, new EntityAIIdleEntityChat(this, 12));
-        this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, true));
         this.setTamed(false);
         this.renderDistanceWeight = 4D;
         this.fakePlayer = new FakePlayerMC(FMLCommonHandler.instance().getMinecraftServerInstance().worldServerForDimension(dimension), new GameProfile(getUniqueID(), null), this);
+        setRole(EnumRole.NONE);
 
         if (par1World != null && !par1World.isRemote) this.setCombatAI();
     }
@@ -253,8 +245,7 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
                 }
             }
         }
-
-        setCarrying(new ItemStack(Items.potionitem, 1, 16457));
+        //setCarrying(new ItemStack(Items.potionitem, 1, 16457));
         return super.interact(player);
     }
 
@@ -532,6 +523,31 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
     @Override
     public EntityLiving getEntity() {
         return this;
+    }
+
+    @Override
+    public void applyAI(EnumRole role) {
+        //General tasks
+        tasks.addTask(1, new EntityAISwimming(this));
+        tasks.addTask(2, this.aiSit);
+        tasks.addTask(4, new EntityAIHeal(this, 150, 1));
+        tasks.addTask(6, new EntityAIWatchClosest(this, EntityPlayer.class, 8F));
+        tasks.addTask(6, new EntityAILookIdle(this));
+        tasks.addTask(7, new EntityAIIdleBlockChat(this, 6));
+        tasks.addTask(7, new EntityAIIdleEntityChat(this, 12));
+        targetTasks.addTask(1, new EntityAIHurtByTarget(this, true));
+
+        switch (role) {
+            case COMBAT: {
+                tasks.addTask(3, new EntityAIUsePotion(this, 0.5F, 2, 100));
+                tasks.addTask(4, new EntityAIFollowOwner(this, 1.2D, 4F, 4F));
+                break;
+            }
+            default: {
+                tasks.addTask(4, new EntityAIFollowOwner(this, 1.1D, 10F, 4F));
+                tasks.addTask(5, new EntityAIWander(this, 1D));
+            }
+        }
     }
 
     @Override

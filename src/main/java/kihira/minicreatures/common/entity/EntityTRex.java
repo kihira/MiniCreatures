@@ -14,6 +14,7 @@
 
 package kihira.minicreatures.common.entity;
 
+import kihira.minicreatures.common.entity.ai.EnumRole;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityAgeable;
 import net.minecraft.entity.EntityLiving;
@@ -118,4 +119,7 @@ public class EntityTRex extends EntityTameable implements IMiniCreature {
     public EntityLiving getEntity() {
         return this;
     }
+
+    @Override
+    public void applyAI(EnumRole role) {}
 }

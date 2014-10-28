@@ -8,14 +8,12 @@
 
 package kihira.minicreatures.common.entity.ai;
 
-import com.google.common.collect.Lists;
-import kihira.minicreatures.common.entity.EntityMiniPlayer;
 import kihira.minicreatures.common.entity.IMiniCreature;
-import kihira.minicreatures.common.entity.ai.combat.EntityAIUsePotion;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.ai.EntityAITasks;
 import net.minecraft.entity.passive.EntityTameable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public enum EnumRole {
@@ -25,14 +23,15 @@ public enum EnumRole {
     COMBAT;
 
     //Yeah it's not nice but this won't be called often
+    @SuppressWarnings("unchecked")
     public static <T extends EntityTameable & IMiniCreature> void resetAI(T entity) {
-        List tasks = Lists.newArrayList(entity.tasks.taskEntries); //Copy to help prevent CME
+        List tasks = new ArrayList(entity.tasks.taskEntries);
         for (Object obj : tasks) {
             EntityAIBase ai = obj instanceof EntityAITasks.EntityAITaskEntry ? ((EntityAITasks.EntityAITaskEntry) obj).action : (EntityAIBase) obj;
-            if (ai instanceof IRole) {
-                entity.tasks.removeTask(ai);
-            }
+            entity.tasks.removeTask(ai); //Might be a CME again
         }
+        //Clear list
+        entity.tasks.taskEntries.clear();
     }
 
     @SuppressWarnings("unchecked")
@@ -43,9 +42,9 @@ public enum EnumRole {
                 break;
             }
             case COMBAT: {
-                if (entity instanceof EntityMiniPlayer) entity.tasks.addTask(3, new EntityAIUsePotion(((EntityMiniPlayer) entity), 0.5F, 2, 100));
                 break;
             }
         }
+        entity.applyAI(this);
     }
 }
