@@ -21,12 +21,18 @@ import kihira.minicreatures.MiniCreatures;
 import kihira.minicreatures.common.entity.EntityFox;
 import kihira.minicreatures.common.entity.EntityMiniPlayer;
 import kihira.minicreatures.common.entity.IMiniCreature;
+import kihira.minicreatures.common.entity.ai.EntityAIProspect;
+import kihira.minicreatures.common.entity.ai.EnumRole;
 import kihira.minicreatures.common.network.SetAttackTargetMessage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.ai.EntityAITasks;
 import net.minecraft.entity.monster.EntityZombie;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
+import net.minecraft.item.ItemPickaxe;
 import net.minecraft.item.ItemPotion;
 import net.minecraft.item.ItemSword;
 import net.minecraft.potion.Potion;
@@ -37,9 +43,11 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
 import net.minecraftforge.client.event.MouseEvent;
+import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.EntityInteractEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 
 import java.util.List;
 import java.util.Random;
@@ -74,6 +82,34 @@ public class EventHandler {
             if (names != null && MiniCreatures.randomNameChance != 0 && event.entity instanceof IMiniCreature && random.nextInt(MiniCreatures.randomNameChance) == 0) {
                 EntityLiving entityLiving = ((IMiniCreature) event.entity).getEntity();
                 entityLiving.setCustomNameTag(names[random.nextInt(names.length - 1)]);
+            }
+        }
+    }
+
+    @SubscribeEvent
+    @SuppressWarnings("unchecked")
+    public void onPlayerIteract(PlayerInteractEvent event) {
+        //Used to start making nearby mini players prospect
+        if (!(event.entityPlayer instanceof FakePlayer) && event.action == PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK &&
+                event.entityPlayer.getHeldItem() != null && event.entityPlayer.getHeldItem().getItem() instanceof ItemPickaxe &&
+                event.world.getBlock(event.x, event.y, event.z) == Blocks.stone && event.entityPlayer.isSneaking()) {
+            int radius = 5;
+            EntityPlayer player = event.entityPlayer;
+            List<EntityMiniPlayer> list = event.world.getEntitiesWithinAABB(EntityMiniPlayer.class, AxisAlignedBB.getBoundingBox(
+                    player.posX - radius, player.posY - radius, player.posZ - radius, player.posX + radius, player.posY + radius, player.posZ + radius));
+
+            if (list != null && list.size() > 0) {
+                for (EntityMiniPlayer miniPlayer : list) {
+                    if (miniPlayer.getOwner() == player && miniPlayer.getRole() == EnumRole.MINER) {
+                        EntityAIProspect prospectAI = getEntityAITask(miniPlayer, EntityAIProspect.class);
+                        if (prospectAI != null) {
+                            prospectAI.prospect = true;
+                            prospectAI.target = new int[]{event.x, event.y, event.z};
+                            event.setCanceled(true);
+                            break;
+                        }
+                    }
+                }
             }
         }
     }
@@ -152,6 +188,17 @@ public class EventHandler {
                 }
             }
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T, E> T getEntityAITask(EntityLiving entityLiving, Class<? super E> taskClass) {
+        List<EntityAITasks.EntityAITaskEntry> tasks = entityLiving.tasks.taskEntries;
+        for (EntityAITasks.EntityAITaskEntry taskEntry : tasks) {
+            if (taskEntry.action.getClass() == taskClass) {
+                return (T) taskEntry.action;
+            }
+        }
+        return null;
     }
 
     private MovingObjectPosition getMouseOver(double distance) {

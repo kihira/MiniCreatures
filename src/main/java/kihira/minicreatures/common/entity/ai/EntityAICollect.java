@@ -39,7 +39,7 @@ public class EntityAICollect<T extends EntityTameable & IMiniCreature> extends E
         this.entity = entity;
         this.collectRadius = collectRadius;
         this.searchRadius = searchRadius;
-        setMutexBits(1);
+        //setMutexBits(1);
     }
 
     @Override

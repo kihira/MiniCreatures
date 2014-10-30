@@ -24,15 +24,15 @@ public class OreFinder {
 
     private int currentIndex;
 
-    public OreFinder(World world, int originX, int originY, int originZ, int radius) {
+    public OreFinder(World world, int originX, int originY, int originZ, int radius, int yRadius) {
         this.world = world;
 
         //Builds a list of block positions to check for ores
-        blockPositions = new int[(radius * 2) * (radius * 2) * (radius * 2)][];
+        blockPositions = new int[(radius * 2) * (radius * 2) * (yRadius * 2)][];
         int index = 0;
         for (int x = originX - radius; x < originX + radius; x++) {
             for (int z = originZ - radius; z < originZ + radius; z++) {
-                for (int y = originY - radius; y < originY + radius; y++) {
+                for (int y = originY - yRadius; y < originY + yRadius; y++) {
                     blockPositions[index] = new int[]{x, y, z};
                     index++;
                 }

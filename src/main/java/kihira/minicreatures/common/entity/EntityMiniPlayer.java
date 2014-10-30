@@ -23,6 +23,7 @@ import kihira.foxlib.common.gson.GsonHelper;
 import kihira.minicreatures.MiniCreatures;
 import kihira.minicreatures.common.customizer.EnumPartCategory;
 import kihira.minicreatures.common.entity.ai.EntityAIHeal;
+import kihira.minicreatures.common.entity.ai.EntityAIProspect;
 import kihira.minicreatures.common.entity.ai.EnumRole;
 import kihira.minicreatures.common.entity.ai.combat.EntityAIUsePotion;
 import kihira.minicreatures.common.entity.ai.idle.EntityAIIdleBlockChat;
@@ -36,6 +37,7 @@ import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.*;
+import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.player.EntityPlayer;
@@ -60,9 +62,11 @@ import net.minecraftforge.event.ForgeEventFactory;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.Map;
+import java.util.UUID;
 
 public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, ICustomisable, IRangedAttackMob, IPersonality {
 
+    private static final AttributeModifier itemUseSlowdown = (new AttributeModifier(UUID.fromString("D59B2377-0D44-455D-BE81-AA60D7485D52"), "Item Use Penalty", -0.25D, 0)).setSaved(false);
     private final InventoryBasic inventory = new InventoryBasic(this.getCommandSenderName(), false, 18);
     private final EntityAIArrowAttack aiArrowAttack = new EntityAIArrowAttack(this, 1D, 20, 50, 15F); //Set par3 and par4 to the same to have a consant firing rate. par5 seems to effect damage output. Higher = more damage falloff
     private final EntityAIAttackOnCollide aiAttackOnCollide = new EntityAIAttackOnCollide(this, 1D, true);
@@ -168,6 +172,7 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
     public boolean interact(EntityPlayer player) {
         ItemStack itemstack = player.inventory.getCurrentItem();
         if (!this.worldObj.isRemote) {
+            //MiniCreatures.proxy.simpleNetworkWrapper.sendTo(new ProspectBlocksMessage(this.getEntityId(), 5, 10), (EntityPlayerMP) this.getOwner());
             //Allow taming in creative mode without items
             if (!this.isTamed() && player.capabilities.isCreativeMode) {
                 this.func_152115_b(player.getUniqueID().toString()); //Set owner UUID
@@ -296,6 +301,7 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
     @Override
     public void onLivingUpdate() {
         super.onLivingUpdate();
+        this.updateArmSwingProgress();
         if (this.worldObj.isRemote && this.statMessageTime < 60) {
             this.statMessageTime++;
         }
@@ -413,6 +419,7 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
 
             if (!this.worldObj.isRemote) {
                 this.setEating(true);
+                getEntityAttribute(SharedMonsterAttributes.movementSpeed).applyModifier(itemUseSlowdown);
             }
         }
     }
@@ -461,6 +468,7 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
 
         if (!this.worldObj.isRemote) {
             this.setEating(false);
+            getEntityAttribute(SharedMonsterAttributes.movementSpeed).removeModifier(itemUseSlowdown);
         }
     }
 
@@ -529,7 +537,7 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
     public void applyAI(EnumRole role) {
         //General tasks
         tasks.addTask(1, new EntityAISwimming(this));
-        tasks.addTask(2, this.aiSit);
+        tasks.addTask(2, aiSit);
         tasks.addTask(4, new EntityAIHeal(this, 150, 1));
         tasks.addTask(6, new EntityAIWatchClosest(this, EntityPlayer.class, 8F));
         tasks.addTask(6, new EntityAILookIdle(this));
@@ -541,6 +549,11 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
             case COMBAT: {
                 tasks.addTask(3, new EntityAIUsePotion(this, 0.5F, 2, 100));
                 tasks.addTask(4, new EntityAIFollowOwner(this, 1.2D, 4F, 4F));
+                break;
+            }
+            case MINER: {
+                tasks.addTask(4, new EntityAIFollowOwner(this, 1.1D, 4F, 4F));
+                tasks.addTask(6, new EntityAIProspect(this, 25, 6, 3));
                 break;
             }
             default: {
