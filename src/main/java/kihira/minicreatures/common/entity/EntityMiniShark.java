@@ -36,8 +36,9 @@ public class EntityMiniShark extends EntityWaterMob {
 
     public EntityMiniShark(World par1World) {
         super(par1World);
-        this.setSize(0.8F, 0.3F);
-        this.renderDistanceWeight = 4D;
+        setSize(0.5F, 0.3F);
+        renderDistanceWeight = 4D;
+        stepHeight = 0F;
     }
 
     @Override
@@ -71,29 +72,29 @@ public class EntityMiniShark extends EntityWaterMob {
     @SuppressWarnings("SuspiciousNameCombination")
     public void onLivingUpdate() {
         super.onLivingUpdate();
-        if (!worldObj.isRemote) {
             if (attackTick > 0) attackTick--;
             if (healCooldown > 0) healCooldown--;
 
             if (this.isInWater()) {
-                float verticalSpeedModifier = 0.75F;
                 double xDist = this.waypointX - this.posX;
                 double yDist = this.waypointY - this.posY;
                 double zDist = this.waypointZ - this.posZ;
                 double d3 = xDist * xDist + yDist * yDist + zDist * zDist;
                 d3 = Math.sqrt(d3);
 
-                this.motionX += xDist / d3 * (this.targetedEntity != null ? 0.02D : 0.01D);
-                this.motionY += yDist / d3 * (this.targetedEntity != null ? 0.02D : 0.01D) * verticalSpeedModifier;
-                this.motionZ += zDist / d3 * (this.targetedEntity != null ? 0.02D : 0.01D);
+                if (!worldObj.isRemote) {
+                    this.motionX += xDist / d3 * (this.targetedEntity != null ? 0.02D : 0.01D);
+                    this.motionY += yDist / d3 * (this.targetedEntity != null ? 0.02D : 0.01D);
+                    this.motionZ += zDist / d3 * (this.targetedEntity != null ? 0.02D : 0.01D);
+                }
             }
             else {
-                this.motionX *= 0.9D;
-                this.motionY -= 0.08D;
-                this.motionY *= 0.9800000190734863D;
-                this.motionZ *= 0.9D;
-/*                System.out.println((int) Math.floor(posX) + " " + (int) Math.floor(posY) + " " + (int) Math.floor(posZ));
-                System.out.println(worldObj.getBlock((int) Math.floor(posX), (int) Math.floor(posY), (int) Math.floor(posZ)).getUnlocalizedName());*/
+                if (!worldObj.isRemote) {
+                    this.motionX = 0D;
+                    this.motionY -= 0.08D;
+                    this.motionY *= 0.9800000190734863D;
+                    this.motionZ = 0D;
+                }
             }
 
             if (this.targetedEntity != null) {
@@ -109,7 +110,6 @@ public class EntityMiniShark extends EntityWaterMob {
             else {
                 this.renderYawOffset = this.rotationYaw = -((float)Math.atan2(this.motionX, this.motionZ)) * 180.0F / (float)Math.PI;
             }
-        }
     }
 
     @Override
@@ -183,30 +183,13 @@ public class EntityMiniShark extends EntityWaterMob {
 
     @Override
     public void moveEntityWithHeading(float p_70612_1_, float p_70612_2_) {
-        if (isInWater()) {
-            this.motionX *= 0.95F;
-            this.motionY *= 0.95F;
-            this.motionZ *= 0.95F;
-        }
         this.moveEntity(this.motionX, this.motionY, this.motionZ);
-
-        this.prevLimbSwingAmount = this.limbSwingAmount;
-        double xDiff = this.posX - this.prevPosX;
-        double zDiff = this.posZ - this.prevPosZ;
-        float limbSwing = MathHelper.sqrt_double(xDiff * xDiff + zDiff * zDiff) * 4.0F;
-
-        if (limbSwing > 1.0F) {
-            limbSwing = 1.0F;
-        }
-
-        this.limbSwingAmount += (limbSwing - this.limbSwingAmount) * 0.4F;
-        this.limbSwing += this.limbSwingAmount;
     }
 
     @Override
     public boolean isInWater() {
-        this.inWater = this.worldObj.getBlock(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.boundingBox.minY + 0.25), MathHelper.floor_double(this.posZ)).getMaterial() == Material.water;
-        return this.inWater;
+        inWater = worldObj.getBlock(MathHelper.floor_double(boundingBox.maxX - (width / 2)), MathHelper.floor_double(boundingBox.minY + (height / 2)), MathHelper.floor_double(boundingBox.maxZ - (width / 2))).getMaterial() == Material.water;
+        return inWater;
     }
 
     @Override
