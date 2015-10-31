@@ -80,12 +80,15 @@ public class EntityMiniShark extends EntityWaterMob {
                 double yDist = this.waypointY - this.posY;
                 double zDist = this.waypointZ - this.posZ;
                 double d3 = xDist * xDist + yDist * yDist + zDist * zDist;
-                d3 = Math.sqrt(d3);
+                //Make sure d is greater then 0 otherwise we'll end up dividing by 0
+                if (d3 > 0) {
+                    d3 = Math.sqrt(d3);
 
-                if (!worldObj.isRemote) {
-                    this.motionX += xDist / d3 * (this.targetedEntity != null ? 0.02D : 0.01D);
-                    this.motionY += yDist / d3 * (this.targetedEntity != null ? 0.02D : 0.01D);
-                    this.motionZ += zDist / d3 * (this.targetedEntity != null ? 0.02D : 0.01D);
+                    if (!worldObj.isRemote) {
+                        this.motionX += xDist / d3 * (this.targetedEntity != null ? 0.02D : 0.01D);
+                        this.motionY += yDist / d3 * (this.targetedEntity != null ? 0.02D : 0.01D);
+                        this.motionZ += zDist / d3 * (this.targetedEntity != null ? 0.02D : 0.01D);
+                    }
                 }
             }
             else {
