@@ -44,7 +44,9 @@ public class EntityMiniShark extends EntityWaterMob {
     @Override
     protected void applyEntityAttributes() {
         super.applyEntityAttributes();
+        this.getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(0.75D);
         this.getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(10D);
+        this.getEntityAttribute(SharedMonsterAttributes.knockbackResistance).setBaseValue(0.25D);
     }
 
     @Override
@@ -85,9 +87,10 @@ public class EntityMiniShark extends EntityWaterMob {
                     d3 = Math.sqrt(d3);
 
                     if (!worldObj.isRemote) {
-                        this.motionX += xDist / d3 * (this.targetedEntity != null ? 0.02D : 0.01D);
-                        this.motionY += yDist / d3 * (this.targetedEntity != null ? 0.02D : 0.01D);
-                        this.motionZ += zDist / d3 * (this.targetedEntity != null ? 0.02D : 0.01D);
+                        double speed = (this.targetedEntity != null ? 0.02D : 0.01D) * getEntityAttribute(SharedMonsterAttributes.movementSpeed).getAttributeValue();
+                        this.motionX += xDist / d3 * speed;
+                        this.motionY += yDist / d3 * speed;
+                        this.motionZ += zDist / d3 * speed;
                     }
                 }
             }
