@@ -14,6 +14,7 @@
 
 package kihira.minicreatures.common.entity;
 
+import net.minecraft.block.BlockAir;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.SharedMonsterAttributes;
@@ -89,7 +90,7 @@ public class EntityMiniShark extends EntityWaterMob {
                     if (!worldObj.isRemote) {
                         double speed = (this.targetedEntity != null ? 0.02D : 0.01D) * getEntityAttribute(SharedMonsterAttributes.movementSpeed).getAttributeValue();
                         this.motionX += xDist / d3 * speed;
-                        this.motionY += yDist / d3 * speed;
+                        this.motionY += yDist / d3 * speed * 1.5f;
                         this.motionZ += zDist / d3 * speed;
                     }
                 }
@@ -138,7 +139,7 @@ public class EntityMiniShark extends EntityWaterMob {
 
                     if ((worldObj.getBlock((int) targetX, (int) targetY, (int) targetZ).getMaterial() == Material.water) && isCourseTraversable(MathHelper.sqrt_double(d3))) {
                         waypointX = targetX;
-                        waypointY = targetY + height;
+                        waypointY = targetY + (worldObj.getBlock((int) targetX, (int) targetY + 1, (int) targetZ) instanceof BlockAir ? height : 0);
                         waypointZ = targetZ;
                         break;
                     }
@@ -189,12 +190,13 @@ public class EntityMiniShark extends EntityWaterMob {
 
     @Override
     public void moveEntityWithHeading(float p_70612_1_, float p_70612_2_) {
+        if (waypointY > posY) motionY += 0.05f;
         this.moveEntity(this.motionX, this.motionY, this.motionZ);
     }
 
     @Override
     public boolean isInWater() {
-        inWater = worldObj.getBlock(MathHelper.floor_double(boundingBox.maxX - (width / 2)), MathHelper.floor_double(boundingBox.minY + (height / 2)), MathHelper.floor_double(boundingBox.maxZ - (width / 2))).getMaterial() == Material.water;
+        inWater = worldObj.getBlock(MathHelper.floor_double(boundingBox.maxX - (width / 2)), MathHelper.floor_double(boundingBox.minY), MathHelper.floor_double(boundingBox.maxZ - (width / 2))).getMaterial() == Material.water;
         return inWater;
     }
 
