@@ -134,7 +134,7 @@ public class EntityMiniShark extends EntityWaterMob {
             if (this.targetedEntity == null && ((d3 < 1D || d3 > 3600D) || !isCourseTraversable(d3))) {
                 for (int i = 0; i < 3; i++) {
                     double targetX = Math.floor(posX + MathHelper.getRandomDoubleInRange(rand, -8F, 8F));
-                    double targetY = Math.floor(posY + MathHelper.getRandomDoubleInRange(rand, -1F, 1F));
+                    double targetY = Math.floor(posY + MathHelper.getRandomDoubleInRange(rand, -1F, 2F));
                     double targetZ = Math.floor(posZ + MathHelper.getRandomDoubleInRange(rand, -8F, 8F));
 
                     if ((worldObj.getBlock((int) targetX, (int) targetY, (int) targetZ).getMaterial() == Material.water) && isCourseTraversable(MathHelper.sqrt_double(d3))) {
@@ -190,7 +190,7 @@ public class EntityMiniShark extends EntityWaterMob {
 
     @Override
     public void moveEntityWithHeading(float p_70612_1_, float p_70612_2_) {
-        if (waypointY > posY) motionY += 0.05f;
+        if (waypointY > posY && waypointY - posY > 1) motionY += 0.05f;
         this.moveEntity(this.motionX, this.motionY, this.motionZ);
     }
 
