@@ -15,11 +15,14 @@
 package kihira.minicreatures.common;
 
 import net.minecraft.command.CommandBase;
-import net.minecraft.command.ICommand;
+import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.math.BlockPos;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 /**
@@ -38,27 +41,27 @@ public class CommandSpawnEntity extends CommandBase {
     }
 
     @Override
-    public void processCommand(ICommandSender var1, String[] var2) {
-        if (var2.length > 0) {
-            String entityName = var2[0];
-            Entity entity = EntityList.createEntityByName(entityName, var1.getEntityWorld());
-            entity.setPosition(var1.getPlayerCoordinates().posX, var1.getPlayerCoordinates().posY, var1.getPlayerCoordinates().posZ);
-            if (var2.length == 2) {
-                for (int i = 0; i < Integer.parseInt(var2[1]); i++) {
-                    var1.getEntityWorld().spawnEntityInWorld(entity);
+    public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
+        if (args.length > 0) {
+            String entityName = args[0];
+            Entity entity = EntityList.createEntityByName(entityName, sender.getEntityWorld());
+            if (entity == null) throw new CommandException("Failed to create entity!");
+
+            BlockPos senderPos = sender.getPosition();
+            entity.setPosition(senderPos.getX(), senderPos.getY(), senderPos.getZ());
+            if (args.length == 2) {
+                for (int i = 0; i < Integer.parseInt(args[1]); i++) {
+                    sender.getEntityWorld().spawnEntityInWorld(entity);
                 }
             }
-            else var1.getEntityWorld().spawnEntityInWorld(entity);
+            else sender.getEntityWorld().spawnEntityInWorld(entity);
         }
     }
 
-    public List addTabCompletionOptions(ICommandSender par1ICommandSender, String[] par2ArrayOfStr) {
+    @Override
+    public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos pos) {
         //Gather a list of the entity names
-        String[] entityNameList = (String[]) EntityList.stringToClassMapping.keySet().toArray(new String[EntityList.stringToClassMapping.size()]);
-        return par2ArrayOfStr.length > 0 ? getListOfStringsMatchingLastWord(par2ArrayOfStr, entityNameList) : null;
-    }
-
-    public int compareTo(Object par1Obj) {
-        return this.compareTo((ICommand)par1Obj);
+        String[] entityNameList = EntityList.NAME_TO_CLASS.keySet().toArray(new String[EntityList.NAME_TO_CLASS.size()]);
+        return args.length > 0 ? getListOfStringsMatchingLastWord(args, entityNameList) : null;
     }
 }

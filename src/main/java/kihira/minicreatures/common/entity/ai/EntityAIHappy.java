@@ -1,9 +1,10 @@
 package kihira.minicreatures.common.entity.ai;
 
+import kihira.minicreatures.common.entity.EntityMiniCreature;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.MathHelper;
+import net.minecraft.util.math.MathHelper;
 
 import java.util.Random;
 
@@ -29,7 +30,7 @@ public class EntityAIHappy extends EntityAIBase {
     public void startExecuting() {
         //Set a path next to the entity
         this.findAndSetPath();
-        this.theEntity.getDataWatcher().updateObject(21, 1);
+        this.theEntity.getDataManager().set(EntityMiniCreature.IS_HAPPY, true);
     }
 
     @Override
@@ -45,7 +46,7 @@ public class EntityAIHappy extends EntityAIBase {
 
     @Override
     public void resetTask() {
-        this.theEntity.getDataWatcher().updateObject(21, 0);
+        this.theEntity.getDataManager().set(EntityMiniCreature.IS_HAPPY, false);
         this.timesRunAround = 0;
     }
 
@@ -60,7 +61,7 @@ public class EntityAIHappy extends EntityAIBase {
 
         if (player != null) {
             this.theEntity.getNavigator().setPath(this.theEntity.getNavigator().getPathToXYZ(player.posX +
-                   MathHelper.getRandomIntegerInRange(random, -1, 1), player.boundingBox.minY, player.posZ + MathHelper.getRandomIntegerInRange(random, -1, 1)), 1.2D);
+                   MathHelper.getRandomIntegerInRange(random, -1, 1), player.getEntityBoundingBox().minY, player.posZ + MathHelper.getRandomIntegerInRange(random, -1, 1)), 1.2D);
         }
     }
 }

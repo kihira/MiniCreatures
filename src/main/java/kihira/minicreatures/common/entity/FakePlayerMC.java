@@ -15,6 +15,7 @@ import net.minecraft.potion.PotionEffect;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.util.FakePlayer;
 
+import javax.annotation.Nullable;
 import java.util.Collection;
 
 public class FakePlayerMC extends FakePlayer {
@@ -29,11 +30,6 @@ public class FakePlayerMC extends FakePlayer {
     @Override
     public Collection getActivePotionEffects() {
         return miniPlayer.getActivePotionEffects();
-    }
-
-    @Override
-    public boolean isPotionActive(int potionID) {
-        return miniPlayer.isPotionActive(potionID);
     }
 
     @Override
@@ -56,14 +52,15 @@ public class FakePlayerMC extends FakePlayer {
         return miniPlayer.isPotionApplicable(potionEffect);
     }
 
+    @Nullable
     @Override
-    public void removePotionEffectClient(int potionID) {
-        miniPlayer.removePotionEffectClient(potionID);
+    public PotionEffect removeActivePotionEffect(@Nullable Potion potioneffectin) {
+        return miniPlayer.removeActivePotionEffect(potioneffectin);
     }
 
     @Override
-    public void removePotionEffect(int potionID) {
-        miniPlayer.removePotionEffect(potionID);
+    public void removePotionEffect(Potion potion) {
+        miniPlayer.removePotionEffect(potion);
     }
 
     @Override

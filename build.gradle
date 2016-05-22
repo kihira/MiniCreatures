@@ -1,108 +1,46 @@
 buildscript {
     repositories {
-        mavenCentral()
+        jcenter()
         maven {
             name = "forge"
             url = "http://files.minecraftforge.net/maven"
         }
-        maven {
-            name = "sonatype"
-            url = "https://oss.sonatype.org/content/repositories/snapshots/"
-        }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:1.2-SNAPSHOT'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT'
     }
 }
 
-repositories {
-    mavenCentral()
-    maven {
-        name = 'Kihira Repo'
-        url = 'http://maven.kihirakreations.co.uk'
-    }
-}
 
-apply plugin: 'forge'
+apply plugin: 'net.minecraftforge.gradle.forge'
 
-project.ext {
-    massive = "0"
-    major = "2"
-    minor = "0"
-    mcVersion = "1.7.10"
-    forgeVersion = "10.13.4.1456-1.7.10"
-    tailsDevVersion = "1.7.10-1.1.1.+"
-    foxlibDevVersion = "1.7.10-0.5.0.+"
-    foxlibVersion = "1.7.10-0.5.0"
-    buildVersion = System.getenv("BUILD_NUMBER")
-}
-
-configurations {
-    deployerJars
-    all {
-        resolutionStrategy.cacheChangingModulesFor 1, 'seconds'
-    }
-}
-
-dependencies {
-    deployerJars "org.apache.maven.wagon:wagon-ftp:2.2"
-    compile "kihira:FoxLib:"+project.foxlibDevVersion+":dev"
-    compile "kihira:Tails:"+project.tailsDevVersion+":dev"
-}
-
-project.version = "${project.ext.mcVersion}-${project.ext.massive}.${project.ext.major}.${project.minor}"
-if (project.hasProperty("teamcity") && project.ext.buildVersion != null && teamcity["maven_release"] == null) {
-    version = version + "-${System.getenv("BUILD_NUMBER")}"
-}
-
-group= "kihira"
+version = "1.9.4-0.2.0"
+group= "uk.kihira.minicreatures"
 archivesBaseName = "MiniCreatures"
 
 minecraft {
-    version = "${project.ext.mcVersion}-${project.ext.forgeVersion}"
+    version = "1.9.4-12.17.0.1909-1.9.4"
+    runDir = "eclipse"
+    mappings = "snapshot_20160518"
+
 }
 
-processResources {
-    // replace stuff in mcmod.info, nothing else
-    from(sourceSets.main.resources.srcDirs) {
-        include 'mcmod.info'
+processResources
+        {
+            // this will ensure that this task is redone when the versions change.
+            inputs.property "version", project.version
+            inputs.property "mcversion", project.minecraft.version
 
-        // replace version and mcversion
-        expand 'version':project.version, 'mcversion':project.minecraft.version
-    }
+            // replace stuff in mcmod.info, nothing else
+            from(sourceSets.main.resources.srcDirs) {
+                include 'mcmod.info'
 
-    // copy everything else, thats not the mcmod.info
-    from(sourceSets.main.resources.srcDirs) {
-        exclude 'mcmod.info'
-    }
-}
+                // replace version and mcversion
+                expand 'version':project.version, 'mcversion':project.minecraft.version
+            }
 
-task sourceJar(type: Jar) {
-    from sourceSets.main.allSource
-    from sourceSets.api.allSource
-    classifier = 'src'
-}
-
-task deobfJar(type: Jar) {
-    from sourceSets.main.output
-    from sourceSets.api.output
-    classifier = 'dev'
-}
-
-artifacts {
-    archives sourceJar
-    archives deobfJar
-}
-
-uploadArchives {
-    dependsOn 'reobf'
-
-    if (project.hasProperty("teamcity")) {
-        repositories.mavenDeployer {
-            configuration = configurations.deployerJars
-            repository(url: teamcity["maven_url"]) {
-                authentication(userName: teamcity["maven_username"], password: teamcity["maven_password"])
+            // copy everything else, thats not the mcmod.info
+            from(sourceSets.main.resources.srcDirs) {
+                exclude 'mcmod.info'
             }
         }
-    }
-}

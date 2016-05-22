@@ -14,9 +14,6 @@
 
 package kihira.minicreatures.common.handler;
 
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import kihira.minicreatures.MiniCreatures;
 import kihira.minicreatures.common.entity.EntityFox;
 import kihira.minicreatures.common.entity.EntityMiniPlayer;
@@ -32,25 +29,32 @@ import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
+import net.minecraft.init.MobEffects;
+import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemPickaxe;
 import net.minecraft.item.ItemPotion;
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemSword;
-import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
-import net.minecraft.potion.PotionHelper;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.MovingObjectPosition;
-import net.minecraft.util.Vec3;
+import net.minecraft.potion.PotionUtils;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.client.event.MouseEvent;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
-import net.minecraftforge.event.entity.player.EntityInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 public class EventHandler {
 
@@ -63,11 +67,11 @@ public class EventHandler {
     @SideOnly(Side.CLIENT)
     public void leftClick(MouseEvent interactEvent) {
         //Only trigger if it has been more then 5 seconds
-        if ((System.currentTimeMillis() - this.lastTrigger > 5000) && Minecraft.getMinecraft().gameSettings.keyBindAttack.getIsKeyPressed()) {
+        if ((System.currentTimeMillis() - this.lastTrigger > 5000) && Minecraft.getMinecraft().gameSettings.keyBindAttack.isPressed()) {
             //Only if it's a sword
-            if (Minecraft.getMinecraft().thePlayer.getCurrentEquippedItem() != null && Minecraft.getMinecraft().thePlayer.getCurrentEquippedItem().getItem() instanceof ItemSword) {
-                MovingObjectPosition target = getMouseOver(20);
-                if (target != null && target.typeOfHit == MovingObjectPosition.MovingObjectType.ENTITY) {
+            if (Minecraft.getMinecraft().thePlayer.getHeldItem(EnumHand.MAIN_HAND) != null && Minecraft.getMinecraft().thePlayer.getHeldItem(EnumHand.MAIN_HAND).getItem() instanceof ItemSword) {
+                RayTraceResult target = getMouseOver(20);
+                if (target != null && target.typeOfHit == RayTraceResult.Type.ENTITY) {
                     this.lastTrigger = System.currentTimeMillis();
                     MiniCreatures.proxy.simpleNetworkWrapper.sendToServer(new SetAttackTargetMessage(target.entityHit.getEntityId()));
                 }
@@ -77,34 +81,33 @@ public class EventHandler {
 
     @SubscribeEvent
     public void onEntitySpawn(EntityEvent.EntityConstructing event) {
-        if (event.entity.worldObj != null) {
-            Random random = event.entity.worldObj.rand;
-            if (names != null && MiniCreatures.randomNameChance != 0 && event.entity instanceof IMiniCreature && random.nextInt(MiniCreatures.randomNameChance) == 0) {
-                EntityLiving entityLiving = ((IMiniCreature) event.entity).getEntity();
+        if (event.getEntity().worldObj != null) {
+            Random random = event.getEntity().worldObj.rand;
+            if (names != null && MiniCreatures.randomNameChance != 0 && event.getEntity() instanceof IMiniCreature && random.nextInt(MiniCreatures.randomNameChance) == 0) {
+                EntityLiving entityLiving = ((IMiniCreature) event.getEntity()).getEntity();
                 entityLiving.setCustomNameTag(names[random.nextInt(names.length - 1)]);
             }
         }
     }
 
     @SubscribeEvent
-    @SuppressWarnings("unchecked")
-    public void onPlayerIteract(PlayerInteractEvent event) {
+    public void onRightClickBlock(PlayerInteractEvent.RightClickBlock event) {
         //Used to start making nearby mini players prospect
-        if (!(event.entityPlayer instanceof FakePlayer) && event.action == PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK &&
-                event.entityPlayer.getHeldItem() != null && event.entityPlayer.getHeldItem().getItem() instanceof ItemPickaxe &&
-                event.world.getBlock(event.x, event.y, event.z) == Blocks.stone && event.entityPlayer.isSneaking()) {
+        if (!(event.getEntityPlayer() instanceof FakePlayer) && event.getEntityPlayer().getHeldItem(EnumHand.MAIN_HAND) != null
+                && event.getEntityPlayer().getHeldItem(EnumHand.MAIN_HAND).getItem() instanceof ItemPickaxe &&
+                event.getWorld().getBlockState(event.getPos()).getBlock() == Blocks.STONE && event.getEntityPlayer().isSneaking()) {
             int radius = 5;
-            EntityPlayer player = event.entityPlayer;
-            List<EntityMiniPlayer> list = event.world.getEntitiesWithinAABB(EntityMiniPlayer.class, AxisAlignedBB.getBoundingBox(
+            EntityPlayer player = event.getEntityPlayer();
+            List<EntityMiniPlayer> list = event.getWorld().getEntitiesWithinAABB(EntityMiniPlayer.class, new AxisAlignedBB(
                     player.posX - radius, player.posY - radius, player.posZ - radius, player.posX + radius, player.posY + radius, player.posZ + radius));
 
-            if (list != null && list.size() > 0) {
+            if (list.size() > 0) {
                 for (EntityMiniPlayer miniPlayer : list) {
                     if (miniPlayer.getOwner() == player && miniPlayer.getRole() == EnumRole.MINER) {
                         EntityAIProspect prospectAI = getEntityAITask(miniPlayer, EntityAIProspect.class);
                         if (prospectAI != null) {
                             prospectAI.prospect = true;
-                            prospectAI.target = new int[]{event.x, event.y, event.z};
+                            prospectAI.target = event.getPos();
                             event.setCanceled(true);
                             break;
                         }
@@ -115,34 +118,32 @@ public class EventHandler {
     }
 
     @SubscribeEvent
-    public void onInteract(EntityInteractEvent event) {
+    public void onInteract(PlayerInteractEvent.EntityInteract event) {
         //We do this render here as if the player right clicks with a lead, entity.interact never fires
-        if (event.entityPlayer.getCurrentEquippedItem() != null && event.entityPlayer.getCurrentEquippedItem().getItem() == Items.lead) {
+        if (event.getEntityPlayer().getActiveItemStack() != null && event.getEntityPlayer().getActiveItemStack().getItem() == Items.LEAD) {
             //Mount the fox
-            if (event.target instanceof EntityFox) {
-                EntityFox entityFox = (EntityFox) event.target;
-                if (entityFox.riddenByEntity == null && entityFox.ridingEntity == null) {
+            if (event.getTarget() instanceof EntityFox) {
+                EntityFox entityFox = (EntityFox) event.getTarget();
+                if (!entityFox.isBeingRidden() && !entityFox.isRiding()) {
                     double d0 = 7.0D;
-                    List list = entityFox.worldObj.getEntitiesWithinAABB(EntityMiniPlayer.class, AxisAlignedBB.getBoundingBox(entityFox.posX - d0, entityFox.posY - d0, entityFox.posZ - d0, entityFox.posX + d0, entityFox.posY + d0, entityFox.posZ + d0));
+                    List list = entityFox.worldObj.getEntitiesWithinAABB(EntityMiniPlayer.class, new AxisAlignedBB(entityFox.posX - d0, entityFox.posY - d0, entityFox.posZ - d0, entityFox.posX + d0, entityFox.posY + d0, entityFox.posZ + d0));
 
-                    if (list != null) {
-                        for (Object aList : list) {
-                            EntityLiving entityliving = (EntityLiving) aList;
-                            if (entityliving instanceof EntityMiniPlayer && entityliving.getLeashed() && entityliving.getLeashedToEntity() == event.entityPlayer) {
-                                entityliving.setLeashedToEntity(null, true);
-                                entityliving.mountEntity(entityFox);
-                                event.setCanceled(true);
-                                break;
-                            }
+                    for (Object aList : list) {
+                        EntityLiving entityliving = (EntityLiving) aList;
+                        if (entityliving instanceof EntityMiniPlayer && entityliving.getLeashed() && entityliving.getLeashedToEntity() == event.getEntityPlayer()) {
+                            entityliving.setLeashedToEntity(null, true);
+                            entityliving.startRiding(entityFox);
+                            event.setCanceled(true);
+                            break;
                         }
                     }
                 }
             }
             //Unmount from fox
-            else if (event.target instanceof EntityMiniPlayer) {
-                EntityMiniPlayer entityMiniPlayer = (EntityMiniPlayer) event.target;
-                if (entityMiniPlayer.ridingEntity != null) {
-                    entityMiniPlayer.mountEntity(null);
+            else if (event.getTarget() instanceof EntityMiniPlayer) {
+                EntityMiniPlayer entityMiniPlayer = (EntityMiniPlayer) event.getTarget();
+                if (entityMiniPlayer.isRiding()) {
+                    entityMiniPlayer.dismountRidingEntity();
                     event.setCanceled(true);
                 }
             }
@@ -156,34 +157,37 @@ public class EventHandler {
     @SubscribeEvent
     @SuppressWarnings("unchecked")
     public void onAttack(AttackEntityEvent event) {
-        if (event.target instanceof EntityZombie) {
-            EntityZombie entityZombie = (EntityZombie) event.target;
+        if (event.getTarget() instanceof EntityZombie) {
+            EntityZombie entityZombie = (EntityZombie) event.getTarget();
+            EntityPlayer player = event.getEntityPlayer();
+            ItemStack heldItem = player.getHeldItem(EnumHand.MAIN_HAND);
             //Is target viable
-            if (entityZombie.isChild() && !entityZombie.isConverting() && entityZombie.isPotionActive(Potion.weakness) && event.entityPlayer.getCurrentEquippedItem() != null && event.entityPlayer.getCurrentEquippedItem().getItem() instanceof ItemPotion) {
-                List<PotionEffect> potionEffects = PotionHelper.getPotionEffects(event.entityPlayer.getCurrentEquippedItem().getItemDamage(), false);
+            if (entityZombie.isChild() && !entityZombie.isConverting() && entityZombie.isPotionActive(MobEffects.WEAKNESS)
+                    && heldItem != null && heldItem.getItem() instanceof ItemPotion) {
+                List<PotionEffect> potionEffects = PotionUtils.getEffectsFromStack(heldItem);
+                // todo optimise. do we need to loop here?
                 for (PotionEffect effect : potionEffects) {
-                    if (effect.getPotionID() == Potion.heal.getId()) {
+                    if (effect.getPotion() == MobEffects.INSTANT_HEALTH) {
                         event.setCanceled(true);
-                        event.entityPlayer.setCurrentItemOrArmor(0, null);
+                        event.getEntityPlayer().setHeldItem(EnumHand.MAIN_HAND, null);
 
                         //Create the mini player and copy some data
-                        EntityMiniPlayer miniPlayer = new EntityMiniPlayer(event.entityPlayer.worldObj);
+                        EntityMiniPlayer miniPlayer = new EntityMiniPlayer(player.worldObj);
                         miniPlayer.copyLocationAndAnglesFrom(entityZombie);
                         miniPlayer.setCustomNameTag(entityZombie.getCustomNameTag());
-                        miniPlayer.func_152115_b(event.entityPlayer.getUniqueID().toString());
+                        miniPlayer.setOwnerId(player.getUniqueID());
                         miniPlayer.setTamed(true);
-                        for (int i = 0; i < 5; i++) {
-                            miniPlayer.setCurrentItemOrArmor(i, entityZombie.getEquipmentInSlot(i));
+
+                        for (EntityEquipmentSlot slot : EntityEquipmentSlot.values()) {
+                            miniPlayer.setItemStackToSlot(slot, entityZombie.getItemStackFromSlot(slot));
                         }
 
                         //Spawn them in
-                        event.entityPlayer.worldObj.removeEntity(entityZombie);
-                        event.entityPlayer.worldObj.spawnEntityInWorld(miniPlayer);
+                        player.worldObj.removeEntity(entityZombie);
+                        player.worldObj.spawnEntityInWorld(miniPlayer);
 
-                        //Spawns a particle on the server (ie tells all nearby players about this particle)
-                        //name, x, y, z, particleCount, areaAlongXAxisToDisperse, areaAlongYAxisToDisperse, areaAlongZAxisToDisperse, ?
-                        //Final 4 params seem to define an area based around x, y, z where the particles will randomly spawn
-                        MinecraftServer.getServer().worldServerForDimension(event.entityPlayer.worldObj.provider.dimensionId).func_147487_a("heart", miniPlayer.posX + (miniPlayer.width / 2), miniPlayer.posY + miniPlayer.height, miniPlayer.posZ + (miniPlayer.width / 2) - miniPlayer.width, 10, 0.5, 1, 0.5, 0);
+                        FMLCommonHandler.instance().getMinecraftServerInstance().worldServerForDimension(event.getEntityPlayer().worldObj.provider.getDimension())
+                                .spawnParticle(EnumParticleTypes.HEART, miniPlayer.posX + (miniPlayer.width / 2), miniPlayer.posY + miniPlayer.height, miniPlayer.posZ + (miniPlayer.width / 2) - miniPlayer.width, 10, 0.5, 1, 0.5, 0);
                     }
                 }
             }
@@ -192,7 +196,7 @@ public class EventHandler {
 
     @SuppressWarnings("unchecked")
     private <T, E> T getEntityAITask(EntityLiving entityLiving, Class<? super E> taskClass) {
-        List<EntityAITasks.EntityAITaskEntry> tasks = entityLiving.tasks.taskEntries;
+        Set<EntityAITasks.EntityAITaskEntry> tasks = entityLiving.tasks.taskEntries;
         for (EntityAITasks.EntityAITaskEntry taskEntry : tasks) {
             if (taskEntry.action.getClass() == taskClass) {
                 return (T) taskEntry.action;
@@ -201,19 +205,21 @@ public class EventHandler {
         return null;
     }
 
-    private MovingObjectPosition getMouseOver(double distance) {
-        MovingObjectPosition objectMouseOver = null;
-        if ((Minecraft.getMinecraft().renderViewEntity != null) && (Minecraft.getMinecraft().theWorld != null)) {
+    private RayTraceResult getMouseOver(double distance) {
+        RayTraceResult objectMouseOver = null;
+        if (Minecraft.getMinecraft().theWorld != null) {
             Entity pointedEntity = null;
-            objectMouseOver = Minecraft.getMinecraft().renderViewEntity.rayTrace(distance, 1);
-            Vec3 vec3 = Minecraft.getMinecraft().renderViewEntity.getPosition(1);
+            Entity renderViewEntity = Minecraft.getMinecraft().getRenderViewEntity();
+            objectMouseOver = renderViewEntity.rayTrace(distance, 1);
+            Vec3d posVec = renderViewEntity.getPositionVector();
 
-            if (objectMouseOver != null) distance = objectMouseOver.hitVec.distanceTo(vec3);
+            if (objectMouseOver != null) distance = objectMouseOver.hitVec.distanceTo(posVec);
 
-            Vec3 vec31 = Minecraft.getMinecraft().renderViewEntity.getLook(1);
-            Vec3 vec32 = vec3.addVector(vec31.xCoord * distance, vec31.yCoord * distance, vec31.zCoord * distance);
-            Vec3 vec33 = null;
-            List list = Minecraft.getMinecraft().theWorld.getEntitiesWithinAABBExcludingEntity(Minecraft.getMinecraft().renderViewEntity, Minecraft.getMinecraft().renderViewEntity.boundingBox.addCoord(vec31.xCoord * distance, vec31.yCoord * distance, vec31.zCoord * distance).expand(1, 1, 1));
+            Vec3d lookVec = renderViewEntity.getLook(1);
+            Vec3d targetVec = posVec.addVector(lookVec.xCoord * distance, lookVec.yCoord * distance, lookVec.zCoord * distance);
+            Vec3d resultVec = null;
+            List list = Minecraft.getMinecraft().theWorld.getEntitiesWithinAABBExcludingEntity(renderViewEntity,
+                    renderViewEntity.getEntityBoundingBox().addCoord(lookVec.xCoord * distance, lookVec.yCoord * distance, lookVec.zCoord * distance).expand(1, 1, 1));
             double d2 = distance;
 
             for (Object aList : list) {
@@ -221,28 +227,28 @@ public class EventHandler {
 
                 if (entity.canBeCollidedWith()) {
                     float f2 = entity.getCollisionBorderSize();
-                    AxisAlignedBB axisalignedbb = entity.boundingBox.expand((double) f2, (double) f2, (double) f2);
-                    MovingObjectPosition movingobjectposition = axisalignedbb.calculateIntercept(vec3, vec32);
+                    AxisAlignedBB axisalignedbb = entity.getEntityBoundingBox().expand((double) f2, (double) f2, (double) f2);
+                    RayTraceResult rayResult = axisalignedbb.calculateIntercept(posVec, targetVec);
 
-                    if (axisalignedbb.isVecInside(vec3)) {
+                    if (axisalignedbb.isVecInside(posVec)) {
                         if (0.0D < d2 || d2 == 0.0D) {
                             pointedEntity = entity;
-                            vec33 = movingobjectposition == null ? vec3 : movingobjectposition.hitVec;
+                            resultVec = rayResult == null ? posVec : rayResult.hitVec;
                             d2 = 0.0D;
                         }
                     }
-                    else if (movingobjectposition != null) {
-                        double d3 = vec3.distanceTo(movingobjectposition.hitVec);
+                    else if (rayResult != null) {
+                        double d3 = posVec.distanceTo(rayResult.hitVec);
 
                         if (d3 < d2 || d2 == 0.0D) {
-                            if (entity == Minecraft.getMinecraft().renderViewEntity.ridingEntity && !entity.canRiderInteract()) {
+                            if (entity == renderViewEntity.getRidingEntity() && !entity.canRiderInteract()) {
                                 if (d2 == 0.0D) {
                                     pointedEntity = entity;
-                                    vec33 = movingobjectposition.hitVec;
+                                    resultVec = rayResult.hitVec;
                                 }
                             } else {
                                 pointedEntity = entity;
-                                vec33 = movingobjectposition.hitVec;
+                                resultVec = rayResult.hitVec;
                                 d2 = d3;
                             }
                         }
@@ -251,7 +257,7 @@ public class EventHandler {
             }
 
             if (pointedEntity != null && (d2 < distance || objectMouseOver == null)) {
-                objectMouseOver = new MovingObjectPosition(pointedEntity, vec33);
+                objectMouseOver = new RayTraceResult(pointedEntity, resultVec);
             }
         }
         return objectMouseOver;

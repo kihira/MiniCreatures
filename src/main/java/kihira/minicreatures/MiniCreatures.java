@@ -17,13 +17,6 @@ package kihira.minicreatures;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import cpw.mods.fml.common.Loader;
-import cpw.mods.fml.common.Mod;
-import cpw.mods.fml.common.SidedProxy;
-import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.event.FMLServerStartingEvent;
-import cpw.mods.fml.common.network.NetworkRegistry;
-import cpw.mods.fml.common.registry.EntityRegistry;
 import kihira.foxlib.common.gson.GsonHelper;
 import kihira.minicreatures.client.TailsCompatHandler;
 import kihira.minicreatures.common.CommandSpawnEntity;
@@ -37,9 +30,16 @@ import kihira.minicreatures.common.personality.MoodVariable;
 import kihira.minicreatures.common.personality.Personality;
 import kihira.minicreatures.proxy.CommonProxy;
 import net.minecraft.entity.EnumCreatureType;
-import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.init.Biomes;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.SidedProxy;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraftforge.fml.common.registry.EntityRegistry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -195,20 +195,20 @@ public class MiniCreatures {
     public void registerEntities() {
         if (enableMiniFoxes) {
             EntityRegistry.registerModEntity(EntityFox.class, "MiniFox", 0, this, 64, 1, true);
-            EntityRegistry.addSpawn(EntityFox.class, 6, 2, 4, EnumCreatureType.creature, BiomeGenBase.plains, BiomeGenBase.forest, BiomeGenBase.forestHills);
+            EntityRegistry.addSpawn(EntityFox.class, 6, 2, 4, EnumCreatureType.CREATURE, Biomes.PLAINS, Biomes.FOREST, Biomes.FOREST_HILLS);
         }
         if (enableMiniTRex) {
-            EntityRegistry.registerModEntity(EntityTRex.class, "MiniTRex", 1, this, 64, 1, true);
-            EntityRegistry.addSpawn(EntityTRex.class, 2, 1, 2, EnumCreatureType.creature, BiomeGenBase.jungle, BiomeGenBase.jungleHills);
+            EntityRegistry.registerModEntity(EntityMiniTRex.class, "MiniTRex", 1, this, 64, 1, true);
+            EntityRegistry.addSpawn(EntityMiniTRex.class, 2, 1, 2, EnumCreatureType.CREATURE, Biomes.JUNGLE, Biomes.JUNGLE_HILLS);
         }
         if (enableMiniPlayers) EntityRegistry.registerModEntity(EntityMiniPlayer.class, "MiniPlayer", 2, this, 64, 1, true);
         if (enableMiniShark) {
             EntityRegistry.registerModEntity(EntityMiniShark.class, "MiniShark", 3, this, 64, 1, true);
-            EntityRegistry.addSpawn(EntityTRex.class, 10, 2, 4, EnumCreatureType.waterCreature, BiomeGenBase.ocean, BiomeGenBase.deepOcean);
+            EntityRegistry.addSpawn(EntityMiniTRex.class, 10, 2, 4, EnumCreatureType.WATER_CREATURE, Biomes.OCEAN, Biomes.DEEP_OCEAN);
         }
         if (enableMiniRedPandas) {
             EntityRegistry.registerModEntity(EntityRedPanda.class, "MiniRedPanda", 4, this, 64, 1, true);
-            EntityRegistry.addSpawn(EntityRedPanda.class, 6, 2, 4, EnumCreatureType.creature, BiomeGenBase.forest, BiomeGenBase.forestHills, BiomeGenBase.birchForest, BiomeGenBase.birchForestHills);
+            EntityRegistry.addSpawn(EntityRedPanda.class, 6, 2, 4, EnumCreatureType.CREATURE, Biomes.FOREST, Biomes.FOREST_HILLS, Biomes.BIRCH_FOREST, Biomes.BIRCH_FOREST_HILLS);
         }
     }
 }

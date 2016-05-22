@@ -8,12 +8,13 @@
 
 package kihira.minicreatures.common.entity.ai;
 
+import com.google.common.base.Predicate;
 import kihira.minicreatures.common.entity.IMiniCreature;
-import net.minecraft.command.IEntitySelector;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.passive.EntityTameable;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.OreDictionary;
@@ -28,12 +29,7 @@ public class EntityAICollect<T extends EntityTameable & IMiniCreature> extends E
     private final float searchRadius;
     private boolean remove = false;
 
-    private static final IEntitySelector itemSelector = new IEntitySelector() {
-        @Override
-        public boolean isEntityApplicable(Entity entity) {
-            return !entity.isDead && ((EntityItem) entity).delayBeforeCanPickup <= 0;
-        }
-    };
+    private static final Predicate<EntityItem> CAN_BE_PICKED = input -> input!= null && !input.isDead && input.cannotPickup();
 
     public EntityAICollect(T entity, float collectRadius, float searchRadius) {
         this.entity = entity;
@@ -61,7 +57,7 @@ public class EntityAICollect<T extends EntityTameable & IMiniCreature> extends E
             int stackSize = itemStack.stackSize;
             //Collect
             if (addItemStackToInventory(itemStack)) {
-                entity.worldObj.playSoundAtEntity(entity, "random.pop", 0.2F, ((entity.getRNG().nextFloat() - entity.getRNG().nextFloat()) * 0.7F + 1.0F) * 2.0F);
+                entity.playSound(SoundEvents.ENTITY_CHICKEN_EGG, 0.2F, ((entity.getRNG().nextFloat() - entity.getRNG().nextFloat()) * 0.7F + 1.0F) * 2.0F);
                 entity.onItemPickup(entityItem, stackSize);
 
                 if (itemStack.stackSize <= 0) {
@@ -97,27 +93,27 @@ public class EntityAICollect<T extends EntityTameable & IMiniCreature> extends E
 
     @SuppressWarnings("unchecked")
     private List<EntityItem> getEntityItemsInRadius(float radius, float yRadius) {
-        List<Entity> entities = entity.worldObj.selectEntitiesWithinAABB(EntityItem.class, entity.boundingBox.expand(radius, yRadius, radius), itemSelector);
-        List<EntityItem> entityItems = new ArrayList<EntityItem>();
-        if (entities != null && entities.size() > 0) {
-            for (Entity entity : entities) {
+        List<EntityItem> items = entity.worldObj.getEntitiesWithinAABB(EntityItem.class, entity.getEntityBoundingBox().expand(radius, yRadius, radius), CAN_BE_PICKED);
+        List<EntityItem> validItems = new ArrayList<EntityItem>();
+        if (items.size() > 0) {
+            for (Entity entity : items) {
                 EntityItem entityItem = (EntityItem) entity;
                 int[] oreIDs = OreDictionary.getOreIDs(entityItem.getEntityItem());
                 if (oreIDs.length > 0) {
                     for (int oreID : oreIDs) {
                         String oreName = OreDictionary.getOreName(oreID);
                         if (oreName.startsWith("gem") || oreName.startsWith("ore")) {
-                            entityItems.add(entityItem);
+                            validItems.add(entityItem);
                         }
                     }
                 }
             }
         }
-        return entityItems;
+        return validItems;
     }
 
-    public boolean addItemStackToInventory(ItemStack itemStackToAdd) {
-        if (itemStackToAdd != null && itemStackToAdd.stackSize != 0 && itemStackToAdd.getItem() != null) {
+    private boolean addItemStackToInventory(ItemStack itemStackToAdd) {
+        if (itemStackToAdd != null && itemStackToAdd.stackSize != 0) {
             IInventory inventory = entity.getInventory();
             for (int i = 0; i < inventory.getSizeInventory(); i++) {
                 ItemStack itemStack = inventory.getStackInSlot(i);

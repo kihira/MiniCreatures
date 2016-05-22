@@ -9,6 +9,7 @@
 package kihira.minicreatures.client.gui;
 
 import com.google.common.base.Strings;
+import com.mojang.realmsclient.gui.ChatFormatting;
 import kihira.foxlib.client.gui.GuiBaseScreen;
 import kihira.foxlib.client.gui.ITooltip;
 import kihira.minicreatures.MiniCreatures;
@@ -19,10 +20,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,12 +63,12 @@ public class GuiRoleSelect extends GuiBaseScreen {
         drawTexturedModalRect(guiLeft, guiTop, 0, 0, guiWidth, guiHeight);
 
         drawString(fontRendererObj, I18n.format("gui.roleselect.select"), guiLeft + 8, guiTop + 8, 0xFFFFFF);
-        GuiInventory.func_147046_a(guiLeft + 43, guiTop + 105, 52, guiLeft + 43 - mouseX, guiTop + 65 - mouseY, miniPlayer);
+        GuiInventory.drawEntityOnScreen(guiLeft + 43, guiTop + 105, 52, guiLeft + 43 - mouseX, guiTop + 65 - mouseY, miniPlayer);
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
 
     @Override
-    protected void actionPerformed(GuiButton button) {
+    protected void actionPerformed(GuiButton button) throws IOException {
         if (button instanceof GuiRoleSelectButton) {
             MiniCreatures.proxy.simpleNetworkWrapper.sendToServer(new RoleMessage(miniPlayer.getEntityId(), ((GuiRoleSelectButton) button).role));
             mc.displayGuiScreen(null);
@@ -91,7 +92,7 @@ public class GuiRoleSelect extends GuiBaseScreen {
             if (this.visible) {
                 GL11.glColor3f(1F, 1F, 1F);
                 mc.renderEngine.bindTexture(guiTextures);
-                field_146123_n = mouseX >= this.xPosition && mouseY >= this.yPosition && mouseX < this.xPosition + this.width && mouseY < this.yPosition + this.height;
+                hovered = mouseX >= this.xPosition && mouseY >= this.yPosition && mouseX < this.xPosition + this.width && mouseY < this.yPosition + this.height;
                 int colour = selected ? 0x2200ff00 : 0x22000000;
                 drawGradientRect(xPosition, yPosition, xPosition + width, yPosition + height, colour, colour);
                 colour = colour | 0x33 << 24;
@@ -105,7 +106,7 @@ public class GuiRoleSelect extends GuiBaseScreen {
         @SuppressWarnings("unchecked")
         public List<String> getTooltip(int mouseX, int mouseY) {
             List<String> list = new ArrayList<String>();
-            if (selected) list.add(EnumChatFormatting.GREEN + "" + EnumChatFormatting.ITALIC + I18n.format("gui.roleselect.selected"));
+            if (selected) list.add(ChatFormatting.GREEN + "" + ChatFormatting.ITALIC + I18n.format("gui.roleselect.selected"));
             if (!Strings.isNullOrEmpty(displayString)) {
                 list.addAll(fontRendererObj.listFormattedStringToWidth(displayString, guiWidth));
             }

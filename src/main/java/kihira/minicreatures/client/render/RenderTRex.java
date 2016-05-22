@@ -15,21 +15,20 @@
 package kihira.minicreatures.client.render;
 
 import kihira.minicreatures.client.model.ModelTRex;
+import kihira.minicreatures.common.entity.EntityMiniTRex;
 import net.minecraft.client.renderer.entity.RenderLiving;
-import net.minecraft.entity.Entity;
+import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.util.ResourceLocation;
 
-public class RenderTRex extends RenderLiving {
+public class RenderTRex extends RenderLiving<EntityMiniTRex> {
+    private static final ResourceLocation TREX_TEXTURE = new ResourceLocation("minicreatures", "textures/entity/trex.png");
 
-    private final ResourceLocation trexTexture = new ResourceLocation("minicreatures", "textures/entity/trex.png");
-
-    public RenderTRex() {
-        super(new ModelTRex(), 0.5F);
-        this.setRenderPassModel(this.mainModel);
+    public RenderTRex(RenderManager manager) {
+        super(manager, new ModelTRex(), 0.5F);
     }
 
     @Override
-    protected ResourceLocation getEntityTexture(Entity entity) {
-        return this.trexTexture;
+    protected ResourceLocation getEntityTexture(EntityMiniTRex entity) {
+        return TREX_TEXTURE;
     }
 }

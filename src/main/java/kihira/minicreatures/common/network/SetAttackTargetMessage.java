@@ -1,14 +1,14 @@
 package kihira.minicreatures.common.network;
 
-import cpw.mods.fml.common.network.simpleimpl.IMessage;
-import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
-import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import io.netty.buffer.ByteBuf;
 import kihira.minicreatures.common.entity.EntityMiniPlayer;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
+import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 import java.util.List;
 
@@ -35,7 +35,7 @@ public class SetAttackTargetMessage implements IMessage {
         @Override
         public IMessage onMessage(SetAttackTargetMessage message, MessageContext ctx) {
             EntityPlayer entityPlayer = ctx.getServerHandler().playerEntity;
-            AxisAlignedBB axisalignedbb = AxisAlignedBB.getBoundingBox(entityPlayer.posX, entityPlayer.posY, entityPlayer.posZ, entityPlayer.posX, entityPlayer.posY, entityPlayer.posZ).expand(10, 10, 10);
+            AxisAlignedBB axisalignedbb = new AxisAlignedBB(entityPlayer.posX, entityPlayer.posY, entityPlayer.posZ, entityPlayer.posX, entityPlayer.posY, entityPlayer.posZ).expand(10, 10, 10);
             List entityList = entityPlayer.worldObj.getEntitiesWithinAABB(EntityMiniPlayer.class, axisalignedbb);
 
             if (entityList != null) {

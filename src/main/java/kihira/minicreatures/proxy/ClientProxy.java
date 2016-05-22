@@ -14,33 +14,57 @@
 
 package kihira.minicreatures.proxy;
 
-import cpw.mods.fml.client.registry.RenderingRegistry;
-import cpw.mods.fml.relauncher.Side;
 import kihira.minicreatures.MiniCreatures;
-import kihira.minicreatures.client.render.*;
+import kihira.minicreatures.client.render.RenderMiniCreature;
+import kihira.minicreatures.client.render.RenderMiniPlayer;
+import kihira.minicreatures.client.render.RenderMiniShark;
+import kihira.minicreatures.client.render.RenderTRex;
 import kihira.minicreatures.common.entity.*;
 import kihira.minicreatures.common.network.ItemUseMessage;
 import kihira.minicreatures.common.network.PersonalityMessage;
 import kihira.minicreatures.common.network.ProspectBlocksMessage;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.client.registry.RenderingRegistry;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
  * This class is loaded as the {@link kihira.minicreatures.MiniCreatures#proxy} only on the client
  */
+@SideOnly(Side.CLIENT)
 public class ClientProxy extends CommonProxy {
 
     public static final ResourceLocation specialTextures = new ResourceLocation("minicreatures", "textures/model/specials.png");
+
+    private static final ResourceLocation FOX_TEXTURE = new ResourceLocation("minicreatures", "textures/entity/fox.png");
+    private static final ResourceLocation FOX_COLLAR_TEXTURE = new ResourceLocation("minicreatures", "textures/entity/foxcollar.png");
+    private static final ResourceLocation RED_PANDA_TEXTURE = new ResourceLocation("minicreatures", "textures/entity/redpanda.png");
+    private static final ResourceLocation RED_PANDA_COLLAR_TEXTURE = new ResourceLocation("minicreatures", "textures/entity/redpandacollar.png");
 
     /**
      * Registers the renderers for the various entities
      */
     @Override
     public void registerRenderers() {
-        if (MiniCreatures.enableMiniFoxes) RenderingRegistry.registerEntityRenderingHandler(EntityFox.class, new RenderFox());
-        if (MiniCreatures.enableMiniTRex) RenderingRegistry.registerEntityRenderingHandler(EntityTRex.class, new RenderTRex());
-        if (MiniCreatures.enableMiniPlayers) RenderingRegistry.registerEntityRenderingHandler(EntityMiniPlayer.class, new RenderMiniPlayer());
-        if (MiniCreatures.enableMiniShark) RenderingRegistry.registerEntityRenderingHandler(EntityMiniShark.class, new RenderMiniShark());
-        if (MiniCreatures.enableMiniRedPandas) RenderingRegistry.registerEntityRenderingHandler(EntityRedPanda.class, new RenderRedPanda());
+        if (MiniCreatures.enableMiniFoxes) {
+            RenderingRegistry.registerEntityRenderingHandler(EntityFox.class, manager -> {
+                return new RenderMiniCreature<>(manager, 0.4f, FOX_TEXTURE, FOX_COLLAR_TEXTURE);
+            });
+        }
+        if (MiniCreatures.enableMiniTRex) {
+            RenderingRegistry.registerEntityRenderingHandler(EntityMiniTRex.class, RenderTRex::new);
+        }
+        if (MiniCreatures.enableMiniPlayers) {
+            RenderingRegistry.registerEntityRenderingHandler(EntityMiniPlayer.class, RenderMiniPlayer::new);
+        }
+        if (MiniCreatures.enableMiniShark) {
+            RenderingRegistry.registerEntityRenderingHandler(EntityMiniShark.class, RenderMiniShark::new);
+        }
+        if (MiniCreatures.enableMiniRedPandas) {
+            RenderingRegistry.registerEntityRenderingHandler(EntityRedPanda.class, manager -> {
+                return new RenderMiniCreature<>(manager, 0.4f, RED_PANDA_TEXTURE, RED_PANDA_COLLAR_TEXTURE);
+            });
+        }
     }
 
     @Override

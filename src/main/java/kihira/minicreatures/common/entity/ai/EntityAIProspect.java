@@ -15,7 +15,9 @@ import kihira.minicreatures.common.network.ProspectBlocksMessage;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.util.MathHelper;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 
 public class EntityAIProspect extends EntityAIBase implements IRole {
 
@@ -27,7 +29,7 @@ public class EntityAIProspect extends EntityAIBase implements IRole {
     private int cooldown;
     //This is set true when we need to prospect. Yeah not great but it works
     public boolean prospect;
-    public int[] target;
+    public BlockPos target;
 
     /**
      * Creates an EntityAI task for prospecting ores. This only finds and lists the ores, does nothing with them. Speed
@@ -66,20 +68,20 @@ public class EntityAIProspect extends EntityAIBase implements IRole {
         if (oreFinder == null) {
             //Head to target block first
             if (entity.getNavigator().noPath()) {
-                entity.getNavigator().setPath(entity.getNavigator().getPathToXYZ(target[0] + 0.5, target[1] + 0.5, target[2] + 0.5), 1D);
+                entity.getNavigator().setPath(entity.getNavigator().getPathToXYZ(target.getX() + 0.5, target.getY() + 0.5, target.getZ() + 0.5), 1D);
             }
-            else if (entity.getDistanceSq(target[0], target[1], target[2]) < 4D) {
+            else if (entity.getDistanceSq(target) < 4D) {
                 oreFinder = new OreFinder(entity.worldObj, MathHelper.floor_double(entity.posX), MathHelper.floor_double(entity.posY), MathHelper.floor_double(entity.posZ), radius, yRadius);
             }
         }
         else if (oreFinder.hasNext()) {
             oreFinder.next(speed);
-            if (entity.ticksExisted % 6 == 0) entity.swingItem();
+            if (entity.ticksExisted % 6 == 0) entity.swingArm(EnumHand.MAIN_HAND);
         }
 
         //Face at target block
-        entity.getLookHelper().setLookPosition(target[0] + 0.5, target[1] + 0.5, target[2] + 0.5, 10F, entity.getVerticalFaceSpeed());
-        float[] pitchYaw = EntityHelper.getPitchYawToPosition(entity.posX, entity.posY, entity.posZ, target[0], target[1], target[2]);
+        entity.getLookHelper().setLookPosition(target.getX() + 0.5, target.getY() + 0.5, target.getZ() + 0.5, 10F, entity.getVerticalFaceSpeed());
+        float[] pitchYaw = EntityHelper.getPitchYawToPosition(entity.posX, entity.posY, entity.posZ, target);
         entity.rotationPitch = EntityHelper.updateRotation(entity.rotationPitch, pitchYaw[0], 5);
         entity.rotationYaw = EntityHelper.updateRotation(entity.rotationYaw, pitchYaw[1], 5);
     }

@@ -22,11 +22,11 @@ import java.util.EnumSet;
 
 public interface ICustomisable {
 
-    public EnumSet<EnumPartCategory> getPartCatergoies();
+    EnumSet<EnumPartCategory> getPartCatergoies();
 
-    public ArrayList<String> getCurrentParts(boolean isPreview);
+    ArrayList<String> getCurrentParts(boolean isPreview);
 
-    public void setParts(ArrayList<String> parts, boolean isPreview);
+    void setParts(ArrayList<String> parts, boolean isPreview);
 
-    public EntityLiving getEntity();
+    EntityLiving getEntity();
 }

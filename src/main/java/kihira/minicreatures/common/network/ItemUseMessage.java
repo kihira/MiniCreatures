@@ -8,14 +8,15 @@
 
 package kihira.minicreatures.common.network;
 
-import cpw.mods.fml.common.network.simpleimpl.IMessage;
-import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
-import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import io.netty.buffer.ByteBuf;
 import kihira.minicreatures.MiniCreatures;
 import kihira.minicreatures.common.entity.EntityMiniPlayer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.EnumHand;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
+import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 public class ItemUseMessage implements IMessage {
 
@@ -49,7 +50,8 @@ public class ItemUseMessage implements IMessage {
             Entity entity = Minecraft.getMinecraft().theWorld.getEntityByID(message.entityID);
             if (entity instanceof EntityMiniPlayer) {
                 EntityMiniPlayer miniPlayer = (EntityMiniPlayer) entity;
-                miniPlayer.setItemInUse(miniPlayer.getHeldItem(), miniPlayer.getHeldItem().getMaxItemUseDuration());
+                // todo support off hand
+                miniPlayer.setItemInUse(miniPlayer.getHeldItem(EnumHand.MAIN_HAND), miniPlayer.getHeldItem(EnumHand.MAIN_HAND).getMaxItemUseDuration());
             }
             else {
                 MiniCreatures.logger.warn("Received a personality update for an entity that is not a Mini Player! " + entity);

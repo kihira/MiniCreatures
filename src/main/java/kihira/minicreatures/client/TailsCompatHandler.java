@@ -8,33 +8,14 @@
 
 package kihira.minicreatures.client;
 
-import cpw.mods.fml.common.ObfuscationReflectionHelper;
-import cpw.mods.fml.common.eventhandler.EventPriority;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import kihira.minicreatures.common.entity.EntityMiniPlayer;
-import kihira.tails.api.IRenderHelper;
-import kihira.tails.client.render.RenderPart;
-import kihira.tails.client.texture.TextureHelper;
-import kihira.tails.common.PartInfo;
-import kihira.tails.common.PartsData;
-import kihira.tails.common.Tails;
-import net.minecraft.client.entity.AbstractClientPlayer;
-import net.minecraft.client.renderer.ThreadDownloadImageData;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.client.event.RenderLivingEvent;
-import org.lwjgl.opengl.GL11;
-
-import java.awt.image.BufferedImage;
-import java.util.UUID;
-
+// todo port to 1.9.4
 public class TailsCompatHandler {
 
     public TailsCompatHandler() {
-        RenderPart.registerRenderHelper(EntityMiniPlayer.class, new MiniPlayerRenderHelper());
+        //RenderPart.registerRenderHelper(EntityMiniPlayer.class, new MiniPlayerRenderHelper());
     }
 
-    @SubscribeEvent(priority = EventPriority.LOWEST)
+/*    @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onPlayerRenderTick(RenderLivingEvent.Specials.Pre e) {
         if (e.entity instanceof EntityMiniPlayer && ((EntityMiniPlayer) e.entity).hasCustomNameTag()) {
             UUID uuid = e.entity.getPersistentID();
@@ -65,6 +46,6 @@ public class TailsCompatHandler {
             GL11.glScalef(0.35F, 0.35F, 0.35F);
             GL11.glRotatef(180F, 1F, 0F, 0F);
         }
-    }
+    }*/
 
 }

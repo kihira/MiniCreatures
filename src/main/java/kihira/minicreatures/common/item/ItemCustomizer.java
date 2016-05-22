@@ -26,7 +26,7 @@ public class ItemCustomizer extends Item {
 
     public ItemCustomizer() {
         this.setUnlocalizedName("customizer");
-        this.setCreativeTab(CreativeTabs.tabMisc);
+        this.setCreativeTab(CreativeTabs.MISC);
         this.setMaxStackSize(1);
     }
 

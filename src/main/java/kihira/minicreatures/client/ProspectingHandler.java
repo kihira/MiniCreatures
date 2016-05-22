@@ -8,14 +8,13 @@
 
 package kihira.minicreatures.client;
 
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.TickEvent;
 import kihira.foxlib.client.TextHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.lwjgl.opengl.GL11;
 
 public class ProspectingHandler {
@@ -26,7 +25,6 @@ public class ProspectingHandler {
 
     private ProspectingHandler() {
         MinecraftForge.EVENT_BUS.register(this);
-        FMLCommonHandler.instance().bus().register(this);
     }
 
     @SubscribeEvent
@@ -46,9 +44,9 @@ public class ProspectingHandler {
         if (blocks != null) {
             GL11.glPushMatrix();
             Entity entity = Minecraft.getMinecraft().thePlayer;
-            double interpPosX = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * event.partialTicks;
-            double interpPosY = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * event.partialTicks;
-            double interpPosZ = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * event.partialTicks;
+            double interpPosX = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * event.getPartialTicks();
+            double interpPosY = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * event.getPartialTicks();
+            double interpPosZ = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * event.getPartialTicks();
             GL11.glTranslated(-interpPosX, -interpPosY, -interpPosZ);
             GL11.glDisable(GL11.GL_DEPTH_TEST);
             for (int[] orePos : blocks) {

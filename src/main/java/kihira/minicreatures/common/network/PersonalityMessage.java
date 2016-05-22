@@ -1,10 +1,6 @@
 package kihira.minicreatures.common.network;
 
 import com.google.gson.JsonSyntaxException;
-import cpw.mods.fml.common.network.ByteBufUtils;
-import cpw.mods.fml.common.network.simpleimpl.IMessage;
-import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
-import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import io.netty.buffer.ByteBuf;
 import kihira.foxlib.common.gson.GsonHelper;
 import kihira.minicreatures.MiniCreatures;
@@ -13,6 +9,10 @@ import kihira.minicreatures.common.personality.Mood;
 import kihira.minicreatures.common.personality.Personality;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
+import net.minecraftforge.fml.common.network.ByteBufUtils;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
+import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 public class PersonalityMessage implements IMessage {
 

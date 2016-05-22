@@ -8,8 +8,9 @@
 
 package kihira.minicreatures.common;
 
-import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.oredict.OreDictionary;
 
@@ -38,7 +39,7 @@ public class OreFinder {
                 }
             }
         }
-        orePositions = new ArrayList<int[]>();
+        orePositions = new ArrayList<>();
     }
 
     public void next(int count) {
@@ -51,12 +52,14 @@ public class OreFinder {
         }
     }
 
-    public void next() {
+    private void next() {
         int[] currPos = blockPositions[currentIndex];
-        int x = currPos[0], y = currPos[1], z = currPos[2];
-        Block block = world.getBlock(x, y, z);
-        if (block != null && !block.isAir(world, x, y, z)) {
-            int[] oreIDs = OreDictionary.getOreIDs(new ItemStack(block, 1, world.getBlockMetadata(x, y, z)));
+        BlockPos blockPos = new BlockPos(currPos[0], currPos[1], currPos[2]);
+
+        if (!world.isAirBlock(blockPos)) {
+            IBlockState state = world.getBlockState(blockPos);
+            int[] oreIDs = OreDictionary.getOreIDs(new ItemStack(state.getBlock(), 1, state.getBlock().getMetaFromState(state)));
+
             if (oreIDs.length > 0) {
                 for (int oreID : oreIDs) {
                     String oreName = OreDictionary.getOreName(oreID);

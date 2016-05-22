@@ -20,12 +20,12 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.text.TextComponentString;
 
 public class ItemMindControlHelmet extends Item {
 
     public ItemMindControlHelmet() {
-        this.setCreativeTab(CreativeTabs.tabMisc);
+        this.setCreativeTab(CreativeTabs.MISC);
         this.setUnlocalizedName("mindControlHelmet");
     }
 
@@ -35,7 +35,8 @@ public class ItemMindControlHelmet extends Item {
                 EntityMiniPlayer miniPlayer = (EntityMiniPlayer) entity;
                 if (miniPlayer.getOwner() == player && !miniPlayer.isMindControlled()) {
                     miniPlayer.setMindControlled(true);
-                    player.addChatComponentMessage(new ChatComponentText(miniPlayer.getCommandSenderName() + ": I will do anything you command of me Master..."));
+                    //todo check
+                    player.addChatComponentMessage(new TextComponentString(miniPlayer.getDisplayName() + ": I will do anything you command of me Master..."));
                 }
             }
             return true;

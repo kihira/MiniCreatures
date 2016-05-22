@@ -15,113 +15,79 @@
 package kihira.minicreatures.client.render;
 
 import com.google.common.base.Strings;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import kihira.foxlib.client.TextHelper;
 import kihira.minicreatures.client.model.ModelMiniPlayer;
 import kihira.minicreatures.common.entity.EntityMiniPlayer;
-import net.minecraft.block.Block;
 import net.minecraft.client.entity.AbstractClientPlayer;
-import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.entity.RenderBiped;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.passive.EntityTameable;
-import net.minecraft.item.ItemBlock;
-import net.minecraft.item.ItemStack;
+import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.client.renderer.entity.layers.LayerBipedArmor;
+import net.minecraft.client.renderer.entity.layers.LayerHeldItem;
+import net.minecraft.client.resources.DefaultPlayerSkin;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.client.IItemRenderer;
-import net.minecraftforge.client.MinecraftForgeClient;
-import org.lwjgl.opengl.GL11;
-
-import static net.minecraftforge.client.IItemRenderer.ItemRenderType.EQUIPPED;
-import static net.minecraftforge.client.IItemRenderer.ItemRendererHelper.BLOCK_3D;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class RenderMiniPlayer extends RenderBiped {
+public class RenderMiniPlayer extends RenderBiped<EntityMiniPlayer> {
 
-    public RenderMiniPlayer() {
-        super(new ModelMiniPlayer(), 0.3F);
+    public RenderMiniPlayer(RenderManager manager) {
+        super(manager, new ModelMiniPlayer(), 0.3F, 1F);
+        this.addLayer(new LayerHeldItem(this));
+        LayerBipedArmor layerbipedarmor = new LayerBipedArmor(this)
+        {
+            protected void initArmor()
+            {
+                this.modelLeggings = new ModelMiniPlayer(0.5F, true);
+                this.modelArmor = new ModelMiniPlayer(1.0F, true);
+            }
+        };
+        this.addLayer(layerbipedarmor);
     }
 
     @Override
-    protected void func_82421_b() {
-        //We need to set these values so armour renders properly. Kinda got an idea why
-        this.field_82423_g = new ModelMiniPlayer(1.0F);
-        this.field_82425_h = new ModelMiniPlayer(0.5F);
-    }
-
-    @Override
-    public void doRender(Entity par1Entity, double x, double y, double z, float par8, float par9) {
-        EntityMiniPlayer miniPlayer = (EntityMiniPlayer) par1Entity;
-        this.doRender(miniPlayer, x, y, z, par8, par9);
+    public void doRender(EntityMiniPlayer entity, double x, double y, double z, float entityYaw, float partialTicks) {
+        super.doRender(entity, x, y, z, entityYaw, partialTicks);
 
         //Draw the chat messages
-        String chat = miniPlayer.getChat();
+        String chat = entity.getChat();
         if (!Strings.isNullOrEmpty(chat)) {
-            TextHelper.drawWrappedMessageFacingPlayer(x, y + miniPlayer.height + 0.67F, z, 0.016666668F * 1.1F, 100, 20, chat, -1);
+            TextHelper.drawWrappedMessageFacingPlayer(x, y + entity.height + 0.67F, z, 0.016666668F * 1.1F, 100, 20, chat, -1);
         }
 
         //Draw stat changes
         //This is greater then 0 if we have changes to display
-        if (miniPlayer.statMessageTime < 60) {
+        if (entity.statMessageTime < 60) {
             //Messages floats up over time
-            float yOffset = miniPlayer.height + 0.67F + (miniPlayer.statMessageTime / 150F);
+            float yOffset = entity.height + 0.67F + (entity.statMessageTime / 150F);
             //Loop through any changes
-            for (String statChange : miniPlayer.statMessage.split(";")) {
+            for (String statChange : entity.statMessage.split(";")) {
                 if (!statChange.isEmpty()) {
-                    TextHelper.drawMultiLineMessageFacingPlayer(x, y + yOffset, z, 0.016666668F, new String[]{statChange}, (int) (-(miniPlayer.statMessageTime / 60F) * 255) << 24, true, false);
+                    TextHelper.drawMultiLineMessageFacingPlayer(x, y + yOffset, z, 0.016666668F, new String[]{statChange}, (int) (-(entity.statMessageTime / 60F) * 255) << 24, true, false);
                     yOffset += 0.4;
                 }
             }
         }
     }
 
-    //Copied from RenderPlayer.renderSpecials
     @Override
-    protected void renderEquippedItems(EntityLivingBase par1EntityLivingBase, float par2) {
-        ItemStack itemstack = par1EntityLivingBase.getHeldItem();
-        EntityMiniPlayer miniPlayer = (EntityMiniPlayer) par1EntityLivingBase;
-        if (itemstack != null) {
-            IItemRenderer customRenderer = MinecraftForgeClient.getItemRenderer(itemstack, EQUIPPED);
-            boolean is3D = (customRenderer != null && customRenderer.shouldUseRenderHelper(EQUIPPED, itemstack, BLOCK_3D));
-            if (miniPlayer.isSitting()) GL11.glTranslatef(0F, 0.3F, 0F);
-            if (miniPlayer.isRiding()) GL11.glTranslatef(0F, 0.25F, 0F);
-            if ((miniPlayer.ridingEntity instanceof EntityTameable) && (((EntityTameable) miniPlayer.ridingEntity).isSitting())) GL11.glTranslatef(0F, 0.1F, 0F);
-            //If item is a block or has a custom renderer
-            if (itemstack.getItem() instanceof ItemBlock && (is3D || RenderBlocks.renderItemIn3d(Block.getBlockFromItem(itemstack.getItem()).getRenderType()))) {
-                GL11.glTranslatef(0.0F, 0.8875F, -0.3F);
-                GL11.glRotatef(-90.0F, 0.0F, 1.0F, 0.0F);
-                GL11.glScalef(-0.3F, -0.3F, -0.3F);
-                this.renderManager.itemRenderer.renderItem(par1EntityLivingBase, itemstack, 0);
-            }
-            //Otherwise render "2D"
-            else {
-                GL11.glTranslatef(0F, 0.725F, -0.025F);
-                GL11.glScalef(0.5F, 0.5F, 0.5F);
-                super.renderEquippedItems(par1EntityLivingBase, par2);
-            }
-        }
-    }
-
-    @Override
-    protected void func_96449_a(EntityLivingBase entity, double x, double y, double z, String text, float p_96449_9_, double p_96449_10_) {
-        if (((EntityMiniPlayer) entity).isSitting()) {
-            this.func_147906_a(entity, text, x, y - 0.3D, z, 64);
+    protected void renderEntityName(EntityMiniPlayer entity, double x, double y, double z, String name, double p_188296_9_) {
+        super.renderEntityName(entity, x, y, z, name, p_188296_9_);
+        if (entity.isSitting()) {
+            this.renderLivingLabel(entity, name, x, y - 0.3D, z, 64);
         }
         else {
-            this.func_147906_a(entity, text, x, y, z, 64);
+            this.renderLivingLabel(entity, name, x, y, z, 64);
         }
     }
 
     @Override
-    protected ResourceLocation getEntityTexture(Entity entity) {
+    protected ResourceLocation getEntityTexture(EntityMiniPlayer entity) {
         //Gets the players skin
-        ResourceLocation resourcelocation = AbstractClientPlayer.locationStevePng;
-        EntityMiniPlayer entityMiniPlayer = (EntityMiniPlayer)entity;
-        if (entityMiniPlayer.hasCustomNameTag()) {
-            resourcelocation = AbstractClientPlayer.getLocationSkin(entityMiniPlayer.getCustomNameTag());
-            AbstractClientPlayer.getDownloadImageSkin(resourcelocation, entityMiniPlayer.getCustomNameTag());
+        ResourceLocation resourcelocation = DefaultPlayerSkin.getDefaultSkin(entity.getUniqueID()); // todo only support legacy skin?
+        if (entity.hasCustomName()) {
+            resourcelocation = AbstractClientPlayer.getLocationSkin(entity.getCustomNameTag());
+            AbstractClientPlayer.getDownloadImageSkin(resourcelocation, entity.getCustomNameTag());
         }
         return resourcelocation;
     }

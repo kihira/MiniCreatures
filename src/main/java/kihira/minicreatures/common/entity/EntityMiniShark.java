@@ -14,14 +14,14 @@
 
 package kihira.minicreatures.common.entity;
 
-import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.passive.EntityWaterMob;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.MathHelper;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
 
@@ -37,18 +37,12 @@ public class EntityMiniShark extends EntityWaterMob {
     public EntityMiniShark(World par1World) {
         super(par1World);
         this.setSize(0.8F, 0.3F);
-        this.renderDistanceWeight = 4D;
     }
 
     @Override
     protected void applyEntityAttributes() {
         super.applyEntityAttributes();
-        this.getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(10D);
-    }
-
-    @Override
-    public boolean isAIEnabled() {
-        return false;
+        this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(10D);
     }
 
     @Override
@@ -58,9 +52,9 @@ public class EntityMiniShark extends EntityWaterMob {
 
     @Override
     public boolean attackEntityAsMob(Entity entity) {
-        boolean attack = entity.attackEntityFrom(DamageSource.causeMobDamage(this), worldObj.difficultySetting.getDifficultyId() * 2);
+        boolean attack = entity.attackEntityFrom(DamageSource.causeMobDamage(this), worldObj.getDifficulty().getDifficultyId() * 2);
         if (attack && healCooldown <= 0) {
-            heal(worldObj.difficultySetting.getDifficultyId());
+            heal(worldObj.getDifficulty().getDifficultyId());
             healCooldown = 60;
         }
         return attack;
@@ -99,7 +93,7 @@ public class EntityMiniShark extends EntityWaterMob {
             if (this.targetedEntity != null) {
                 this.faceEntity(this.targetedEntity, 5F, 5F);
 
-                double distToTarget = this.getDistanceSq(this.targetedEntity.posX, this.targetedEntity.boundingBox.minY, this.targetedEntity.posZ);
+                double distToTarget = this.getDistanceSq(this.targetedEntity.posX, this.targetedEntity.getEntityBoundingBox().minY, this.targetedEntity.posZ);
                 double d10 = (double)(this.width + this.targetedEntity.width);
                 if (distToTarget <= d10 && this.attackTick <= 0) {
                     this.attackTick = 20;
@@ -112,7 +106,8 @@ public class EntityMiniShark extends EntityWaterMob {
         }
     }
 
-    @Override
+    // todo port to 1.9.4
+/*    @Override
     protected void updateEntityActionState() {
         moveStrafing = 0.0F;
         moveForward = 0.0F;
@@ -143,7 +138,7 @@ public class EntityMiniShark extends EntityWaterMob {
             }
         }
 
-        if (targetedEntity == null) targetedEntity = worldObj.getClosestVulnerablePlayerToEntity(this, 64D);
+        if (targetedEntity == null) targetedEntity = worldObj.getClosestPlayerToEntity(this, 64D);
         checkTargetValid();
         if (targetedEntity != null) {
             this.waypointX = this.targetedEntity.posX;
@@ -152,7 +147,7 @@ public class EntityMiniShark extends EntityWaterMob {
         }
 
         despawnEntity();
-    }
+    }*/
 
     private void checkTargetValid() {
         if (targetedEntity != null && (targetedEntity.isDead || !targetedEntity.isInWater() || this.targetedEntity.getDistanceSqToEntity(this) > 3600D || !canEntityBeSeen(this.targetedEntity))) {
@@ -170,10 +165,10 @@ public class EntityMiniShark extends EntityWaterMob {
         double x = (this.waypointX - this.posX) / dist;
         double y = (this.waypointY - this.posY) / dist;
         double z = (this.waypointZ - this.posZ) / dist;
-        AxisAlignedBB axisalignedbb = this.boundingBox.getOffsetBoundingBox(x, y, z);
+        AxisAlignedBB axisalignedbb = this.getEntityBoundingBox().offset(x, y, z);
 
         for (int i = 1; (double)i < dist; ++i) {
-            if (!this.worldObj.getCollidingBoundingBoxes(this, axisalignedbb).isEmpty()) {
+            if (!this.worldObj.getCollisionBoxes(this, axisalignedbb).isEmpty()) {
                 return false;
             }
         }
@@ -205,7 +200,8 @@ public class EntityMiniShark extends EntityWaterMob {
 
     @Override
     public boolean isInWater() {
-        this.inWater = this.worldObj.getBlock(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.boundingBox.minY + 0.25), MathHelper.floor_double(this.posZ)).getMaterial() == Material.water;
+        // todo port to 1.9.4
+        // this.inWater = this.worldObj.getBlock(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.getEntityBoundingBox().minY + 0.25), MathHelper.floor_double(this.posZ)).getMaterial() == Material.WATER;
         return this.inWater;
     }
 
@@ -220,7 +216,15 @@ public class EntityMiniShark extends EntityWaterMob {
 
     @Override
     protected void despawnEntity() {
-        if (worldObj.difficultySetting == EnumDifficulty.PEACEFUL) setDead();
+        if (worldObj.getDifficulty() == EnumDifficulty.PEACEFUL) setDead();
         else super.despawnEntity();
+    }
+
+    private static class AIMove  extends EntityAIBase {
+
+        @Override
+        public boolean shouldExecute() {
+            return false;
+        }
     }
 }

@@ -23,8 +23,8 @@ import kihira.minicreatures.common.network.UpdateEntityMessage;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiInventory;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.StatCollector;
 import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
@@ -58,7 +58,7 @@ public class GuiCustomizer extends GuiScreen {
         this.guiTop = (this.height - this.ySize) / 2;
 
         //Add in category button
-        this.categoryButton = new GuiButton(0, this.guiLeft + 83, this.guiTop + 7, 112, 20, StatCollector.translateToLocal("category." + this.currentCategory.name() + ".part"));
+        this.categoryButton = new GuiButton(0, this.guiLeft + 83, this.guiTop + 7, 112, 20, I18n.format("category." + this.currentCategory.name() + ".part"));
         this.buttonList.add(0, this.categoryButton);
         //Add in parts buttons
         for (int i = 1; i < 7; i++) {
@@ -67,10 +67,10 @@ public class GuiCustomizer extends GuiScreen {
         //Add in navigation buttons
         this.buttonList.add(7, new GuiButton(7, this.guiLeft + 84, this.height / 2 + 54, 20, 20, "<"));
         this.buttonList.add(8, new GuiButton(8, this.guiLeft + 156, this.height / 2 + 54, 20, 20, ">"));
-        this.buttonList.add(9, new GuiButton(9, this.guiLeft + 105, this.height / 2 + 54, 50, 20, StatCollector.translateToLocal("gui.done")));
+        this.buttonList.add(9, new GuiButton(9, this.guiLeft + 105, this.height / 2 + 54, 50, 20, I18n.format("gui.done")));
         //Add in reset buttons
-        this.buttonList.add(10, new GuiButton(10, this.guiLeft + 8, this.guiTop + 95, 72, 20, StatCollector.translateToLocal("gui.reset")));
-        this.buttonList.add(11, new GuiButton(11, this.guiLeft + 8, this.guiTop + 116, 72, 20, StatCollector.translateToLocal("gui.clear")));
+        this.buttonList.add(10, new GuiButton(10, this.guiLeft + 8, this.guiTop + 95, 72, 20, I18n.format("gui.reset")));
+        this.buttonList.add(11, new GuiButton(11, this.guiLeft + 8, this.guiTop + 116, 72, 20, I18n.format("gui.clear")));
 
         //Load current part data.
         this.currentEquippedParts = this.miniCreature.getCurrentParts(false);
@@ -90,7 +90,7 @@ public class GuiCustomizer extends GuiScreen {
             EnumPartCategory[] partCategories = this.miniCreature.getPartCatergoies().toArray(new EnumPartCategory[20]);
             if (this.currentCategory.ordinal() + 1 >= this.miniCreature.getPartCatergoies().size()) this.currentCategory = EnumPartCategory.ALL;
             else this.currentCategory = partCategories[this.currentCategory.ordinal() + 1];
-            this.categoryButton.displayString = StatCollector.translateToLocal("category." + this.currentCategory.name() + ".part");
+            this.categoryButton.displayString = I18n.format("category." + this.currentCategory.name() + ".part");
         }
         //Nav button
         else if (button.id == 7) this.currentPage--;
@@ -120,8 +120,8 @@ public class GuiCustomizer extends GuiScreen {
     }
 
     private void updateNavButtons() {
-        ((GuiButton) this.buttonList.get(7)).enabled = this.currentPage != 0;
-        ((GuiButton) this.buttonList.get(8)).enabled = !((this.currentPage + 1) * 6 >= this.currentValidParts.size());
+        this.buttonList.get(7).enabled = this.currentPage != 0;
+        this.buttonList.get(8).enabled = !((this.currentPage + 1) * 6 >= this.currentValidParts.size());
     }
 
     private void updatePartsList() {
@@ -129,10 +129,10 @@ public class GuiCustomizer extends GuiScreen {
         this.partsList = new String[6];
         for (int i = 1; i < 7; i++) {
             int num = (this.currentPage * 6) + i - 1;
-            GuiButton button = (GuiButton) this.buttonList.get(i);
+            GuiButton button = this.buttonList.get(i);
             if (this.currentValidParts.size() > num) {
                 button.visible = true;
-                button.displayString = StatCollector.translateToLocal("name." + this.currentValidParts.get(num) + ".part");
+                button.displayString = I18n.format("name." + this.currentValidParts.get(num) + ".part");
                 this.partsList[num] = this.currentValidParts.get(num);
             }
             else {
@@ -162,7 +162,7 @@ public class GuiCustomizer extends GuiScreen {
         super.drawScreen(par1, par2, par3);
     }
 
-    private void drawForeground(int p_146979_1_, int p_146979_2_) {
+    private void drawForeground(int mouseX, int mouseY) {
         this.mc.getTextureManager().bindTexture(this.guiTextures);
         //Render checkmarks if part is currently equipped
         for (int i = 0; i < 6; i++) {
@@ -177,6 +177,6 @@ public class GuiCustomizer extends GuiScreen {
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         this.mc.getTextureManager().bindTexture(this.guiTextures);
         this.drawTexturedModalRect(this.guiLeft, this.guiTop, 0, 0, this.xSize, this.ySize);
-        GuiInventory.func_147046_a(this.guiLeft + 42, this.guiTop + 82, 45, (float) (this.guiLeft + 51) - p_146976_2_, (float) (this.guiTop + 75 - 50) - p_146976_3_, this.miniCreature.getEntity());
+        GuiInventory.drawEntityOnScreen(this.guiLeft + 42, this.guiTop + 82, 45, (float) (this.guiLeft + 51) - p_146976_2_, (float) (this.guiTop + 75 - 50) - p_146976_3_, this.miniCreature.getEntity());
     }
 }

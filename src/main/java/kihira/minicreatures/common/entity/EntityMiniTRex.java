@@ -30,16 +30,26 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 
-public class EntityTRex extends EntityTameable implements IMiniCreature {
+public class EntityMiniTRex extends EntityTameable implements IMiniCreature {
 
-    public EntityTRex(World par1World) {
+    public EntityMiniTRex(World par1World) {
         super(par1World);
         setSize(0.6F, 0.9F);
-        this.getNavigator().setAvoidsWater(true);
-        this.getNavigator().setCanSwim(true);
+        this.setTamed(false);
+    }
+
+    @Override
+    protected void applyEntityAttributes() {
+        super.applyEntityAttributes();
+        this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(10.0D);
+        this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.30000001192092896D);
+    }
+
+    @Override
+    protected void initEntityAI() {
         this.tasks.addTask(1, new EntityAISwimming(this));
         this.tasks.addTask(2, this.aiSit);
-        this.tasks.addTask(3, new EntityAIAttackOnCollide(this, 1.0D, true));
+        this.tasks.addTask(3, new EntityAIAttackMelee(this, 1.0D, true));
         this.tasks.addTask(4, new EntityAIFollowOwner(this, 1.0D, 10.0F, 2.0F));
         //this.tasks.addTask(5, new EntityAIMate(this, 1.0D));
         this.tasks.addTask(6, new EntityAIWander(this, 1.0D));
@@ -48,21 +58,7 @@ public class EntityTRex extends EntityTameable implements IMiniCreature {
         this.targetTasks.addTask(1, new EntityAIOwnerHurtByTarget(this));
         this.targetTasks.addTask(2, new EntityAIOwnerHurtTarget(this));
         this.targetTasks.addTask(3, new EntityAIHurtByTarget(this, true));
-        this.targetTasks.addTask(4, new EntityAITargetNonTamed(this, EntityAnimal.class, 1000, false));
-        this.setTamed(false);
-        this.renderDistanceWeight = 4D;
-    }
-
-    @Override
-    protected void applyEntityAttributes() {
-        super.applyEntityAttributes();
-        this.getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(10.0D);
-        this.getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(0.30000001192092896D);
-    }
-
-    @Override
-    public boolean isAIEnabled() {
-        return true;
+        this.targetTasks.addTask(4, new EntityAITargetNonTamed(this, EntityAnimal.class, false, null));
     }
 
     @Override
@@ -87,7 +83,7 @@ public class EntityTRex extends EntityTameable implements IMiniCreature {
 
     @Override
     protected Item getDropItem() {
-        return Items.bone;
+        return Items.BONE;
     }
 
     @Override
@@ -95,7 +91,7 @@ public class EntityTRex extends EntityTameable implements IMiniCreature {
         int j = this.rand.nextInt(2) + this.rand.nextInt(1 + lootingLevel);
 
         for (int k = 0; k < j; ++k) {
-            this.dropItem(Items.bone, 1);
+            this.dropItem(Items.BONE, 1);
         }
     }
 

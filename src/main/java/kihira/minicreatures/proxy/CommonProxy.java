@@ -14,10 +14,6 @@
 
 package kihira.minicreatures.proxy;
 
-import cpw.mods.fml.common.network.NetworkRegistry;
-import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
-import cpw.mods.fml.common.registry.GameRegistry;
-import cpw.mods.fml.relauncher.Side;
 import kihira.minicreatures.MiniCreatures;
 import kihira.minicreatures.client.model.parts.PartModelFairy;
 import kihira.minicreatures.client.model.parts.PartModelHorns;
@@ -26,15 +22,13 @@ import kihira.minicreatures.common.customizer.CustomizerRegistry;
 import kihira.minicreatures.common.network.RoleMessage;
 import kihira.minicreatures.common.network.SetAttackTargetMessage;
 import kihira.minicreatures.common.network.UpdateEntityMessage;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
+import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.relauncher.Side;
 
-/**
- * This class is loaded as the {@link kihira.minicreatures.MiniCreatures#proxy} only on the server
- */
 public class CommonProxy {
 
-    /**
-     * The {@link cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper} for this mod
-     */
     public final SimpleNetworkWrapper simpleNetworkWrapper = NetworkRegistry.INSTANCE.newSimpleChannel("minicreatures");
 
     public void registerRenderers() {}
@@ -46,9 +40,6 @@ public class CommonProxy {
         CustomizerRegistry.registerPart("tail", new PartModelTail());
     }
 
-    /**
-     * Registers the various {@link cpw.mods.fml.common.network.simpleimpl.IMessage}s in the channel {@link #simpleNetworkWrapper}
-     */
     public void registerMessages() {
         this.simpleNetworkWrapper.registerMessage(UpdateEntityMessage.UpdateEntityMessageHandler.class, UpdateEntityMessage.class, 1, Side.SERVER);
         this.simpleNetworkWrapper.registerMessage(SetAttackTargetMessage.SetAttackTargetMessageHandler.class, SetAttackTargetMessage.class, 2, Side.SERVER);

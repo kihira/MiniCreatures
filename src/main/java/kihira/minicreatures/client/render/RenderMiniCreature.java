@@ -14,22 +14,28 @@
 
 package kihira.minicreatures.client.render;
 
-import kihira.minicreatures.client.model.ModelMiniShark;
+import kihira.minicreatures.client.model.ModelFox;
+import kihira.minicreatures.client.render.layers.LayerCollar;
+import kihira.minicreatures.common.entity.EntityMiniCreature;
 import net.minecraft.client.renderer.entity.RenderLiving;
 import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class RenderMiniShark extends RenderLiving {
+@SideOnly(Side.CLIENT)
+public class RenderMiniCreature<T extends EntityMiniCreature> extends RenderLiving<T> {
 
-    private final ResourceLocation sharkTexture = new ResourceLocation("minicreatures", "textures/entity/minishark.png");
+    private final ResourceLocation texture;
 
-    public RenderMiniShark(RenderManager manager) {
-        super(manager, new ModelMiniShark(), 0.4F);
+    public RenderMiniCreature(RenderManager manager, float shadow, ResourceLocation texture, ResourceLocation collarTexture) {
+        super(manager, new ModelFox(), shadow);
+        this.texture = texture;
+        this.addLayer(new LayerCollar<RenderMiniCreature>(this, collarTexture));
     }
 
     @Override
-    protected ResourceLocation getEntityTexture(Entity var1) {
-        return this.sharkTexture;
+    protected ResourceLocation getEntityTexture(T entity) {
+        return texture;
     }
 }

@@ -14,10 +14,8 @@
 
 package kihira.minicreatures.common.handler;
 
-import cpw.mods.fml.common.network.IGuiHandler;
 import kihira.minicreatures.client.gui.GuiCustomizer;
 import kihira.minicreatures.client.gui.GuiRoleSelect;
-import kihira.minicreatures.common.ContainerCarriedAnvil;
 import kihira.minicreatures.common.entity.EntityMiniPlayer;
 import kihira.minicreatures.common.entity.ICustomisable;
 import kihira.minicreatures.common.entity.IMiniCreature;
@@ -25,7 +23,9 @@ import net.minecraft.client.gui.GuiRepair;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.ContainerChest;
+import net.minecraft.inventory.ContainerRepair;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.network.IGuiHandler;
 
 public class GuiHandler implements IGuiHandler {
 
@@ -33,8 +33,13 @@ public class GuiHandler implements IGuiHandler {
     public Object getServerGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
         //Get Entity ID as x coord. Inspired by OpenBlocks
         switch (ID) {
-            case (0): return new ContainerChest(player.inventory, ((IMiniCreature)world.getEntityByID(x)).getInventory());
-            case (1): return new ContainerCarriedAnvil(player.inventory, world, x, y, z, player);
+            case (0): return new ContainerChest(player.inventory, ((IMiniCreature)world.getEntityByID(x)).getInventory(), player);
+            case (1): return new ContainerRepair(player.inventory, world, player) {
+                @Override
+                public boolean canInteractWith(EntityPlayer playerIn) {
+                    return true;
+                }
+            };
             default: return null;
         }
     }
@@ -43,7 +48,7 @@ public class GuiHandler implements IGuiHandler {
     public Object getClientGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
         switch (ID) {
             case (0): return new GuiChest(player.inventory, ((IMiniCreature)world.getEntityByID(x)).getInventory());
-            case (1): return new GuiRepair(player.inventory, world, x, y, z);
+            case (1): return new GuiRepair(player.inventory, world);
             case (2): return new GuiCustomizer((ICustomisable) world.getEntityByID(x));
             case (3): return new GuiRoleSelect((EntityMiniPlayer) world.getEntityByID(x));
             default: return null;

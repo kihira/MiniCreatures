@@ -1,15 +1,16 @@
 package kihira.minicreatures.common.entity.ai;
 
-import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.ai.RandomPositionGenerator;
 import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
-import net.minecraft.pathfinding.PathEntity;
-import net.minecraft.util.MathHelper;
-import net.minecraft.util.Vec3;
+import net.minecraft.pathfinding.Path;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class EntityAIEscapePlayer extends EntityAIBase {
@@ -18,7 +19,7 @@ public class EntityAIEscapePlayer extends EntityAIBase {
     private final float triggerDistance;
     private final double speed;
     private EntityPlayer closestPlayer;
-    private PathEntity thePath;
+    private Path thePath;
 
     private boolean shouldClimb;
     public boolean isClimbing;
@@ -48,17 +49,18 @@ public class EntityAIEscapePlayer extends EntityAIBase {
 
         if (this.closestPlayer == null) return false;
         //If we're already on leaves and 3 blocks above the player, we can assume this is a tree and is a safe place
-        if (world.getBlock(entityX, entityY - 1, entityZ) == Blocks.leaves &&
-                entityY - this.closestPlayer.posY >= 3F) return false;
+        BlockPos pos = new BlockPos(entityX, entityY - 1, entityZ);
+        IBlockState blockState = world.getBlockState(pos);
+        if (blockState.getBlock().isLeaves(blockState, world, pos) && entityY - this.closestPlayer.posY >= 3F) return false;
 
         for (int x = -searchRadius; x <= searchRadius; x++) {
             for (int y = -1; y <= 1; y++) {
                 for (int z = -searchRadius; z <= searchRadius; z++) {
-                    Block block = world.getBlock(entityX + x, entityY + y, entityZ + z);
                     //If we find a valid target, lets go there
-                    if (block == Blocks.log) {
+                    // todo replace with isWood on Block
+                    if (world.getBlockState(new BlockPos(entityX + x, entityY + y, entityZ + z)).getBlock() == Blocks.LOG) {
                         //TODO check if valid tree
-                        PathEntity path = this.theEntity.getNavigator().getPathToXYZ(entityX + x + 1, entityY + y, entityZ + z);
+                        Path path = this.theEntity.getNavigator().getPathToXYZ(entityX + x + 1, entityY + y, entityZ + z);
                         if (path != null) {
                             this.shouldClimb = true;
                             this.thePath = path;
@@ -70,13 +72,13 @@ public class EntityAIEscapePlayer extends EntityAIBase {
         }
 
         //Just find a random path away instead
-        Vec3 vec3 = RandomPositionGenerator.findRandomTargetBlockAwayFrom(this.theEntity, 16, 7, Vec3.createVectorHelper(this.closestPlayer.posX, this.closestPlayer.posY, this.closestPlayer.posZ));
+        Vec3d vec3 = RandomPositionGenerator.findRandomTargetBlockAwayFrom(this.theEntity, 16, 7, new Vec3d(this.closestPlayer.posX, this.closestPlayer.posY, this.closestPlayer.posZ));
         if (vec3 == null) return false;
         else if (this.closestPlayer.getDistanceSq(vec3.xCoord, vec3.yCoord, vec3.zCoord) < this.closestPlayer.getDistanceSqToEntity(this.theEntity)) {
             return false;
         }
         else {
-            PathEntity path = this.theEntity.getNavigator().getPathToXYZ(vec3.xCoord, vec3.yCoord, vec3.zCoord);
+            Path path = this.theEntity.getNavigator().getPathToXYZ(vec3.xCoord, vec3.yCoord, vec3.zCoord);
             if (path != null) {
                 this.thePath = path;
                 return true;
@@ -116,8 +118,11 @@ public class EntityAIEscapePlayer extends EntityAIBase {
                 int entityY = MathHelper.floor_double(this.theEntity.posY);
                 int entityZ = MathHelper.floor_double(this.theEntity.posZ);
 
-                if (!(world.isAirBlock(entityX, entityY, entityZ) && world.getBlock(entityX, entityY - 1, entityZ) == Blocks.leaves) &&
-                        world.getBlock(entityX - 1, entityY, entityZ) == Blocks.log) {
+                BlockPos leavesPos = new BlockPos(entityX, entityY - 1, entityZ);
+                IBlockState leavesState = world.getBlockState(leavesPos);
+                BlockPos logPos = new BlockPos(entityX - 1, entityY, entityZ);
+                if (!(world.isAirBlock(theEntity.getPosition()) && leavesState.getBlock().isLeaves(leavesState, world, leavesPos))
+                        && world.getBlockState(logPos).getBlock().isWood(world, logPos)) {
                     this.isClimbing = true;
                     this.theEntity.noClip = true;
                     this.theEntity.motionY = 0F;

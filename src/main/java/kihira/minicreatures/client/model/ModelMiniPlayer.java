@@ -23,23 +23,22 @@ import net.minecraft.client.model.ModelBiped;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.passive.EntityTameable;
-import net.minecraft.init.Items;
-import net.minecraft.item.EnumAction;
-import net.minecraft.item.ItemBlock;
-import net.minecraft.util.MathHelper;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
 
 /**
  * The model for {@link kihira.minicreatures.common.entity.EntityMiniPlayer}
  */
+@SideOnly(Side.CLIENT)
 public class ModelMiniPlayer extends ModelBiped {
 
     public ModelMiniPlayer() {
-        this(0.0F);
+        this(0.0F, false);
     }
 
-    public ModelMiniPlayer(float par1) {
-        super(par1, 0.0F, 64, 32);
+    public ModelMiniPlayer(float modelSize, boolean smallTexture) {
+        super(modelSize, 0.0F, 64, smallTexture ? 32 : 64);
 
         this.bipedBody.rotateAngleX = 0.0F;
         this.bipedRightLeg.rotationPointZ = 0.1F;
@@ -108,15 +107,16 @@ public class ModelMiniPlayer extends ModelBiped {
 
         if (this.isRiding) {
             GL11.glTranslatef(0F, 0.25F, 0F);
-            if ((miniPlayer.ridingEntity instanceof EntityTameable) && (((EntityTameable) miniPlayer.ridingEntity).isSitting())) GL11.glTranslatef(0F, 0.1F, 0F);
+            if ((miniPlayer.getRidingEntity() instanceof EntityTameable) && (((EntityTameable) miniPlayer.getRidingEntity()).isSitting())) GL11.glTranslatef(0F, 0.1F, 0F);
         }
 
-        if (this.heldItemRight != 0 && (miniPlayer.getHeldItem().getItem() instanceof ItemBlock)) {
+        // todo port to 1.9.4
+/*        if (this.heldItemRight != 0 && (miniPlayer.getHeldItem().getItem() instanceof ItemBlock)) {
             this.bipedLeftArm.rotateAngleX = -0.8F;
             this.bipedLeftArm.rotateAngleZ = -0.05F;
             this.bipedRightArm.rotateAngleX = -0.8F;
             this.bipedRightArm.rotateAngleZ = 0.05F;
-        }
+        }*/
 
         if (miniPlayer.isSitting()) {
             GL11.glTranslatef(0F, 0.3F, 0F);
@@ -128,9 +128,10 @@ public class ModelMiniPlayer extends ModelBiped {
             this.bipedLeftLeg.rotateAngleY = -((float)Math.PI / 10F);
         }
 
-        if (miniPlayer.getItemInUseDuration() > 0 && miniPlayer.getHeldItem() != null) {
+        // todo port to 1.9.4
+/*        if (miniPlayer.getItemInUseDuration() > 0 && miniPlayer.getHeldItem() != null) {
             EnumAction action = miniPlayer.getHeldItem().getItemUseAction();
-            if (action == EnumAction.drink || action == EnumAction.eat) {
+            if (action == EnumAction.DRINK || action == EnumAction.EAT) {
                 float itemUseCount = (float)miniPlayer.getItemUseCount() + 1F;
                 float timeLeft = 1F - itemUseCount / (float) miniPlayer.getHeldItem().getMaxItemUseDuration();
                 float angle = (float) (1F - Math.pow(1F - timeLeft, 9));
@@ -138,7 +139,7 @@ public class ModelMiniPlayer extends ModelBiped {
                 bipedRightArm.rotateAngleY = -angle * 0.3F;
                 bipedRightArm.rotateAngleZ = angle * 0.4F;
             }
-        }
+        }*/
     }
 
     /**
@@ -151,7 +152,7 @@ public class ModelMiniPlayer extends ModelBiped {
      */
     public void setLivingAnimations(EntityLivingBase entityLivingBase, float par2, float par3, float par4) {
         EntityMiniPlayer miniPlayer = (EntityMiniPlayer) entityLivingBase;
-        this.aimedBow = !miniPlayer.isSitting() && (miniPlayer.getHeldItem() != null) && (miniPlayer.getHeldItem().getItem() == Items.bow);
+        //todo this.aimedBow = !miniPlayer.isSitting() && (miniPlayer.getHeldItem() != null) && (miniPlayer.getHeldItem().getItem() == Items.BOW);
         super.setLivingAnimations(entityLivingBase, par2, par3, par4);
     }
 }
