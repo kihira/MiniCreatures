@@ -14,6 +14,7 @@
 
 package kihira.minicreatures.common.entity;
 
+import net.minecraft.block.BlockAir;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIBase;
@@ -36,13 +37,16 @@ public class EntityMiniShark extends EntityWaterMob {
 
     public EntityMiniShark(World par1World) {
         super(par1World);
-        this.setSize(0.8F, 0.3F);
+        setSize(0.5F, 0.3F);
+        stepHeight = 0F;
     }
 
     @Override
     protected void applyEntityAttributes() {
         super.applyEntityAttributes();
+        this.getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(0.75D);
         this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(10D);
+        this.getEntityAttribute(SharedMonsterAttributes.knockbackResistance).setBaseValue(0.25D);
     }
 
     @Override
@@ -65,29 +69,33 @@ public class EntityMiniShark extends EntityWaterMob {
     @SuppressWarnings("SuspiciousNameCombination")
     public void onLivingUpdate() {
         super.onLivingUpdate();
-        if (!worldObj.isRemote) {
             if (attackTick > 0) attackTick--;
             if (healCooldown > 0) healCooldown--;
 
             if (this.isInWater()) {
-                float verticalSpeedModifier = 0.75F;
                 double xDist = this.waypointX - this.posX;
                 double yDist = this.waypointY - this.posY;
                 double zDist = this.waypointZ - this.posZ;
                 double d3 = xDist * xDist + yDist * yDist + zDist * zDist;
-                d3 = Math.sqrt(d3);
+                //Make sure d is greater then 0 otherwise we'll end up dividing by 0
+                if (d3 > 0) {
+                    d3 = Math.sqrt(d3);
 
-                this.motionX += xDist / d3 * (this.targetedEntity != null ? 0.02D : 0.01D);
-                this.motionY += yDist / d3 * (this.targetedEntity != null ? 0.02D : 0.01D) * verticalSpeedModifier;
-                this.motionZ += zDist / d3 * (this.targetedEntity != null ? 0.02D : 0.01D);
+                    if (!worldObj.isRemote) {
+                        double speed = (this.targetedEntity != null ? 0.02D : 0.01D) * getEntityAttribute(SharedMonsterAttributes.movementSpeed).getAttributeValue();
+                        this.motionX += xDist / d3 * speed;
+                        this.motionY += yDist / d3 * speed * 1.5f;
+                        this.motionZ += zDist / d3 * speed;
+                    }
+                }
             }
             else {
-                this.motionX *= 0.9D;
-                this.motionY -= 0.08D;
-                this.motionY *= 0.9800000190734863D;
-                this.motionZ *= 0.9D;
-/*                System.out.println((int) Math.floor(posX) + " " + (int) Math.floor(posY) + " " + (int) Math.floor(posZ));
-                System.out.println(worldObj.getBlock((int) Math.floor(posX), (int) Math.floor(posY), (int) Math.floor(posZ)).getUnlocalizedName());*/
+                if (!worldObj.isRemote) {
+                    this.motionX = 0D;
+                    this.motionY -= 0.08D;
+                    this.motionY *= 0.9800000190734863D;
+                    this.motionZ = 0D;
+                }
             }
 
             if (this.targetedEntity != null) {
@@ -103,7 +111,6 @@ public class EntityMiniShark extends EntityWaterMob {
             else {
                 this.renderYawOffset = this.rotationYaw = -((float)Math.atan2(this.motionX, this.motionZ)) * 180.0F / (float)Math.PI;
             }
-        }
     }
 
     // todo port to 1.9.4
@@ -122,12 +129,12 @@ public class EntityMiniShark extends EntityWaterMob {
             if (this.targetedEntity == null && ((d3 < 1D || d3 > 3600D) || !isCourseTraversable(d3))) {
                 for (int i = 0; i < 3; i++) {
                     double targetX = Math.floor(posX + MathHelper.getRandomDoubleInRange(rand, -8F, 8F));
-                    double targetY = Math.floor(posY + MathHelper.getRandomDoubleInRange(rand, -1F, 1F));
+                    double targetY = Math.floor(posY + MathHelper.getRandomDoubleInRange(rand, -1F, 2F));
                     double targetZ = Math.floor(posZ + MathHelper.getRandomDoubleInRange(rand, -8F, 8F));
 
                     if ((worldObj.getBlock((int) targetX, (int) targetY, (int) targetZ).getMaterial() == Material.water) && isCourseTraversable(MathHelper.sqrt_double(d3))) {
                         waypointX = targetX;
-                        waypointY = targetY + height;
+                        waypointY = targetY + (worldObj.getBlock((int) targetX, (int) targetY + 1, (int) targetZ) instanceof BlockAir ? height : 0);
                         waypointZ = targetZ;
                         break;
                     }
@@ -178,31 +185,15 @@ public class EntityMiniShark extends EntityWaterMob {
 
     @Override
     public void moveEntityWithHeading(float p_70612_1_, float p_70612_2_) {
-        if (isInWater()) {
-            this.motionX *= 0.95F;
-            this.motionY *= 0.95F;
-            this.motionZ *= 0.95F;
-        }
+        if (waypointY > posY && waypointY - posY > 1) motionY += 0.05f;
         this.moveEntity(this.motionX, this.motionY, this.motionZ);
-
-        this.prevLimbSwingAmount = this.limbSwingAmount;
-        double xDiff = this.posX - this.prevPosX;
-        double zDiff = this.posZ - this.prevPosZ;
-        float limbSwing = MathHelper.sqrt_double(xDiff * xDiff + zDiff * zDiff) * 4.0F;
-
-        if (limbSwing > 1.0F) {
-            limbSwing = 1.0F;
-        }
-
-        this.limbSwingAmount += (limbSwing - this.limbSwingAmount) * 0.4F;
-        this.limbSwing += this.limbSwingAmount;
     }
 
     @Override
     public boolean isInWater() {
         // todo port to 1.9.4
         // this.inWater = this.worldObj.getBlock(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.getEntityBoundingBox().minY + 0.25), MathHelper.floor_double(this.posZ)).getMaterial() == Material.WATER;
-        return this.inWater;
+        this.inWater = this.worldObj.getBlock(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.boundingBox.minY + 0.25), MathHelper.floor_double(this.posZ)).getMaterial() == Material.water;
     }
 
     @Override
