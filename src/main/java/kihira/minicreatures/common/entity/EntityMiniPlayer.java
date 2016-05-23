@@ -47,7 +47,6 @@ import net.minecraft.init.SoundEvents;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.InventoryBasic;
-import net.minecraft.item.EnumAction;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -60,7 +59,6 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
-import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -92,9 +90,6 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
     public String statMessage = "";
     @SideOnly(Side.CLIENT)
     public int statMessageTime = 60;
-
-    private ItemStack itemInUse;
-    private int itemUseCount = -1;
 
     public EntityMiniPlayer(World par1World) {
         super(par1World);
@@ -176,7 +171,7 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
 
     @Override
     public boolean processInteract(EntityPlayer player, EnumHand hand, @Nullable ItemStack stack) {
-        if (!this.worldObj.isRemote) {
+        if (!this.worldObj.isRemote && hand == EnumHand.MAIN_HAND) { // todo hand check is fix to prevent double activation
             //MiniCreatures.proxy.simpleNetworkWrapper.sendTo(new ProspectBlocksMessage(this.getEntityId(), 5, 10), (EntityPlayerMP) this.getOwner());
             //Allow taming in creative mode without items
             if (!this.isTamed() && player.capabilities.isCreativeMode) {
@@ -245,12 +240,14 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
                         this.setAttackTarget(null);
                     }
                     else {
-                        this.aiSit.setSitting(!this.isSitting());
+                        setActiveHand(EnumHand.MAIN_HAND);
+                        //onItemUseFinish();
+/*                        this.aiSit.setSitting(!this.isSitting());
                         this.setSitting(!this.isSitting());
                         this.isJumping = false;
                         this.getNavigator().clearPathEntity();
                         this.setRevengeTarget(null);
-                        this.setAttackTarget(null);
+                        this.setAttackTarget(null);*/
                     }
                 }
             }
@@ -272,7 +269,7 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
         super.onUpdate();
 
         //Use item
-        if (itemInUse == getHeldItem(EnumHand.MAIN_HAND)) {
+/*        if (activeItemStack != null) {
             itemUseCount = ForgeEventFactory.onItemUseTick(this, getHeldItem(EnumHand.MAIN_HAND), itemUseCount);
             if (itemUseCount <= 0) {
                 onItemUseFinish();
@@ -293,7 +290,7 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
         else {
             itemInUse = null;
             itemUseCount = 0;
-        }
+        }*/
     }
 
     @Override
@@ -411,69 +408,6 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
         int id = this.getDataManager().get(ROLE);
         if (id <= EnumRole.values().length) return EnumRole.values()[id];
         else return EnumRole.NONE;
-    }
-
-    public void setItemInUse(ItemStack itemStack, int itemUseCount) {
-        if (itemStack != this.itemInUse) {
-            itemUseCount = ForgeEventFactory.onItemUseStart(this, itemStack, itemUseCount);
-            if (itemUseCount <= 0) return;
-            this.itemInUse = itemStack;
-            this.itemUseCount = itemUseCount;
-
-            if (!this.worldObj.isRemote) {
-                this.setActiveHand(EnumHand.MAIN_HAND);
-                getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).applyModifier(itemUseSlowdown);
-            }
-        }
-    }
-
-    // todo this overrides a 1.9 method, no longer needed?
-/*    protected void onItemUseFinish() {
-        if (this.itemInUse != null) {
-            int i = this.itemInUse.stackSize;
-            ItemStack itemstack = this.itemInUse.onFoodEaten(worldObj, fakePlayer);
-            itemstack = ForgeEventFactory.onItemUseFinish(fakePlayer, itemInUse, itemUseCount, itemstack);
-
-            if (itemstack != this.itemInUse || itemstack != null && itemstack.stackSize != i) {
-                setCurrentItemOrArmor(0, itemstack);
-
-                if (itemstack != null && itemstack.stackSize == 0) {
-                    setCurrentItemOrArmor(0, null);
-                }
-            }
-
-            this.clearItemInUse();
-        }
-    }*/
-
-    @SideOnly(Side.CLIENT)
-    public int getItemUseCount() {
-        return itemUseCount;
-    }
-
-    @SideOnly(Side.CLIENT)
-    public int getItemInUseDuration() {
-        return itemInUse != null ? getActiveItemStack().getMaxItemUseDuration() - itemUseCount : 0; // todo use getActiveItemStack instead of getHeldItem everywhere?
-    }
-
-    public void stopUsingItem() {
-        if (itemInUse != null) {
-            if (!ForgeEventFactory.onUseItemStop(this, itemInUse, itemUseCount)) {
-                itemInUse.onPlayerStoppedUsing(worldObj, this, itemUseCount);
-            }
-        }
-
-        this.clearItemInUse();
-    }
-
-    public void clearItemInUse() {
-        this.itemInUse = null;
-        this.itemUseCount = 0;
-
-        if (!this.worldObj.isRemote) {
-            this.onItemUseFinish();
-            getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).removeModifier(itemUseSlowdown);
-        }
     }
 
     @Override

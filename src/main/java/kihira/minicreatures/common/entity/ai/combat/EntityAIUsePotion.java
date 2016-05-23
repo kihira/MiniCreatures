@@ -9,10 +9,8 @@
 package kihira.minicreatures.common.entity.ai.combat;
 
 import kihira.foxlib.common.EntityHelper;
-import kihira.minicreatures.MiniCreatures;
 import kihira.minicreatures.common.entity.EntityMiniPlayer;
 import kihira.minicreatures.common.entity.ai.IRole;
-import kihira.minicreatures.common.network.ItemUseMessage;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.projectile.EntityPotion;
@@ -26,7 +24,6 @@ import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.potion.PotionUtils;
 import net.minecraft.util.EnumHand;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.Arrays;
@@ -91,9 +88,7 @@ public class EntityAIUsePotion extends EntityAIBase implements IRole {
                     else miniPlayer.setCarrying(heldItemStack);
                 }
                 else {
-                    miniPlayer.setItemInUse(heldItemStack, heldItemStack.getMaxItemUseDuration());
-                    MiniCreatures.proxy.simpleNetworkWrapper.sendToAllAround(new ItemUseMessage(miniPlayer.getEntityId(), heldItemStack.getMaxItemUseDuration()),
-                            new NetworkRegistry.TargetPoint(miniPlayer.dimension, miniPlayer.posX, miniPlayer.posY, miniPlayer.posZ, 64));
+                    miniPlayer.setActiveHand(EnumHand.MAIN_HAND);
                 }
                 ticksToNextPotion = heldItemStack.getMaxItemUseDuration() + cooldown;
                 return;
@@ -157,7 +152,7 @@ public class EntityAIUsePotion extends EntityAIBase implements IRole {
                         // todo support off hand
                         inventory.setInventorySlotContents(i, miniPlayer.getHeldItem(EnumHand.MAIN_HAND)); //Put away current item
                         miniPlayer.setHeldItem(EnumHand.MAIN_HAND, itemStack);
-                        miniPlayer.setItemInUse(itemStack, itemStack.getMaxItemUseDuration());
+                        miniPlayer.setActiveHand(EnumHand.MAIN_HAND);
                         flag = true;
                         break;
                     }

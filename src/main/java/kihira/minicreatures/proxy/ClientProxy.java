@@ -20,7 +20,6 @@ import kihira.minicreatures.client.render.RenderMiniPlayer;
 import kihira.minicreatures.client.render.RenderMiniShark;
 import kihira.minicreatures.client.render.RenderTRex;
 import kihira.minicreatures.common.entity.*;
-import kihira.minicreatures.common.network.ItemUseMessage;
 import kihira.minicreatures.common.network.PersonalityMessage;
 import kihira.minicreatures.common.network.ProspectBlocksMessage;
 import net.minecraft.util.ResourceLocation;
@@ -71,7 +70,6 @@ public class ClientProxy extends CommonProxy {
     public void registerMessages() {
         super.registerMessages();
         this.simpleNetworkWrapper.registerMessage(PersonalityMessage.PersonalityMessageHandler.class, PersonalityMessage.class, 0, Side.CLIENT);
-        this.simpleNetworkWrapper.registerMessage(ItemUseMessage.ItemUseMessageHandler.class, ItemUseMessage.class, 4, Side.CLIENT);
         this.simpleNetworkWrapper.registerMessage(ProspectBlocksMessage.ProspectBlocksMessageHandler.class, ProspectBlocksMessage.class, 5, Side.CLIENT);
     }
 }

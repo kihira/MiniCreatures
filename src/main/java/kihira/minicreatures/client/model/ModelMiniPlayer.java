@@ -20,10 +20,13 @@ import kihira.minicreatures.common.customizer.ICustomizerPart;
 import kihira.minicreatures.common.entity.EntityMiniPlayer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBiped;
+import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.EntityTameable;
+import net.minecraft.item.EnumAction;
 import net.minecraft.util.EnumHandSide;
+import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
@@ -95,18 +98,18 @@ public class ModelMiniPlayer extends ModelBiped {
             this.bipedLeftLeg.rotateAngleY = -((float)Math.PI / 10F);
         }
 
-        // todo port to 1.9.4
-/*        if (miniPlayer.getItemInUseDuration() > 0 && miniPlayer.getHeldItem() != null) {
-            EnumAction action = miniPlayer.getHeldItem().getItemUseAction();
+        if (miniPlayer.getItemInUseCount() > 0) {
+            EnumAction action = miniPlayer.getActiveItemStack().getItemUseAction();
             if (action == EnumAction.DRINK || action == EnumAction.EAT) {
-                float itemUseCount = (float)miniPlayer.getItemUseCount() + 1F;
-                float timeLeft = 1F - itemUseCount / (float) miniPlayer.getHeldItem().getMaxItemUseDuration();
+                float itemUseCount = (float) miniPlayer.getItemInUseCount() + 1F;
+                float timeLeft = 1F - itemUseCount / (float) miniPlayer.getActiveItemStack().getMaxItemUseDuration();
                 float angle = (float) (1F - Math.pow(1F - timeLeft, 9));
-                bipedRightArm.rotateAngleX += (-angle * (miniPlayer.isSitting() ? 0.6F : 1.2F)) + MathHelper.abs(MathHelper.cos(itemUseCount / 4F * (float) Math.PI) * 0.1F) * (timeLeft > 0.2F ? 1F : 0F);
-                bipedRightArm.rotateAngleY = -angle * 0.3F;
-                bipedRightArm.rotateAngleZ = angle * 0.4F;
+                ModelRenderer arm = getArmForSide(miniPlayer.getPrimaryHand());
+                arm.rotateAngleX += (-angle * (miniPlayer.isSitting() ? 0.6F : 1.2F)) + MathHelper.abs(MathHelper.cos(itemUseCount / 4F * (float) Math.PI) * 0.1F) * (timeLeft > 0.2F ? 1F : 0F);
+                arm.rotateAngleY = -angle * 0.3F;
+                arm.rotateAngleZ = angle * 0.4F;
             }
-        }*/
+        }
     }
 
     @Override
