@@ -266,30 +266,6 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
     @Override
     public void onUpdate() {
         super.onUpdate();
-
-        //Use item
-/*        if (activeItemStack != null) {
-            itemUseCount = ForgeEventFactory.onItemUseTick(this, getHeldItem(EnumHand.MAIN_HAND), itemUseCount);
-            if (itemUseCount <= 0) {
-                onItemUseFinish();
-            }
-            else {
-                getHeldItem(EnumHand.MAIN_HAND).getItem().onUsingTick(getHeldItem(EnumHand.MAIN_HAND), this, itemUseCount);
-                if (itemUseCount % 4 == 0) {
-                    //Drink
-                    if (getHeldItem(EnumHand.MAIN_HAND).getItemUseAction() == EnumAction.DRINK) {
-                        playSound(SoundEvents.ENTITY_GENERIC_DRINK, 0.3F, this.worldObj.rand.nextFloat() * 0.1F + 0.9F);
-                    }
-                }
-                if (itemUseCount-- == 0 && !this.worldObj.isRemote) {
-                    onItemUseFinish();
-                }
-            }
-        }
-        else {
-            itemInUse = null;
-            itemUseCount = 0;
-        }*/
     }
 
     @Override

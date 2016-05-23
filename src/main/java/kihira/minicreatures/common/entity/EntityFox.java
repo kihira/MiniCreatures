@@ -17,7 +17,9 @@ package kihira.minicreatures.common.entity;
 import kihira.minicreatures.common.entity.ai.EntityAIHappy;
 import kihira.minicreatures.common.entity.ai.EntityAIHeal;
 import net.minecraft.block.Block;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityAgeable;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.*;
 import net.minecraft.entity.passive.EntityChicken;
@@ -36,6 +38,7 @@ import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
@@ -123,6 +126,26 @@ public class EntityFox extends EntityMiniCreature implements IMiniCreature {
     @Override
     public boolean isBreedingItem(ItemStack itemStack) {
         return itemStack != null && (itemStack.getItem() instanceof ItemFood);
+    }
+
+    @Override
+    public double getMountedYOffset() {
+        return isSitting() ? -0.3d : -0.2d ;
+    }
+
+    // todo mini player rotations are being very very weird. This method probably isn't the place to solve it, must be caused by something
+    @Override
+    public void updatePassenger(Entity passenger) {
+        if (this.isPassenger(passenger)) {
+            float sin = MathHelper.sin(this.renderYawOffset * 0.017453292F);
+            float cos = MathHelper.cos(this.renderYawOffset * 0.017453292F);
+            float offset = 0.1F;
+            passenger.setPosition(this.posX + (double)(offset * sin), this.posY + this.getMountedYOffset() + passenger.getYOffset(), this.posZ - (double)(offset * cos));
+
+            if (passenger instanceof EntityLivingBase) {
+                ((EntityLivingBase)passenger).renderYawOffset = this.renderYawOffset;
+            }
+        }
     }
 
     @Override

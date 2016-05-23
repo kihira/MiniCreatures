@@ -150,6 +150,16 @@ public abstract class EntityMiniCreature extends EntityTameable implements IMini
         return super.processInteract(player, hand, stack);
     }
 
+/*    @Override
+    public boolean canBeLeashedTo(EntityPlayer player) {
+        for (EntityLiving entity : this.worldObj.getEntitiesWithinAABB(EntityLiving.class, this.getEntityBoundingBox().expandXyz(10.0D))) {
+            if (entity.getLeashed() && entity.getLeashedToEntity() == player) {
+                return false;
+            }
+        }
+        return super.canBeLeashedTo(player);
+    }*/
+
     @Override
     public void onDeath(DamageSource damageSource) {
         super.onDeath(damageSource);

@@ -25,13 +25,11 @@ import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.item.EnumAction;
 import net.minecraft.util.EnumHandSide;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import org.lwjgl.opengl.GL11;
 
 /**
  * The model for {@link kihira.minicreatures.common.entity.EntityMiniPlayer}
@@ -66,13 +64,6 @@ public class ModelMiniPlayer extends ModelBiped {
     @Override
     public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entity) {
         super.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scaleFactor, entity);
-
-        EntityMiniPlayer miniPlayer = (EntityMiniPlayer) entity;
-
-        if (this.isRiding) {
-            GL11.glTranslatef(0F, 0.25F, 0F);
-            if ((miniPlayer.getRidingEntity() instanceof EntityTameable) && (((EntityTameable) miniPlayer.getRidingEntity()).isSitting())) GL11.glTranslatef(0F, 0.1F, 0F);
-        }
 
         // todo consider how we want mini players to hold blocks. endermen style if interactable? Need to override LayerHeldItem if thats the case
 /*        if (this.rightArmPose == ArmPose.ITEM && miniPlayer.getHeldItemMainhand() != null && miniPlayer.getHeldItemMainhand().getItem() instanceof ItemBlock) {

@@ -115,9 +115,9 @@ public class EventHandler {
     }
 
     @SubscribeEvent
-    public void onInteract(PlayerInteractEvent.EntityInteract event) {
+    public void onInteract(PlayerInteractEvent.EntityInteractSpecific event) {
         //We do this render here as if the player right clicks with a lead, entity.interact never fires
-        if (event.getEntityPlayer().getActiveItemStack() != null && event.getEntityPlayer().getActiveItemStack().getItem() == Items.LEAD) {
+        if (event.getEntityPlayer().getHeldItemMainhand() != null && event.getEntityPlayer().getHeldItemMainhand().getItem() == Items.LEAD) {
             //Mount the fox
             if (event.getTarget() instanceof EntityFox) {
                 EntityFox entityFox = (EntityFox) event.getTarget();
