@@ -65,6 +65,7 @@ public class EntityFox extends EntityMiniCreature implements IMiniCreature {
         super.applyEntityAttributes();
         this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(10.0D);
         this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.30000001192092896D);
+        this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(2d);
     }
 
     @Override
@@ -154,6 +155,12 @@ public class EntityFox extends EntityMiniCreature implements IMiniCreature {
     }
 
     @Override
+    public void setTamed(boolean tamed) {
+        super.setTamed(tamed);
+        this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(4.0D);
+    }
+
+    @Override
     protected void playStepSound(BlockPos pos, Block blockIn) {
         this.playSound(SoundEvents.ENTITY_WOLF_STEP, 0.15F, 1.0F);
     }
@@ -209,10 +216,4 @@ public class EntityFox extends EntityMiniCreature implements IMiniCreature {
         }
         return entityFox;
     }
-/*
-    @Override
-    public boolean attackEntityAsMob(Entity par1Entity) {
-        int i = this.isTamed() ? 4 : 2;
-        return par1Entity.attackEntityFrom(DamageSource.causeMobDamage(this), (float)i);
-    }*/
 }

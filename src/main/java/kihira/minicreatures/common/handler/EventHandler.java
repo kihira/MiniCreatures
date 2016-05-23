@@ -122,8 +122,8 @@ public class EventHandler {
             if (event.getTarget() instanceof EntityFox) {
                 EntityFox entityFox = (EntityFox) event.getTarget();
                 if (!entityFox.isBeingRidden() && !entityFox.isRiding()) {
-                    double d0 = 7.0D;
-                    List list = entityFox.worldObj.getEntitiesWithinAABB(EntityMiniPlayer.class, new AxisAlignedBB(entityFox.posX - d0, entityFox.posY - d0, entityFox.posZ - d0, entityFox.posX + d0, entityFox.posY + d0, entityFox.posZ + d0));
+                    double dist = 7.0D;
+                    List list = entityFox.worldObj.getEntitiesWithinAABB(EntityMiniPlayer.class, entityFox.getEntityBoundingBox().expandXyz(dist));
 
                     for (Object aList : list) {
                         EntityLiving entityliving = (EntityLiving) aList;

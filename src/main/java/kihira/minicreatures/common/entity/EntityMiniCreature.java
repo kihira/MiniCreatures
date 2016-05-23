@@ -1,6 +1,7 @@
 package kihira.minicreatures.common.entity;
 
 import kihira.minicreatures.MiniCreatures;
+import kihira.minicreatures.common.Utils;
 import kihira.minicreatures.common.entity.ai.EnumRole;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
@@ -52,6 +53,12 @@ public abstract class EntityMiniCreature extends EntityTameable implements IMini
     }
 
     @Override
+    protected void applyEntityAttributes() {
+        super.applyEntityAttributes();
+        this.getAttributeMap().registerAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(3d);
+    }
+
+    @Override
     public void writeEntityToNBT(NBTTagCompound tag) {
         super.writeEntityToNBT(tag);
 
@@ -90,9 +97,9 @@ public abstract class EntityMiniCreature extends EntityTameable implements IMini
                 // Heal
                 if (stack.getItem() instanceof ItemFood) {
                     ItemFood itemfood = (ItemFood)stack.getItem();
-                    if (itemfood.isWolfsFavoriteMeat() && this.getHealth() < this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).getAttributeValue()) {
+                    if (itemfood.isWolfsFavoriteMeat() && this.getHealth() < this.getMaxHealth()) {
                         this.heal((float) itemfood.getHealAmount(stack));
-                        if (!player.capabilities.isCreativeMode && --stack.stackSize <= 0) player.inventory.setInventorySlotContents(player.inventory.currentItem, null);
+                        Utils.decreaseCurrentStack(player, stack);
                         return true;
                     }
                 }
@@ -100,7 +107,7 @@ public abstract class EntityMiniCreature extends EntityTameable implements IMini
                 else if (Block.getBlockFromItem(stack.getItem()) == Blocks.CHEST && !this.hasChest()) {
                     this.setHasChest(true);
                     this.playSound(SoundEvents.ENTITY_CHICKEN_EGG, 1.0F, (this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F + 1.0F);
-                    if (!player.capabilities.isCreativeMode && --stack.stackSize <= 0) player.inventory.setInventorySlotContents(player.inventory.currentItem, null);
+                    Utils.decreaseCurrentStack(player, stack);
                     return true;
                 }
                 // Dye collar
@@ -108,7 +115,7 @@ public abstract class EntityMiniCreature extends EntityTameable implements IMini
                     EnumDyeColor i = EnumDyeColor.byDyeDamage(stack.getMetadata());
                     if (i != this.getCollarColour()) {
                         this.setCollarColour(i);
-                        if (!player.capabilities.isCreativeMode && --stack.stackSize <= 0) player.inventory.setInventorySlotContents(player.inventory.currentItem, null);
+                        Utils.decreaseCurrentStack(player, stack);
                         return true;
                     }
                 }
@@ -127,8 +134,7 @@ public abstract class EntityMiniCreature extends EntityTameable implements IMini
             }
         }
         else if (stack != null && stack.getItem() == tamingItem) {
-            if (!player.capabilities.isCreativeMode) --stack.stackSize;
-            if (stack.stackSize <= 0) player.inventory.setInventorySlotContents(player.inventory.currentItem, null);
+            Utils.decreaseCurrentStack(player, stack);
             if (!this.worldObj.isRemote) {
                 if (this.rand.nextInt(3) == 0) {
                     this.setTamed(true);
@@ -136,7 +142,7 @@ public abstract class EntityMiniCreature extends EntityTameable implements IMini
                     this.setAttackTarget(null);
                     this.aiSit.setSitting(true);
                     this.setHealth(20.0F);
-                    this.setOwnerId(player.getUniqueID());
+                    this.setOwnerId(player.getPersistentID());
                     this.playTameEffect(true);
                     this.worldObj.setEntityState(this, (byte)7);
                 }
@@ -149,16 +155,6 @@ public abstract class EntityMiniCreature extends EntityTameable implements IMini
         }
         return super.processInteract(player, hand, stack);
     }
-
-/*    @Override
-    public boolean canBeLeashedTo(EntityPlayer player) {
-        for (EntityLiving entity : this.worldObj.getEntitiesWithinAABB(EntityLiving.class, this.getEntityBoundingBox().expandXyz(10.0D))) {
-            if (entity.getLeashed() && entity.getLeashedToEntity() == player) {
-                return false;
-            }
-        }
-        return super.canBeLeashedTo(player);
-    }*/
 
     @Override
     public void onDeath(DamageSource damageSource) {
@@ -182,10 +178,11 @@ public abstract class EntityMiniCreature extends EntityTameable implements IMini
         }
     }
     @Override
-    public boolean attackEntityAsMob(Entity par1Entity) {
-        // todo use attributes
-        int i = this.isTamed() ? 3 : 2;
-        return par1Entity.attackEntityFrom(DamageSource.causeMobDamage(this), (float) i);
+    public boolean attackEntityAsMob(Entity target) {
+        boolean damage = target.attackEntityFrom(DamageSource.causeMobDamage(this), (float)(this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).getAttributeValue()));
+        if (damage) this.applyEnchantments(this, target);
+
+        return damage;
     }
 
     @Override

@@ -18,6 +18,7 @@ import com.google.common.base.Strings;
 import com.mojang.realmsclient.gui.ChatFormatting;
 import kihira.foxlib.common.gson.GsonHelper;
 import kihira.minicreatures.MiniCreatures;
+import kihira.minicreatures.common.Utils;
 import kihira.minicreatures.common.customizer.EnumPartCategory;
 import kihira.minicreatures.common.entity.ai.EntityAIHeal;
 import kihira.minicreatures.common.entity.ai.EntityAIProspect;
@@ -49,6 +50,7 @@ import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.InventoryBasic;
 import net.minecraft.item.ItemArmor;
+import net.minecraft.item.ItemAxe;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -94,7 +96,7 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
 
     public EntityMiniPlayer(World par1World) {
         super(par1World);
-        this.setSize(0.4F, 1F);
+        this.setSize(0.3F, 1.1F);
         this.setTamed(false);
         this.setCombatAI();
     }
@@ -188,7 +190,7 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
                         EntityEquipmentSlot slot = EntityLiving.getSlotForItemStack(stack);
                         if (this.getItemStackFromSlot(slot) == null) {
                             this.setItemStackToSlot(slot, stack.copy());
-                            if (!player.capabilities.isCreativeMode && --stack.stackSize <= 0) player.inventory.setInventorySlotContents(player.inventory.currentItem, null);
+                            Utils.decreaseCurrentStack(player, stack);
                         }
                         else {
                             EntityItem entityItem = new EntityItem(this.worldObj, this.posX, this.posY, this.posZ, this.getItemStackFromSlot(slot));
@@ -222,7 +224,7 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
                         newItemStack.stackSize = 1;
                         this.setCarrying(newItemStack);
                         playSound(SoundEvents.ENTITY_CHICKEN_EGG, 1.0F, (this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F + 1.0F);
-                        if (!player.capabilities.isCreativeMode && --stack.stackSize <= 0) player.inventory.setInventorySlotContents(player.inventory.currentItem, null);
+                        Utils.decreaseCurrentStack(player, stack);
                     }
                 }
                 //If entity is holding something and player isn't, open GUI
@@ -264,16 +266,21 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
     }
 
     @Override
-    public void onUpdate() {
-        super.onUpdate();
-    }
-
-    @Override
     public void onLivingUpdate() {
         super.onLivingUpdate();
         this.updateArmSwingProgress();
         if (this.worldObj.isRemote && this.statMessageTime < 60) {
             this.statMessageTime++;
+        }
+    }
+
+    public void notifyDataManagerChange(DataParameter<?> key) {
+        super.notifyDataManagerChange(key);
+
+        if (EntityTameable.TAMED.equals(key)) {
+            if (this.isSitting()) this.setSize(0.3f, 0.85f);
+            else setSize(0.3f, 1.1f);
+            setScale(1f);
         }
     }
 
@@ -300,18 +307,18 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
     @Override
     public boolean attackEntityAsMob(Entity target) {
         float attackDamage = (float)this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).getAttributeValue();
-        int knockback = 0;
+        float knockback = 0;
 
         if (target instanceof EntityLivingBase) {
             attackDamage += EnchantmentHelper.getModifierForCreature(this.getHeldItemMainhand(), ((EntityLivingBase)target).getCreatureAttribute());
             knockback += EnchantmentHelper.getKnockbackModifier(this);
         }
 
-        boolean flag = target.attackEntityFrom(DamageSource.causeMobDamage(this), attackDamage);
+        boolean damaged = target.attackEntityFrom(DamageSource.causeMobDamage(this), attackDamage);
 
-        if (flag) {
+        if (damaged) {
             if (knockback > 0) {
-                target.addVelocity((double)(-MathHelper.sin(this.rotationYaw * (float) Math.PI / 180.0F) * (float)knockback * 0.5F), 0.1D, (double)(MathHelper.cos(this.rotationYaw * (float)Math.PI / 180.0F) * (float)knockback * 0.5F));
+                ((EntityLivingBase)target).knockBack(this, knockback * 0.5F, MathHelper.sin(this.rotationYaw * 0.017453292F), -MathHelper.cos(this.rotationYaw * 0.017453292F));
                 this.motionX *= 0.6D;
                 this.motionZ *= 0.6D;
             }
@@ -319,13 +326,25 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
             int fire = EnchantmentHelper.getFireAspectModifier(this);
             if (fire > 0) target.setFire(fire * 4);
 
-            if (target instanceof EntityLivingBase) {
-                EnchantmentHelper.applyThornEnchantments((EntityLivingBase)target, this);
-                EnchantmentHelper.applyArthropodEnchantments(this, target);
+            if (target instanceof EntityPlayer) {
+                EntityPlayer entityplayer = (EntityPlayer)target;
+                ItemStack itemMainhand = this.getHeldItemMainhand();
+                ItemStack itemActive = entityplayer.isHandActive() ? entityplayer.getActiveItemStack() : null;
+
+                if (itemMainhand != null && itemActive != null && itemMainhand.getItem() instanceof ItemAxe && itemActive.getItem() == Items.SHIELD) {
+                    float shieldChance = 0.25F + (float)EnchantmentHelper.getEfficiencyModifier(this) * 0.05F;
+
+                    if (this.rand.nextFloat() < shieldChance) {
+                        entityplayer.getCooldownTracker().setCooldown(Items.SHIELD, 100);
+                        this.worldObj.setEntityState(entityplayer, (byte)30);
+                    }
+                }
             }
+
+            this.applyEnchantments(this, target);
         }
 
-        return flag;
+        return damaged;
     }
 
     @Override
