@@ -74,7 +74,7 @@ public class GuiCustomizer extends GuiScreen {
 
         //Load current part data.
         this.currentEquippedParts = this.miniCreature.getCurrentParts(false);
-        this.originalParts = new ArrayList<String>(this.currentEquippedParts);
+        this.originalParts = new ArrayList<>(this.currentEquippedParts);
         this.miniCreature.setParts(this.currentEquippedParts, true);
 
         //Always perform this last
@@ -106,12 +106,12 @@ public class GuiCustomizer extends GuiScreen {
         //Reset button
         if (button.id == 10) {
             this.miniCreature.setParts(this.originalParts, true);
-            this.currentEquippedParts = new ArrayList<String>(this.originalParts);
+            this.currentEquippedParts = new ArrayList<>(this.originalParts);
         }
         //Clear button
         if (button.id == 11) {
-            this.miniCreature.setParts(new ArrayList<String>(), true);
-            this.currentEquippedParts = new ArrayList<String>();
+            this.miniCreature.setParts(new ArrayList<>(), true);
+            this.currentEquippedParts = new ArrayList<>();
         }
 
         //Update everything just to be safe

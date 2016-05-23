@@ -14,7 +14,7 @@ import java.util.List;
  */
 public class Personality implements Serializable {
 
-    public static final List<Mood> moodList = new ArrayList<Mood>();
+    public static final List<Mood> moodList = new ArrayList<>();
 
     /**
      * A base neutral mood for when there is no other moods
@@ -24,7 +24,7 @@ public class Personality implements Serializable {
     /**
      * All the MoodVariables assigned to this personality
      */
-    public HashMap<String, MoodVariable> moodVariables = new HashMap<String, MoodVariable>();
+    public HashMap<String, MoodVariable> moodVariables = new HashMap<>();
 
     /**
      * The current active mood

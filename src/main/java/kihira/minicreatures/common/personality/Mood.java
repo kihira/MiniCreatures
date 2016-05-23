@@ -19,11 +19,11 @@ public class Mood implements Serializable {
     /**
      * A list of class names (As returned by {@link Class#getName()}) of entities that can use this mood
      */
-    public List<String> validClassNames = new ArrayList<String>();
+    public List<String> validClassNames = new ArrayList<>();
     /**
      * These MoodVariables are used to define the max and minimum amounts for the MoodVariables in the main Personality
      */
-    public HashMap<String, MoodVariable> moodVariablesLimits = new HashMap<String, MoodVariable>();
+    public HashMap<String, MoodVariable> moodVariablesLimits = new HashMap<>();
 
     /**
      * This defines the maximum amount of time in ticks that the mood can be active. When it reaches this time, the mod
@@ -37,7 +37,7 @@ public class Mood implements Serializable {
     public int minMoodTime = 0;
 
     public Mood(String name) {
-        this(name, new ArrayList<String>(), new HashMap<String, MoodVariable>());
+        this(name, new ArrayList<>(), new HashMap<>());
     }
 
     public Mood(String name, List<String> validClassNames, HashMap<String, MoodVariable> moodVariablesLimits) {

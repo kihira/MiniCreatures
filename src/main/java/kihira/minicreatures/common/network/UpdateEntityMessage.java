@@ -15,7 +15,7 @@ import java.util.Collections;
 
 public class UpdateEntityMessage implements IMessage {
     private int entityID;
-    private ArrayList<String> partsList = new ArrayList<String>();
+    private ArrayList<String> partsList = new ArrayList<>();
 
     public UpdateEntityMessage() {}
     public UpdateEntityMessage(int entityID, ArrayList<String> partsList) {
@@ -30,7 +30,7 @@ public class UpdateEntityMessage implements IMessage {
     @Override
     public void fromBytes(ByteBuf buf) {
         this.entityID = buf.readInt();
-        this.partsList = new ArrayList<String>();
+        this.partsList = new ArrayList<>();
         while (buf.isReadable()) {
             try {
                 this.partsList.add(ByteBufUtils.readUTF8String(buf));

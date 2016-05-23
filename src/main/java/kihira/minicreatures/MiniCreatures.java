@@ -156,7 +156,7 @@ public class MiniCreatures {
                 //Create defaults
                 //Create default personalities
                 jsonWriter.beginArray();
-                List<String> list = new ArrayList<String>();
+                List<String> list = new ArrayList<>();
                 list.add(EntityMiniPlayer.class.getName());
                 gson.toJson(gson.toJsonTree(new Mood("psychotic", list, new HashMap<String, MoodVariable>() {{
                     put("happiness", new MoodVariable(35, 50));

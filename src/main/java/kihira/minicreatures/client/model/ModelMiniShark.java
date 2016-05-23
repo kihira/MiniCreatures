@@ -81,17 +81,6 @@ public class ModelMiniShark extends ModelBase {
         setRotation(bodyLeftFin, -0.1745329F, 0.6981317F, 0F);
     }
 
-    /**
-     * Renders the model based off the parameters provided. Sets rotations then calls
-     * {@link net.minecraft.client.model.ModelRenderer#render(float)}
-     * @param entity The entity this model is used by
-     * @param f
-     * @param f1
-     * @param f2
-     * @param f3
-     * @param f4
-     * @param scale A mystery number
-     */
     @Override
     public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float scale) {
         super.render(entity, f, f1, f2, f3, f4, scale);
@@ -109,13 +98,6 @@ public class ModelMiniShark extends ModelBase {
         tail.rotateAngleY = MathHelper.cos(limbSwing * 0.66F) * 0.4F * limbSwingAngle;
     }
 
-    /**
-     * Sets the rotation for the {@link net.minecraft.client.model.ModelRenderer} provided
-     * @param model The {@link net.minecraft.client.model.ModelRenderer}
-     * @param x The x angle in radians
-     * @param y The y angle in radians
-     * @param z The z angle in radians
-     */
     private void setRotation(ModelRenderer model, float x, float y, float z) {
         model.rotateAngleX = x;
         model.rotateAngleY = y;

@@ -105,7 +105,7 @@ public class GuiRoleSelect extends GuiBaseScreen {
         @Override
         @SuppressWarnings("unchecked")
         public List<String> getTooltip(int mouseX, int mouseY) {
-            List<String> list = new ArrayList<String>();
+            List<String> list = new ArrayList<>();
             if (selected) list.add(ChatFormatting.GREEN + "" + ChatFormatting.ITALIC + I18n.format("gui.roleselect.selected"));
             if (!Strings.isNullOrEmpty(displayString)) {
                 list.addAll(fontRendererObj.listFormattedStringToWidth(displayString, guiWidth));

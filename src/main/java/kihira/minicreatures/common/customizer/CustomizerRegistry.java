@@ -23,7 +23,7 @@ import java.util.Map;
 
 public class CustomizerRegistry {
 
-    private static final HashMap<String, ICustomizerPart> partList = new HashMap<String, ICustomizerPart>();
+    private static final HashMap<String, ICustomizerPart> partList = new HashMap<>();
 
     /**
      * An instance of ICustomizerPart should be passed to here
@@ -41,7 +41,7 @@ public class CustomizerRegistry {
     }
 
     public static ArrayList<String> getValidParts(Entity miniCreature, EnumPartCategory partCategory) {
-        ArrayList<String> validPartsList = new ArrayList<String>();
+        ArrayList<String> validPartsList = new ArrayList<>();
         for (Map.Entry<String, ICustomizerPart> part : partList.entrySet()) {
             if (part.getValue().isPartValidForEntity(miniCreature, partCategory)) validPartsList.add(part.getKey());
         }

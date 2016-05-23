@@ -48,10 +48,6 @@ public class EntityAIBowAttack extends EntityAIBase {
         return (this.shouldExecute() || !this.entity.getNavigator().noPath()) && this.hasBow();
     }
 
-    public void startExecuting() {
-        super.startExecuting();
-    }
-
     public void resetTask() {
         super.startExecuting();
         this.seeTime = 0;

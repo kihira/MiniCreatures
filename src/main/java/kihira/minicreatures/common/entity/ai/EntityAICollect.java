@@ -8,7 +8,6 @@
 
 package kihira.minicreatures.common.entity.ai;
 
-import com.google.common.base.Predicate;
 import kihira.minicreatures.common.entity.IMiniCreature;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.EntityAIBase;
@@ -21,6 +20,7 @@ import net.minecraftforge.oredict.OreDictionary;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
 public class EntityAICollect<T extends EntityTameable & IMiniCreature> extends EntityAIBase implements IRole {
 
@@ -93,8 +93,8 @@ public class EntityAICollect<T extends EntityTameable & IMiniCreature> extends E
 
     @SuppressWarnings("unchecked")
     private List<EntityItem> getEntityItemsInRadius(float radius, float yRadius) {
-        List<EntityItem> items = entity.worldObj.getEntitiesWithinAABB(EntityItem.class, entity.getEntityBoundingBox().expand(radius, yRadius, radius), CAN_BE_PICKED);
-        List<EntityItem> validItems = new ArrayList<EntityItem>();
+        List<EntityItem> items = entity.worldObj.getEntitiesWithinAABB(EntityItem.class, entity.getEntityBoundingBox().expand(radius, yRadius, radius), CAN_BE_PICKED::test);
+        List<EntityItem> validItems = new ArrayList<>();
         if (items.size() > 0) {
             for (Entity entity : items) {
                 EntityItem entityItem = (EntityItem) entity;

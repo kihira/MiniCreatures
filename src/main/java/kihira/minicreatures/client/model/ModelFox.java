@@ -94,17 +94,6 @@ public class ModelFox extends ModelBase {
         tailBase.addChild(tailMid);
     }
 
-    /**
-     * Renders the model based off the parameters provided. Sets rotations then calls
-     * {@link net.minecraft.client.model.ModelRenderer#render(float)}
-     * @param entity The entity this model is used by
-     * @param f
-     * @param f1
-     * @param f2
-     * @param f3
-     * @param f4
-     * @param f5 A mystery number
-     */
     public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
         this.setRotationAngles(f, f1, f2, f3, f4, f5, entity);
 
@@ -136,14 +125,6 @@ public class ModelFox extends ModelBase {
         GL11.glPopMatrix();
     }
 
-    /**
-     * This is called in {@link net.minecraft.client.renderer.entity.RenderLiving} to set the various angles for the
-     * various {@link net.minecraft.client.model.ModelRenderer}s on this model.
-     * @param entityLivingBase The entity
-     * @param par2
-     * @param par3
-     * @param par4
-     */
     public void setLivingAnimations(EntityLivingBase entityLivingBase, float par2, float par3, float par4) {
         EntityFox entityFox = (EntityFox)entityLivingBase;
 
@@ -192,16 +173,6 @@ public class ModelFox extends ModelBase {
         model.rotateAngleZ = z;
     }
 
-    /**
-     * Sets the models various rotation angles
-     * @param par1 Swing speed/time
-     * @param par2 Maximum swing angle
-     * @param par3
-     * @param par4 Head rotation angle y
-     * @param par5 Head rotation angle x
-     * @param par6
-     * @param entity The entity
-     */
     @Override
     public void setRotationAngles(float par1, float par2, float par3, float par4, float par5, float par6, Entity entity) {
         super.setRotationAngles(par1, par2, par3, par4, par5, par6, entity);
