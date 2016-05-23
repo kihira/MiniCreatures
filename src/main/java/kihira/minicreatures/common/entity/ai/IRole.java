@@ -11,6 +11,6 @@ package kihira.minicreatures.common.entity.ai;
 //TODO abstract?
 public interface IRole {
 
-    public void markForRemoval();
+    void markForRemoval();
 
 }

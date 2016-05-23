@@ -15,7 +15,6 @@
 package kihira.minicreatures.common.entity;
 
 import com.google.common.base.Strings;
-import com.mojang.authlib.GameProfile;
 import com.mojang.realmsclient.gui.ChatFormatting;
 import kihira.foxlib.common.gson.GsonHelper;
 import kihira.minicreatures.MiniCreatures;
@@ -84,7 +83,6 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
     private final EntityAIAttackRanged aiArrowAttack = new EntityAIAttackRanged(this, 1D, 20, 50, 15F); //Set par3 and par4 to the same to have a consant firing rate. par5 seems to effect damage output. Higher = more damage falloff
     private final EntityAIAttackMelee aiAttackOnCollide = new EntityAIAttackMelee(this, 1D, true);
     private Personality personality = new Personality();
-    private FakePlayerMC fakePlayer;
 
     //Maintain an array list client side for previewing
     @SideOnly(Side.CLIENT)
@@ -102,7 +100,6 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
         super(par1World);
         this.setSize(0.4F, 1F);
         this.setTamed(false);
-        this.fakePlayer = new FakePlayerMC(FMLCommonHandler.instance().getMinecraftServerInstance().worldServerForDimension(dimension), new GameProfile(getUniqueID(), null), this);
         this.setCombatAI();
     }
 
@@ -274,21 +271,14 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
     public void onUpdate() {
         super.onUpdate();
 
-        //Mimic this entity in terms of position
-        fakePlayer.posX = posX;
-        fakePlayer.posY = posY;
-        fakePlayer.posZ = posZ;
-        fakePlayer.rotationPitch = rotationPitch;
-        fakePlayer.rotationYaw = rotationYaw;
-
         //Use item
         if (itemInUse == getHeldItem(EnumHand.MAIN_HAND)) {
-            itemUseCount = ForgeEventFactory.onItemUseTick(fakePlayer, getHeldItem(EnumHand.MAIN_HAND), itemUseCount);
+            itemUseCount = ForgeEventFactory.onItemUseTick(this, getHeldItem(EnumHand.MAIN_HAND), itemUseCount);
             if (itemUseCount <= 0) {
                 onItemUseFinish();
             }
             else {
-                getHeldItem(EnumHand.MAIN_HAND).getItem().onUsingTick(getHeldItem(EnumHand.MAIN_HAND), fakePlayer, itemUseCount);
+                getHeldItem(EnumHand.MAIN_HAND).getItem().onUsingTick(getHeldItem(EnumHand.MAIN_HAND), this, itemUseCount);
                 if (itemUseCount % 4 == 0) {
                     //Drink
                     if (getHeldItem(EnumHand.MAIN_HAND).getItemUseAction() == EnumAction.DRINK) {
@@ -425,7 +415,7 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
 
     public void setItemInUse(ItemStack itemStack, int itemUseCount) {
         if (itemStack != this.itemInUse) {
-            itemUseCount = ForgeEventFactory.onItemUseStart(fakePlayer, itemStack, itemUseCount);
+            itemUseCount = ForgeEventFactory.onItemUseStart(this, itemStack, itemUseCount);
             if (itemUseCount <= 0) return;
             this.itemInUse = itemStack;
             this.itemUseCount = itemUseCount;
@@ -468,8 +458,8 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
 
     public void stopUsingItem() {
         if (itemInUse != null) {
-            if (!ForgeEventFactory.onUseItemStop(fakePlayer, itemInUse, itemUseCount)) {
-                itemInUse.onPlayerStoppedUsing(worldObj, fakePlayer, itemUseCount);
+            if (!ForgeEventFactory.onUseItemStop(this, itemInUse, itemUseCount)) {
+                itemInUse.onPlayerStoppedUsing(worldObj, this, itemUseCount);
             }
         }
 

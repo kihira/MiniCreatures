@@ -28,7 +28,7 @@ public class FakePlayerMC extends FakePlayer {
     }
 
     @Override
-    public Collection getActivePotionEffects() {
+    public Collection<PotionEffect> getActivePotionEffects() {
         return miniPlayer.getActivePotionEffects();
     }
 
