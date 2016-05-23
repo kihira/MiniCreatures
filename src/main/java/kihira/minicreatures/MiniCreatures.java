@@ -49,8 +49,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-@Mod(modid = "minicreatures", name = "Mini Creatures", version = "${version}", useMetadata = true)
+@Mod(modid = MiniCreatures.MODID, name = "Mini Creatures", version = "${version}", useMetadata = true)
 public class MiniCreatures {
+    public static final String MODID = "minicreatures";
 
     @SidedProxy(clientSide = "kihira.minicreatures.proxy.ClientProxy", serverSide = "kihira.minicreatures.proxy.CommonProxy")
     public static CommonProxy proxy;

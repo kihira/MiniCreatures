@@ -47,7 +47,7 @@ public class CommonProxy {
     }
 
     public void registerItems() {
-        if (MiniCreatures.enableCustomizer) GameRegistry.registerItem(MiniCreatures.itemCustomizer, "customizer");
+        if (MiniCreatures.enableCustomizer) GameRegistry.register(MiniCreatures.itemCustomizer);
         //GameRegistry.registerItem(itemMindControlHelmet, "mindControlHelmet");
     }
 }

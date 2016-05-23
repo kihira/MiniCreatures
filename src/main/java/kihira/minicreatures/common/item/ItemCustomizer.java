@@ -26,13 +26,13 @@ public class ItemCustomizer extends Item {
 
     public ItemCustomizer() {
         this.setUnlocalizedName("customizer");
+        this.setRegistryName(MiniCreatures.MODID, "customizer");
         this.setCreativeTab(CreativeTabs.MISC);
         this.setMaxStackSize(1);
     }
 
     public boolean onLeftClickEntity(ItemStack stack, EntityPlayer player, Entity entity) {
         if (entity instanceof ICustomisable) {
-            //player.openGui(MiniCreatures.instance, 2, player.worldObj, entity.getEntityId(), 0, 0);
             player.openGui(MiniCreatures.instance, 3, player.worldObj, entity.getEntityId(), 0, 0);
             return true;
         }
