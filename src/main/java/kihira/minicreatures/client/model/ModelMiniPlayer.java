@@ -19,10 +19,12 @@ import kihira.minicreatures.common.customizer.CustomizerRegistry;
 import kihira.minicreatures.common.customizer.ICustomizerPart;
 import kihira.minicreatures.common.entity.EntityMiniPlayer;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.item.EnumAction;
 import net.minecraft.util.EnumHandSide;
@@ -79,9 +81,20 @@ public class ModelMiniPlayer extends ModelBiped {
             this.bipedRightArm.rotateAngleX = -0.8F;
             this.bipedRightArm.rotateAngleZ = 0.05F;
         }*/
+        // need to re-call this cause ~mojang~
+        // standard model rendering calls setLivingAnimations then setRotationAngles causing values to be overwritten
+        // However armour rendering only calls setLivingAnimations
+        setAnimations((EntityMiniPlayer) entity);
+    }
 
+    // armour rendering only calls setLivingAnimations
+    @Override
+    public void setLivingAnimations(EntityLivingBase entity, float p_78086_2_, float p_78086_3_, float partialTickTime) {
+        setAnimations((EntityMiniPlayer) entity);
+    }
+
+    private void setAnimations(EntityMiniPlayer miniPlayer) {
         if (this.isSitting) {
-            GL11.glTranslatef(0F, 0.15F, 0F);
             this.bipedRightArm.rotateAngleX += -((float)Math.PI / 5F);
             this.bipedLeftArm.rotateAngleX += -((float)Math.PI / 5F);
             this.bipedRightLeg.rotateAngleX = -((float)Math.PI * 2.5F / 5F);
@@ -111,5 +124,12 @@ public class ModelMiniPlayer extends ModelBiped {
         else GlStateManager.translate(0F, 0.325F, 0F);
         GlStateManager.rotate(30F, -1.0F, 0F, 0F);
         super.postRenderArm(scale, side);
+    }
+
+    @Override
+    public void setModelAttributes(ModelBase model) {
+        super.setModelAttributes(model);
+
+        this.isSitting = ((ModelMiniPlayer)model).isSitting;
     }
 }

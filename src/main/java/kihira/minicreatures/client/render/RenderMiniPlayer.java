@@ -39,20 +39,21 @@ public class RenderMiniPlayer extends RenderBiped<EntityMiniPlayer> {
     public RenderMiniPlayer(RenderManager manager) {
         super(manager, new ModelMiniPlayer(), 0.3F, 1F);
         this.addLayer(new LayerHeldItem(this));
-        LayerBipedArmor layerbipedarmor = new LayerBipedArmor(this)
+        this.addLayer(new LayerBipedArmor(this)
         {
             protected void initArmor()
             {
                 this.modelLeggings = new ModelMiniPlayer(0.5F, true);
                 this.modelArmor = new ModelMiniPlayer(1.0F, true);
             }
-        };
-        this.addLayer(layerbipedarmor);
+        });
     }
 
     @Override
     public void doRender(EntityMiniPlayer entity, double x, double y, double z, float entityYaw, float partialTicks) {
         setPoses(entity);
+        ((ModelMiniPlayer)modelBipedMain).isSitting = entity.isSitting();
+
         GlStateManager.enableBlendProfile(GlStateManager.Profile.PLAYER_SKIN);
         super.doRender(entity, x, y, z, entityYaw, partialTicks);
         GlStateManager.disableBlendProfile(GlStateManager.Profile.PLAYER_SKIN);
@@ -76,6 +77,12 @@ public class RenderMiniPlayer extends RenderBiped<EntityMiniPlayer> {
                 }
             }
         }
+    }
+
+    @Override
+    protected void renderLivingAt(EntityMiniPlayer entityLivingBaseIn, double x, double y, double z) {
+        super.renderLivingAt(entityLivingBaseIn, x, y, z);
+        if (entityLivingBaseIn.isSitting()) GlStateManager.translate(0F, -0.27F, 0F);
     }
 
     private void setPoses(EntityMiniPlayer miniPlayer) {
@@ -120,14 +127,11 @@ public class RenderMiniPlayer extends RenderBiped<EntityMiniPlayer> {
             modelBipedMain.rightArmPose = offhandPose;
             modelBipedMain.leftArmPose = mainhandPose;
         }
-
-        ((ModelMiniPlayer)modelBipedMain).isSitting = miniPlayer.isSitting();
     }
 
 
     @Override
     protected void renderEntityName(EntityMiniPlayer entity, double x, double y, double z, String name, double p_188296_9_) {
-        super.renderEntityName(entity, x, y, z, name, p_188296_9_);
         if (entity.isSitting()) {
             this.renderLivingLabel(entity, name, x, y - 0.3D, z, 64);
         }
