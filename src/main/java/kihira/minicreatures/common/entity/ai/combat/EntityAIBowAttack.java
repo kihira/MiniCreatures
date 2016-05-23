@@ -16,14 +16,13 @@ public class EntityAIBowAttack extends EntityAIBase {
     private int attackCooldown;
     private final float maxAttackDistance;
     private int attackTime = -1;
-    private int seeTime;
+    private int trackTime;
     private boolean strafingClockwise;
     private boolean strafingBackwards;
     private int strafingTime = -1;
     private int giveUpTime = 60;
 
-    public EntityAIBowAttack(@NotNull IRangedAttackMob entity, double speedAmplifier, int delay, float maxDistance)
-    {
+    public EntityAIBowAttack(@NotNull IRangedAttackMob entity, double speedAmplifier, int delay, float maxDistance) {
         this.entityRanged = entity;
         this.entity = (EntityLiving) entity;
         this.moveSpeedAmp = speedAmplifier;
@@ -32,9 +31,7 @@ public class EntityAIBowAttack extends EntityAIBase {
         this.setMutexBits(3);
     }
 
-    /**
-     * Returns whether the EntityAIBase should begin execution.
-     */
+    @Override
     public boolean shouldExecute()
     {
         return this.entity.getAttackTarget() != null && this.hasBow();
@@ -44,40 +41,36 @@ public class EntityAIBowAttack extends EntityAIBase {
         return this.entity.getHeldItemMainhand() != null && this.entity.getHeldItemMainhand().getItem() instanceof ItemBow;
     }
 
-    public boolean continueExecuting() {
-        return (this.shouldExecute() || !this.entity.getNavigator().noPath()) && this.hasBow();
-    }
-
+    @Override
     public void resetTask() {
-        super.startExecuting();
-        this.seeTime = 0;
+        this.trackTime = 0;
         this.attackTime = -1;
         this.entity.resetActiveHand();
+        this.entity.getMoveHelper().strafe(0,0);
     }
 
+    @Override
     public void updateTask() {
         EntityLivingBase target = this.entity.getAttackTarget();
 
         if (target != null) {
             double dist = this.entity.getDistanceSq(target.posX, target.getEntityBoundingBox().minY, target.posZ);
             boolean canSee = this.entity.getEntitySenses().canSee(target);
-            boolean flag1 = this.seeTime > 0;
+            boolean tracking = this.trackTime > 0;
 
-            if (canSee != flag1) {
-                this.seeTime = 0;
+            if (canSee != tracking) {
+                this.trackTime = 0;
             }
 
-            if (canSee) {
-                ++this.seeTime;
-            }
-            else {
-                --this.seeTime;
-            }
+            if (canSee) ++this.trackTime;
+            else --this.trackTime;
 
-            if (dist <= (double)this.maxAttackDistance && this.seeTime >= 20) {
+            // Can see target and within range
+            if (dist <= (double)this.maxAttackDistance && this.trackTime >= 10) {
                 this.entity.getNavigator().clearPathEntity();
                 ++this.strafingTime;
             }
+            // Try to move to target if unseen or out of range
             else {
                 this.entity.getNavigator().tryMoveToEntityLiving(target, this.moveSpeedAmp);
                 this.strafingTime = -1;
@@ -112,7 +105,7 @@ public class EntityAIBowAttack extends EntityAIBase {
 
             if (this.entity.isHandActive()) {
                 // lost track of target
-                if (!canSee && this.seeTime < -giveUpTime) {
+                if (!canSee && this.trackTime < -giveUpTime) {
                     this.entity.resetActiveHand();
                 }
                 else if (canSee) {
@@ -126,7 +119,7 @@ public class EntityAIBowAttack extends EntityAIBase {
                     }
                 }
             }
-            else if (--this.attackTime <= 0 && this.seeTime >= -giveUpTime)
+            else if (--this.attackTime <= 0 && this.trackTime >= -giveUpTime)
             {
                 this.entity.setActiveHand(EnumHand.MAIN_HAND);
             }

@@ -37,7 +37,6 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.*;
-import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.player.EntityPlayer;
@@ -71,11 +70,9 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.Map;
-import java.util.UUID;
 
 public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, ICustomisable, IRangedAttackMob, IPersonality {
 
-    private static final AttributeModifier itemUseSlowdown = (new AttributeModifier(UUID.fromString("D59B2377-0D44-455D-BE81-AA60D7485D52"), "Item Use Penalty", -0.25D, 0)).setSaved(false);
     private static final DataParameter<String> PARTS = EntityDataManager.createKey(EntityMiniPlayer.class, DataSerializers.STRING);
     private static final DataParameter<Boolean> MIND_CONTROLLED = EntityDataManager.createKey(EntityMiniPlayer.class, DataSerializers.BOOLEAN);
     private static final DataParameter<String> CHAT = EntityDataManager.createKey(EntityMiniPlayer.class, DataSerializers.STRING);
@@ -84,7 +81,9 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
     private final InventoryBasic inventory = new InventoryBasic(this.getName(), false, 18);
     private final EntityAIBowAttack aiArrowAttack = new EntityAIBowAttack(this, 1D, 20, 50);
     private final EntityAIAttackMelee aiAttackOnCollide = new EntityAIAttackMelee(this, 1D, true);
+
     private Personality personality = new Personality();
+    private int healTick;
 
     //Maintain an array list client side for previewing
     @SideOnly(Side.CLIENT)
@@ -118,7 +117,6 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
     @Override
     protected void applyEntityAttributes() {
         super.applyEntityAttributes();
-        this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(20);
         this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.30000001192092896D);
         this.getAttributeMap().registerAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(3);
         this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(40);
@@ -276,6 +274,15 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
         if (this.worldObj.isRemote && this.statMessageTime < 60) {
             this.statMessageTime++;
         }
+
+        // Heal
+        if (getHealth() < getMaxHealth()) {
+            healTick++;
+            if (healTick >= 30) {
+                healTick = 0;
+                heal(1);
+            }
+        }
     }
 
     public void notifyDataManagerChange(DataParameter<?> key) {
@@ -367,8 +374,15 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
         this.worldObj.spawnEntityInWorld(entityarrow);
     }
 
+    // todo?
+/*    @Override
+    protected void damageArmor(float damage) {
+        this.inventoryArmor.damageArmor(damage);
+    }*/
+
     @Override
     protected void damageShield(float damage) {
+        System.out.println(damage);
         if (damage >= 3.0F && this.activeItemStack != null && this.activeItemStack.getItem() == Items.SHIELD) {
             int totalDam = 1 + MathHelper.floor_float(damage);
             this.activeItemStack.damageItem(totalDam, this);
@@ -483,7 +497,7 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
         tasks.addTask(1, new EntityAISwimming(this));
         tasks.addTask(2, aiSit = new EntityAISit(this));
         tasks.addTask(4, new EntityAIHeal(this, 150, 1));
-        tasks.addTask(5, new EntityAIShieldBlock(this, 3f)); // todo move to combat?
+        tasks.addTask(5, new EntityAIShieldBlock(this, 2.5f)); // todo move to combat?
         tasks.addTask(6, new EntityAIWatchClosest(this, EntityPlayer.class, 8F));
         tasks.addTask(6, new EntityAILookIdle(this));
         tasks.addTask(7, new EntityAIIdleBlockChat(this, 6));

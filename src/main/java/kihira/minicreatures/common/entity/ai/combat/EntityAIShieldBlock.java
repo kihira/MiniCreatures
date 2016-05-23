@@ -21,7 +21,7 @@ public class EntityAIShieldBlock extends EntityAIBase {
     @Override
     public boolean shouldExecute() {
         shieldHand = getShield();
-        return shieldHand != null && entity.getAttackTarget() != null && entity.getDistanceToEntity(entity.getAttackTarget()) <= dist && shieldHand != entity.getActiveHand();
+        return shieldHand != null && entity.getAttackTarget() != null && entity.getDistanceToEntity(entity.getAttackTarget()) <= dist && shieldHand != entity.getActiveHand() && !entity.isSwingInProgress;
     }
 
     @Override
