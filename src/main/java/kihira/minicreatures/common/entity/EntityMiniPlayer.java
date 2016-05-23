@@ -88,7 +88,7 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
 
     //Maintain an array list client side for previewing
     @SideOnly(Side.CLIENT)
-    private ArrayList<String> previewParts = new ArrayList<String>();
+    private ArrayList<String> previewParts = new ArrayList<>();
 
     @SideOnly(Side.CLIENT)
     public String statMessage = "";
@@ -551,7 +551,7 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
     public void applyAI(EnumRole role) {
         //General tasks
         tasks.addTask(1, new EntityAISwimming(this));
-        tasks.addTask(2, aiSit);
+        tasks.addTask(2, aiSit = new EntityAISit(this));
         tasks.addTask(4, new EntityAIHeal(this, 150, 1));
         tasks.addTask(6, new EntityAIWatchClosest(this, EntityPlayer.class, 8F));
         tasks.addTask(6, new EntityAILookIdle(this));

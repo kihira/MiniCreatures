@@ -31,16 +31,16 @@ import org.lwjgl.opengl.GL11;
 @SideOnly(Side.CLIENT)
 public class ModelFox extends ModelBase {
 
-    ModelRenderer LBLeg;
-    ModelRenderer head;
-    ModelRenderer tailMid;
-    ModelRenderer RBLeg;
-    ModelRenderer RFLeg;
-    ModelRenderer LFLeg;
-    ModelRenderer Body;
-    ModelRenderer tailTip;
-    ModelRenderer tailBase;
-    ModelRenderer chest;
+    private ModelRenderer LBLeg;
+    private ModelRenderer head;
+    private ModelRenderer tailMid;
+    private ModelRenderer RBLeg;
+    private ModelRenderer RFLeg;
+    private ModelRenderer LFLeg;
+    private ModelRenderer Body;
+    private ModelRenderer tailTip;
+    private ModelRenderer tailBase;
+    private ModelRenderer chest;
 
     public ModelFox() {
         textureWidth = 64;

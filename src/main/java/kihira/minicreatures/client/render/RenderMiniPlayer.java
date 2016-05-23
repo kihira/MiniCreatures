@@ -19,11 +19,16 @@ import kihira.foxlib.client.TextHelper;
 import kihira.minicreatures.client.model.ModelMiniPlayer;
 import kihira.minicreatures.common.entity.EntityMiniPlayer;
 import net.minecraft.client.entity.AbstractClientPlayer;
+import net.minecraft.client.model.ModelBiped;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderBiped;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.entity.layers.LayerBipedArmor;
 import net.minecraft.client.renderer.entity.layers.LayerHeldItem;
 import net.minecraft.client.resources.DefaultPlayerSkin;
+import net.minecraft.item.EnumAction;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumHandSide;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -47,7 +52,10 @@ public class RenderMiniPlayer extends RenderBiped<EntityMiniPlayer> {
 
     @Override
     public void doRender(EntityMiniPlayer entity, double x, double y, double z, float entityYaw, float partialTicks) {
+        setPoses(entity);
+        GlStateManager.enableBlendProfile(GlStateManager.Profile.PLAYER_SKIN);
         super.doRender(entity, x, y, z, entityYaw, partialTicks);
+        GlStateManager.disableBlendProfile(GlStateManager.Profile.PLAYER_SKIN);
 
         //Draw the chat messages
         String chat = entity.getChat();
@@ -69,6 +77,53 @@ public class RenderMiniPlayer extends RenderBiped<EntityMiniPlayer> {
             }
         }
     }
+
+    private void setPoses(EntityMiniPlayer miniPlayer) {
+        ItemStack itemMainhand = miniPlayer.getHeldItemMainhand();
+        ItemStack itemOffhand = miniPlayer.getHeldItemOffhand();
+        ModelBiped.ArmPose mainhandPose = ModelBiped.ArmPose.EMPTY;
+        ModelBiped.ArmPose offhandPose = ModelBiped.ArmPose.EMPTY;
+
+        if (itemMainhand != null) {
+            mainhandPose = ModelBiped.ArmPose.ITEM;
+
+            if (miniPlayer.getItemInUseCount() > 0) {
+                EnumAction enumaction = itemMainhand.getItemUseAction();
+                switch (enumaction){
+                    case BLOCK:
+                        mainhandPose = ModelBiped.ArmPose.BLOCK;
+                        break;
+                    case BOW:
+                        mainhandPose = ModelBiped.ArmPose.BOW_AND_ARROW;
+                        break;
+                }
+            }
+        }
+        if (itemOffhand != null) {
+            offhandPose = ModelBiped.ArmPose.ITEM;
+
+            if (miniPlayer.getItemInUseCount() > 0) {
+                EnumAction enumaction = itemOffhand.getItemUseAction();
+                switch (enumaction){
+                    case BLOCK:
+                        offhandPose = ModelBiped.ArmPose.BLOCK;
+                        break;
+                }
+            }
+        }
+
+        if (miniPlayer.getPrimaryHand() == EnumHandSide.RIGHT) {
+            modelBipedMain.rightArmPose = mainhandPose;
+            modelBipedMain.leftArmPose = offhandPose;
+        }
+        else {
+            modelBipedMain.rightArmPose = offhandPose;
+            modelBipedMain.leftArmPose = mainhandPose;
+        }
+
+        ((ModelMiniPlayer)modelBipedMain).isSitting = miniPlayer.isSitting();
+    }
+
 
     @Override
     protected void renderEntityName(EntityMiniPlayer entity, double x, double y, double z, String name, double p_188296_9_) {

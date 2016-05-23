@@ -36,9 +36,9 @@ public abstract class EntityMiniCreature extends EntityTameable implements IMini
     public static final DataParameter<Boolean> IS_HAPPY = EntityDataManager.createKey(EntityMiniCreature.class, DataSerializers.BOOLEAN);
 
     private final IInventory inventory = new InventoryBasic(this.getName(), false, 18);
-    protected final Item tamingItem;
+    private final Item tamingItem;
 
-    public EntityMiniCreature(World worldIn, Item tamingItem) {
+    EntityMiniCreature(World worldIn, Item tamingItem) {
         super(worldIn);
         this.tamingItem = tamingItem;
     }
@@ -178,6 +178,10 @@ public abstract class EntityMiniCreature extends EntityTameable implements IMini
         return par1Entity.attackEntityFrom(DamageSource.causeMobDamage(this), (float) i);
     }
 
+    @Override
+    public boolean isChild() {
+        return false;
+    }
 
     public boolean hasChest() {
         return this.getDataManager().get(HAS_CHEST);

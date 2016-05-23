@@ -14,7 +14,6 @@
 
 package kihira.minicreatures.common.entity;
 
-import net.minecraft.block.BlockAir;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIBase;
@@ -22,7 +21,6 @@ import net.minecraft.entity.passive.EntityWaterMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
 
@@ -44,9 +42,9 @@ public class EntityMiniShark extends EntityWaterMob {
     @Override
     protected void applyEntityAttributes() {
         super.applyEntityAttributes();
-        this.getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(0.75D);
+        this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.75D);
         this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(10D);
-        this.getEntityAttribute(SharedMonsterAttributes.knockbackResistance).setBaseValue(0.25D);
+        this.getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(0.25D);
     }
 
     @Override
@@ -82,7 +80,7 @@ public class EntityMiniShark extends EntityWaterMob {
                     d3 = Math.sqrt(d3);
 
                     if (!worldObj.isRemote) {
-                        double speed = (this.targetedEntity != null ? 0.02D : 0.01D) * getEntityAttribute(SharedMonsterAttributes.movementSpeed).getAttributeValue();
+                        double speed = (this.targetedEntity != null ? 0.02D : 0.01D) * getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).getAttributeValue();
                         this.motionX += xDist / d3 * speed;
                         this.motionY += yDist / d3 * speed * 1.5f;
                         this.motionZ += zDist / d3 * speed;
@@ -193,7 +191,8 @@ public class EntityMiniShark extends EntityWaterMob {
     public boolean isInWater() {
         // todo port to 1.9.4
         // this.inWater = this.worldObj.getBlock(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.getEntityBoundingBox().minY + 0.25), MathHelper.floor_double(this.posZ)).getMaterial() == Material.WATER;
-        this.inWater = this.worldObj.getBlock(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.boundingBox.minY + 0.25), MathHelper.floor_double(this.posZ)).getMaterial() == Material.water;
+        //this.inWater = this.worldObj.getBlock(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.boundingBox.minY + 0.25), MathHelper.floor_double(this.posZ)).getMaterial() == Material.water;
+        return this.inWater;
     }
 
     @Override
