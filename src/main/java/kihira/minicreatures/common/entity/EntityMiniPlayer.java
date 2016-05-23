@@ -228,7 +228,7 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
                     }
                 }
                 //If entity is holding something and player isn't, open GUI
-                if (this.getHeldItem(EnumHand.MAIN_HAND) != null && !player.isSneaking()) {
+                else if (this.getHeldItem(EnumHand.MAIN_HAND) != null && !player.isSneaking()) {
                     if (Block.getBlockFromItem(this.getHeldItem(EnumHand.MAIN_HAND).getItem()) == Blocks.CHEST) player.openGui(MiniCreatures.instance, 0, player.worldObj, this.getEntityId(), 0, 0);
                     else if (Block.getBlockFromItem(this.getHeldItem(EnumHand.MAIN_HAND).getItem()) == Blocks.ANVIL) player.openGui(MiniCreatures.instance, 1, player.worldObj, (int) this.posX, (int) this.posY, (int) this.posZ);
                 }
@@ -236,15 +236,13 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
                     if (this.isRiding()) {
                         EntityTameable ridingEntity = (EntityTameable) this.getRidingEntity();
                         ridingEntity.getAISit().setSitting(!ridingEntity.isSitting());
-                        ridingEntity.setSitting(!ridingEntity.isSitting());
                         ridingEntity.setJumping(false);
                         this.getNavigator().clearPathEntity();
                         this.setRevengeTarget(null);
                         this.setAttackTarget(null);
                     }
                     else {
-                        this.aiSit.setSitting(!this.isSitting());
-                        this.setSitting(!this.isSitting());
+                        this.getAISit().setSitting(!this.isSitting());
                         this.isJumping = false;
                         this.getNavigator().clearPathEntity();
                         this.setRevengeTarget(null);
@@ -293,17 +291,6 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
         super.setAttackTarget(attackTarget);
     }
 
-    // todo seems this is no longer in 1.9, attackEntityAsMob is now called directly
-/*    public void attackEntity(Entity par1Entity, float par2) {
-        if (this.attackTime <= 0 && par2 < 2.0F && par1Entity.boundingBox.maxY > this.boundingBox.minY && par1Entity.boundingBox.minY < this.boundingBox.maxY) {
-            this.attackTime = 20;
-            this.swingItem();
-            this.attackEntityAsMob(par1Entity);
-            this.personality.changeMoodVariableLevel(this, "happiness", -5);
-            this.personality.changeMoodVariableLevel(this, "hostility", 5);
-        }
-    }*/
-
     @Override
     public boolean attackEntityAsMob(Entity target) {
         float attackDamage = (float)this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).getAttributeValue();
@@ -340,6 +327,9 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
                     }
                 }
             }
+
+            this.personality.changeMoodVariableLevel(this, "happiness", -5);
+            this.personality.changeMoodVariableLevel(this, "hostility", 5);
 
             this.applyEnchantments(this, target);
         }

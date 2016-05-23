@@ -126,7 +126,7 @@ public abstract class EntityMiniCreature extends EntityTameable implements IMini
                 player.openGui(MiniCreatures.instance, 0, player.worldObj, this.getEntityId(), 0, 0);
             }
             else if (player.isEntityEqual(this.getOwner()) && !this.worldObj.isRemote && !this.isBreedingItem(stack)) {
-                this.aiSit.setSitting(!this.isSitting());
+                this.getAISit().setSitting(!this.isSitting());
                 this.isJumping = false;
                 this.getNavigator().clearPathEntity();
                 this.setAttackTarget(null);
@@ -140,7 +140,7 @@ public abstract class EntityMiniCreature extends EntityTameable implements IMini
                     this.setTamed(true);
                     this.getNavigator().clearPathEntity();
                     this.setAttackTarget(null);
-                    this.aiSit.setSitting(true);
+                    this.getAISit().setSitting(true);
                     this.setHealth(20.0F);
                     this.setOwnerId(player.getPersistentID());
                     this.playTameEffect(true);

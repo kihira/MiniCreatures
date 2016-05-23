@@ -121,7 +121,7 @@ public class EventHandler {
             //Mount the fox
             if (event.getTarget() instanceof EntityFox) {
                 EntityFox entityFox = (EntityFox) event.getTarget();
-                if (!entityFox.isBeingRidden() && !entityFox.isRiding()) {
+                if (!entityFox.isBeingRidden() && !entityFox.isRiding() && entityFox.getOwner() == event.getEntityPlayer()) {
                     double dist = 7.0D;
                     List list = entityFox.worldObj.getEntitiesWithinAABB(EntityMiniPlayer.class, entityFox.getEntityBoundingBox().expandXyz(dist));
 
