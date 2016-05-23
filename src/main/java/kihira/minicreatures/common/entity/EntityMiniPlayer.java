@@ -22,6 +22,7 @@ import kihira.minicreatures.common.customizer.EnumPartCategory;
 import kihira.minicreatures.common.entity.ai.EntityAIHeal;
 import kihira.minicreatures.common.entity.ai.EntityAIProspect;
 import kihira.minicreatures.common.entity.ai.EnumRole;
+import kihira.minicreatures.common.entity.ai.combat.EntityAIBowAttack;
 import kihira.minicreatures.common.entity.ai.combat.EntityAIUsePotion;
 import kihira.minicreatures.common.entity.ai.idle.EntityAIIdleBlockChat;
 import kihira.minicreatures.common.entity.ai.idle.EntityAIIdleEntityChat;
@@ -78,7 +79,7 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
     private static final DataParameter<Integer> ROLE = EntityDataManager.createKey(EntityMiniPlayer.class, DataSerializers.VARINT);
 
     private final InventoryBasic inventory = new InventoryBasic(this.getName(), false, 18);
-    private final EntityAIAttackRanged aiArrowAttack = new EntityAIAttackRanged(this, 1D, 20, 50, 15F); //Set par3 and par4 to the same to have a consant firing rate. par5 seems to effect damage output. Higher = more damage falloff
+    private final EntityAIBowAttack aiArrowAttack = new EntityAIBowAttack(this, 1D, 20, 50);
     private final EntityAIAttackMelee aiAttackOnCollide = new EntityAIAttackMelee(this, 1D, true);
     private Personality personality = new Personality();
 
@@ -240,14 +241,12 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
                         this.setAttackTarget(null);
                     }
                     else {
-                        setActiveHand(EnumHand.MAIN_HAND);
-                        //onItemUseFinish();
-/*                        this.aiSit.setSitting(!this.isSitting());
+                        this.aiSit.setSitting(!this.isSitting());
                         this.setSitting(!this.isSitting());
                         this.isJumping = false;
                         this.getNavigator().clearPathEntity();
                         this.setRevengeTarget(null);
-                        this.setAttackTarget(null);*/
+                        this.setAttackTarget(null);
                     }
                 }
             }
@@ -354,7 +353,7 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
     }
 
     @Override
-    public void attackEntityWithRangedAttack(EntityLivingBase target, float var2) {
+    public void attackEntityWithRangedAttack(EntityLivingBase target, float velocity) {
         EntityArrow entityarrow = new EntityTippedArrow(this.worldObj, this);
         double xDist = target.posX - this.posX;
         double yDist = target.getEntityBoundingBox().minY + (double)(target.height / 3.0F) - entityarrow.posY;
@@ -365,7 +364,7 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
         int power = EnchantmentHelper.getEnchantmentLevel(Enchantments.POWER, this.getHeldItem(EnumHand.MAIN_HAND));
         int punch = EnchantmentHelper.getEnchantmentLevel(Enchantments.PUNCH, this.getHeldItem(EnumHand.MAIN_HAND));
 
-        double damage = (double)(var2 * 3.0F) + this.rand.nextGaussian() * 0.25D;
+        double damage = (double)(velocity * 3.0F) + this.rand.nextGaussian() * 0.25D;
         entityarrow.setDamage(damage);
 
         if (power > 0) entityarrow.setDamage(entityarrow.getDamage() + (double)power * 0.5D + 0.5D);

@@ -38,19 +38,17 @@ public class SetAttackTargetMessage implements IMessage {
             AxisAlignedBB axisalignedbb = new AxisAlignedBB(entityPlayer.posX, entityPlayer.posY, entityPlayer.posZ, entityPlayer.posX, entityPlayer.posY, entityPlayer.posZ).expand(10, 10, 10);
             List entityList = entityPlayer.worldObj.getEntitiesWithinAABB(EntityMiniPlayer.class, axisalignedbb);
 
-            if (entityList != null) {
-                for (Object entry : entityList) {
-                    if (entry instanceof EntityMiniPlayer) {
-                        EntityMiniPlayer miniPlayer = (EntityMiniPlayer) entry;
-                        if (miniPlayer.getOwner() == entityPlayer) {
-                            EntityLivingBase attackTarget = (EntityLivingBase) entityPlayer.worldObj.getEntityByID(message.targetEntityID);
-                            if (attackTarget.isOnSameTeam(miniPlayer)) return null;
-                            if ((attackTarget instanceof EntityTameable) && (((EntityTameable) attackTarget).getOwner() == entityPlayer))
-                                return null;
+            for (Object entry : entityList) {
+                if (entry instanceof EntityMiniPlayer) {
+                    EntityMiniPlayer miniPlayer = (EntityMiniPlayer) entry;
+                    if (miniPlayer.getOwner() == entityPlayer) {
+                        EntityLivingBase attackTarget = (EntityLivingBase) entityPlayer.worldObj.getEntityByID(message.targetEntityID);
+                        if (attackTarget.isOnSameTeam(miniPlayer)) return null;
+                        if ((attackTarget instanceof EntityTameable) && (((EntityTameable) attackTarget).getOwner() == entityPlayer))
+                            return null;
 
-                            miniPlayer.setAttackTarget(attackTarget);
-                            //entityPlayer.addChatComponentMessage(new ChatComponentText(miniPlayer.getCommandSenderName() + ": Attacking " + attackTarget.getCommandSenderName()));
-                        }
+                        miniPlayer.setAttackTarget(attackTarget);
+                        //entityPlayer.addChatComponentMessage(new ChatComponentText(miniPlayer.getCommandSenderName() + ": Attacking " + attackTarget.getCommandSenderName()));
                     }
                 }
             }

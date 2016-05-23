@@ -45,14 +45,6 @@ public class ModelMiniPlayer extends ModelBiped {
 
     public ModelMiniPlayer(float modelSize, boolean smallTexture) {
         super(modelSize, 0.0F, 64, smallTexture ? 32 : 64);
-
-        this.bipedBody.rotateAngleX = 0.0F;
-        this.bipedRightLeg.rotationPointZ = 0.1F;
-        this.bipedLeftLeg.rotationPointZ = 0.1F;
-        this.bipedRightLeg.rotationPointY = 12.0F;
-        this.bipedLeftLeg.rotationPointY = 12.0F;
-        this.bipedHead.rotationPointY = 0.0F;
-        this.bipedHeadwear.rotationPointY = 0.0F;
     }
 
     @Override

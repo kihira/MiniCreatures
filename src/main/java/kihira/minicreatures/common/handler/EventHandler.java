@@ -22,7 +22,6 @@ import kihira.minicreatures.common.entity.ai.EntityAIProspect;
 import kihira.minicreatures.common.entity.ai.EnumRole;
 import kihira.minicreatures.common.network.SetAttackTargetMessage;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.ai.EntityAITasks;
 import net.minecraft.entity.monster.EntityZombie;
@@ -40,8 +39,6 @@ import net.minecraft.potion.PotionUtils;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.client.event.MouseEvent;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.event.entity.EntityEvent;
@@ -67,13 +64,13 @@ public class EventHandler {
     @SideOnly(Side.CLIENT)
     public void leftClick(MouseEvent interactEvent) {
         //Only trigger if it has been more then 5 seconds
-        if ((System.currentTimeMillis() - this.lastTrigger > 5000) && Minecraft.getMinecraft().gameSettings.keyBindAttack.isPressed()) {
+        if ((System.currentTimeMillis() - this.lastTrigger > 5000) && Minecraft.getMinecraft().gameSettings.keyBindAttack.isKeyDown()) {
             //Only if it's a sword
-            if (Minecraft.getMinecraft().thePlayer.getHeldItem(EnumHand.MAIN_HAND) != null && Minecraft.getMinecraft().thePlayer.getHeldItem(EnumHand.MAIN_HAND).getItem() instanceof ItemSword) {
-                RayTraceResult target = getMouseOver(20);
-                if (target != null && target.typeOfHit == RayTraceResult.Type.ENTITY) {
+            if (Minecraft.getMinecraft().thePlayer.getHeldItemMainhand() != null && Minecraft.getMinecraft().thePlayer.getHeldItemMainhand().getItem() instanceof ItemSword) {
+                Minecraft.getMinecraft().entityRenderer.getMouseOver(1);
+                if (Minecraft.getMinecraft().pointedEntity != null) {
                     this.lastTrigger = System.currentTimeMillis();
-                    MiniCreatures.proxy.simpleNetworkWrapper.sendToServer(new SetAttackTargetMessage(target.entityHit.getEntityId()));
+                    MiniCreatures.proxy.simpleNetworkWrapper.sendToServer(new SetAttackTargetMessage(Minecraft.getMinecraft().pointedEntity.getEntityId()));
                 }
             }
         }
@@ -131,7 +128,7 @@ public class EventHandler {
                     for (Object aList : list) {
                         EntityLiving entityliving = (EntityLiving) aList;
                         if (entityliving instanceof EntityMiniPlayer && entityliving.getLeashed() && entityliving.getLeashedToEntity() == event.getEntityPlayer()) {
-                            entityliving.setLeashedToEntity(null, true);
+                            entityliving.clearLeashed(true, true);
                             entityliving.startRiding(entityFox);
                             event.setCanceled(true);
                             break;
@@ -203,63 +200,5 @@ public class EventHandler {
             }
         }
         return null;
-    }
-
-    private RayTraceResult getMouseOver(double distance) {
-        RayTraceResult objectMouseOver = null;
-        if (Minecraft.getMinecraft().theWorld != null) {
-            Entity pointedEntity = null;
-            Entity renderViewEntity = Minecraft.getMinecraft().getRenderViewEntity();
-            objectMouseOver = renderViewEntity.rayTrace(distance, 1);
-            Vec3d posVec = renderViewEntity.getPositionVector();
-
-            if (objectMouseOver != null) distance = objectMouseOver.hitVec.distanceTo(posVec);
-
-            Vec3d lookVec = renderViewEntity.getLook(1);
-            Vec3d targetVec = posVec.addVector(lookVec.xCoord * distance, lookVec.yCoord * distance, lookVec.zCoord * distance);
-            Vec3d resultVec = null;
-            List list = Minecraft.getMinecraft().theWorld.getEntitiesWithinAABBExcludingEntity(renderViewEntity,
-                    renderViewEntity.getEntityBoundingBox().addCoord(lookVec.xCoord * distance, lookVec.yCoord * distance, lookVec.zCoord * distance).expand(1, 1, 1));
-            double d2 = distance;
-
-            for (Object aList : list) {
-                Entity entity = (Entity) aList;
-
-                if (entity.canBeCollidedWith()) {
-                    float f2 = entity.getCollisionBorderSize();
-                    AxisAlignedBB axisalignedbb = entity.getEntityBoundingBox().expand((double) f2, (double) f2, (double) f2);
-                    RayTraceResult rayResult = axisalignedbb.calculateIntercept(posVec, targetVec);
-
-                    if (axisalignedbb.isVecInside(posVec)) {
-                        if (0.0D < d2 || d2 == 0.0D) {
-                            pointedEntity = entity;
-                            resultVec = rayResult == null ? posVec : rayResult.hitVec;
-                            d2 = 0.0D;
-                        }
-                    }
-                    else if (rayResult != null) {
-                        double d3 = posVec.distanceTo(rayResult.hitVec);
-
-                        if (d3 < d2 || d2 == 0.0D) {
-                            if (entity == renderViewEntity.getRidingEntity() && !entity.canRiderInteract()) {
-                                if (d2 == 0.0D) {
-                                    pointedEntity = entity;
-                                    resultVec = rayResult.hitVec;
-                                }
-                            } else {
-                                pointedEntity = entity;
-                                resultVec = rayResult.hitVec;
-                                d2 = d3;
-                            }
-                        }
-                    }
-                }
-            }
-
-            if (pointedEntity != null && (d2 < distance || objectMouseOver == null)) {
-                objectMouseOver = new RayTraceResult(pointedEntity, resultVec);
-            }
-        }
-        return objectMouseOver;
     }
 }
