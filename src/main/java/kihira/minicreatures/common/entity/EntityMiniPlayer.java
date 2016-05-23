@@ -24,6 +24,7 @@ import kihira.minicreatures.common.entity.ai.EntityAIHeal;
 import kihira.minicreatures.common.entity.ai.EntityAIProspect;
 import kihira.minicreatures.common.entity.ai.EnumRole;
 import kihira.minicreatures.common.entity.ai.combat.EntityAIBowAttack;
+import kihira.minicreatures.common.entity.ai.combat.EntityAIShieldBlock;
 import kihira.minicreatures.common.entity.ai.combat.EntityAIUsePotion;
 import kihira.minicreatures.common.entity.ai.idle.EntityAIIdleBlockChat;
 import kihira.minicreatures.common.entity.ai.idle.EntityAIIdleEntityChat;
@@ -199,6 +200,11 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
                         }
                         return true;
                     }
+                    // If shield, equip it
+                    else if (stack.getItem() == Items.SHIELD) {
+                        setItemStackToSlot(EntityEquipmentSlot.OFFHAND, stack.copy());
+                        Utils.decreaseCurrentStack(player, stack);
+                    }
                     //If lead and mounted, unmount
                     else if (stack.getItem() == Items.LEAD && this.isRiding() && !player.isSneaking()) this.dismountRidingEntity();
                     //If entity is holding something and player is holding a stick, drop current item
@@ -302,6 +308,7 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
         }
 
         boolean damaged = target.attackEntityFrom(DamageSource.causeMobDamage(this), attackDamage);
+        this.setLastAttacker(target);
 
         if (damaged) {
             if (knockback > 0) {
@@ -358,6 +365,21 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
 
         this.playSound(SoundEvents.ENTITY_ARROW_SHOOT, 1.0F, 1.0F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
         this.worldObj.spawnEntityInWorld(entityarrow);
+    }
+
+    @Override
+    protected void damageShield(float damage) {
+        if (damage >= 3.0F && this.activeItemStack != null && this.activeItemStack.getItem() == Items.SHIELD) {
+            int totalDam = 1 + MathHelper.floor_float(damage);
+            this.activeItemStack.damageItem(totalDam, this);
+
+            if (this.activeItemStack.stackSize <= 0) {
+                this.setItemStackToSlot(this.getActiveHand() == EnumHand.MAIN_HAND ? EntityEquipmentSlot.MAINHAND : EntityEquipmentSlot.OFFHAND, null);
+
+                this.activeItemStack = null;
+                this.playSound(SoundEvents.ITEM_SHIELD_BREAK, 0.8F, 0.8F + this.worldObj.rand.nextFloat() * 0.4F);
+            }
+        }
     }
 
     public void setCombatAI() {
@@ -461,11 +483,14 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
         tasks.addTask(1, new EntityAISwimming(this));
         tasks.addTask(2, aiSit = new EntityAISit(this));
         tasks.addTask(4, new EntityAIHeal(this, 150, 1));
+        tasks.addTask(5, new EntityAIShieldBlock(this, 3f)); // todo move to combat?
         tasks.addTask(6, new EntityAIWatchClosest(this, EntityPlayer.class, 8F));
         tasks.addTask(6, new EntityAILookIdle(this));
         tasks.addTask(7, new EntityAIIdleBlockChat(this, 6));
         tasks.addTask(7, new EntityAIIdleEntityChat(this, 12));
-        targetTasks.addTask(1, new EntityAIHurtByTarget(this, true));
+        targetTasks.addTask(1, new EntityAIOwnerHurtByTarget(this));
+        targetTasks.addTask(2, new EntityAIOwnerHurtTarget(this));
+        targetTasks.addTask(3, new EntityAIHurtByTarget(this, true));
 
         switch (role) {
             case COMBAT: {
