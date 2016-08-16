@@ -23,6 +23,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 
 import javax.annotation.Nullable;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -61,7 +62,6 @@ public class CommandSpawnEntity extends CommandBase {
     @Override
     public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos pos) {
         //Gather a list of the entity names
-        String[] entityNameList = EntityList.NAME_TO_CLASS.keySet().toArray(new String[EntityList.NAME_TO_CLASS.size()]);
-        return args.length > 0 ? getListOfStringsMatchingLastWord(args, entityNameList) : null;
+        return args.length > 0 ? getListOfStringsMatchingLastWord(args, Collections.singletonList(EntityList.NAME_TO_CLASS.keySet())) : null;
     }
 }

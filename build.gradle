@@ -19,7 +19,7 @@ group= "uk.kihira.minicreatures"
 archivesBaseName = "MiniCreatures"
 
 minecraft {
-    version = "1.9.4-12.17.0.1909-1.9.4"
+    version = "1.9.4-12.17.0.1953"
     runDir = "eclipse"
     mappings = "snapshot_20160518"
 
