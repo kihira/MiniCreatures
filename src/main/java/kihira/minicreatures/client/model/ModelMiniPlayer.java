@@ -26,7 +26,6 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.EnumAction;
-import net.minecraft.util.EnumHandSide;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -106,15 +105,6 @@ public class ModelMiniPlayer extends ModelBiped {
                 arm.rotateAngleZ = angle * 0.4F;
             }
         }
-    }
-
-    @Override
-    public void postRenderArm(float scale, EnumHandSide side) {
-        // todo support small arms and left arm?
-        if (this.isSitting) GlStateManager.translate(0F, 0.35F, -0.05F);
-        else GlStateManager.translate(0F, 0.325F, 0F);
-        GlStateManager.rotate(30F, -1.0F, 0F, 0F);
-        super.postRenderArm(scale, side);
     }
 
     @Override

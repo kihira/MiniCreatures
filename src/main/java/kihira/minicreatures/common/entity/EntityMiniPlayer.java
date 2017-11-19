@@ -405,6 +405,10 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
         else return EnumRole.NONE;
     }
 
+    public boolean hasBackpack() {
+        return true; // todo
+    }
+
     @Override
     public String getChat() {
         return this.getDataManager().get(CHAT);

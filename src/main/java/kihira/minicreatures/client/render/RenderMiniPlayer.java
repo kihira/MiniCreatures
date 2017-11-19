@@ -17,6 +17,7 @@ package kihira.minicreatures.client.render;
 import com.google.common.base.Strings;
 import kihira.minicreatures.client.TextHelper;
 import kihira.minicreatures.client.model.ModelMiniPlayer;
+import kihira.minicreatures.client.render.layers.LayerBackpack;
 import kihira.minicreatures.common.entity.EntityMiniPlayer;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.model.ModelBiped;
@@ -38,8 +39,9 @@ public class RenderMiniPlayer extends RenderBiped<EntityMiniPlayer> {
 
     public RenderMiniPlayer(RenderManager manager) {
         super(manager, new ModelMiniPlayer(), 0.3F);
-        this.addLayer(new LayerHeldItem(this));
-        this.addLayer(new LayerBipedArmor(this)
+        addLayer(new LayerBackpack());
+        addLayer(new LayerHeldItem(this));
+        addLayer(new LayerBipedArmor(this)
         {
             protected void initArmor()
             {

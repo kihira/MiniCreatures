@@ -31,7 +31,7 @@ public class RenderMiniCreature<T extends EntityMiniCreature> extends RenderLivi
     public RenderMiniCreature(RenderManager manager, float shadow, ResourceLocation texture, ResourceLocation collarTexture) {
         super(manager, new ModelFox(), shadow);
         this.texture = texture;
-        this.addLayer(new LayerCollar<RenderMiniCreature>(this, collarTexture));
+        addLayer(new LayerCollar<RenderMiniCreature>(this, collarTexture));
     }
 
     @Override
