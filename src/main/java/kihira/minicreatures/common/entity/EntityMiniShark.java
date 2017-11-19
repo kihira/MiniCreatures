@@ -183,7 +183,7 @@ public class EntityMiniShark extends EntityWaterMob {
     }
 
     @Override
-    public void moveEntityWithHeading(float p_70612_1_, float p_70612_2_) {
+    public void travel(float strafe, float vertical, float forward) {
         if (waypointY > posY && waypointY - posY > 1) motionY += 0.05f;
         this.move(MoverType.SELF, this.motionX, this.motionY, this.motionZ);
     }

@@ -1,7 +1,6 @@
 package kihira.minicreatures.common.entity;
 
 import kihira.minicreatures.MiniCreatures;
-import kihira.minicreatures.common.Utils;
 import kihira.minicreatures.common.entity.ai.EnumRole;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;

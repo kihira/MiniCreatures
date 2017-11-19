@@ -35,6 +35,7 @@ import net.minecraft.nbt.NBTTagString;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
@@ -46,7 +47,7 @@ import java.util.UUID;
 
 public class EntityFox extends EntityMiniCreature implements IMiniCreature {
 
-    protected static final DataParameter<String> PARTS_LIST = EntityDataManager.createKey(EntityMiniCreature.class, DataSerializers.STRING);
+    private static final DataParameter<String> PARTS_LIST = EntityDataManager.createKey(EntityMiniCreature.class, DataSerializers.STRING);
 
     public EntityFox(World par1World) {
         super(par1World, Items.BONE);
@@ -171,8 +172,9 @@ public class EntityFox extends EntityMiniCreature implements IMiniCreature {
         return SoundEvents.ENTITY_WOLF_AMBIENT;
     }
 
+    @Nullable
     @Override
-    protected SoundEvent getHurtSound() {
+    protected SoundEvent getHurtSound(DamageSource damageSource) {
         return SoundEvents.ENTITY_WOLF_HURT;
     }
 

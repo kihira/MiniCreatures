@@ -154,11 +154,11 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
 
         //Load parts list
         NBTTagList tagList = tagCompound.getTagList("Parts", 8);
-        String s = "";
+        StringBuilder s = new StringBuilder();
         for (int i = 0; i < tagList.tagCount(); i++) {
-            s += tagList.getStringTagAt(i) + ",";
+            s.append(tagList.getStringTagAt(i)).append(",");
         }
-        this.getDataManager().set(PARTS, s);
+        this.getDataManager().set(PARTS, s.toString());
 
         //Role
         setRole(EnumRole.values()[tagCompound.getInteger("Role")]);
@@ -205,26 +205,27 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
                 else if (stack.getItem() == Items.STICK) {
                     EntityItem entityItem = new EntityItem(player.world, this.posX, this.posY, this.posZ, this.getHeldItem(EnumHand.MAIN_HAND).copy());
                     player.world.spawnEntity(entityItem);
-                    this.setCarrying(null);
+                    this.setCarrying(ItemStack.EMPTY);
                     //Drop chest contents
                     for (int i = 0; i < inventory.getSizeInventory(); i++) {
                         ItemStack itemStackToDrop = inventory.getStackInSlot(i);
-                        if (itemStackToDrop != null) {
+                        if (!itemStackToDrop.isEmpty()) {
                             entityItem = new EntityItem(player.world, this.posX, this.posY, this.posZ, itemStackToDrop);
                             player.world.spawnEntity(entityItem);
                         }
-                        inventory.setInventorySlotContents(i, null);
+                        inventory.setInventorySlotContents(i, ItemStack.EMPTY);
                     }
                 }
                 else if (stack.getItem() == Items.DIAMOND) {
                     personality.changeMoodVariableLevel(this, "happiness", 5);
                 }
+                // Giving entity currently held item
                 else if (this.getHeldItem(EnumHand.MAIN_HAND).isEmpty()) {
                     ItemStack newItemStack = stack.copy();
-                    newItemStack.stackSize = 1;
+                    newItemStack.setCount(1);
+                    stack.shrink(1);
                     this.setCarrying(newItemStack);
                     playSound(SoundEvents.ENTITY_CHICKEN_EGG, 1.0F, (this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F + 1.0F);
-                    stack.shrink(1);
                 }
             }
         }
@@ -240,6 +241,7 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
         this.personality.onUpdate(this);
     }
 
+    @SuppressWarnings("VariableUseSideOnly")
     @Override
     public void onLivingUpdate() {
         super.onLivingUpdate();
@@ -288,7 +290,7 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
         }
 
         boolean damaged = target.attackEntityFrom(DamageSource.causeMobDamage(this), attackDamage);
-        this.setLastAttacker(target);
+        this.setLastAttackedEntity(target);
 
         if (damaged) {
             if (knockback > 0) {
@@ -346,6 +348,9 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
         this.playSound(SoundEvents.ENTITY_ARROW_SHOOT, 1.0F, 1.0F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
         this.world.spawnEntity(entityarrow);
     }
+
+    @Override
+    public void setSwingingArms(boolean swingingArms) { }
 
     // todo?
 /*    @Override
@@ -431,6 +436,7 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
         return EnumSet.allOf(EnumPartCategory.class);
     }
 
+    @SideOnly(Side.CLIENT)
     @Override
     public ArrayList<String> getCurrentParts(boolean isPreview) {
         if (isPreview) return this.previewParts;
@@ -443,6 +449,7 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
         }
     }
 
+    @SideOnly(Side.CLIENT)
     @Override
     public void setParts(ArrayList<String> parts, boolean isPreview) {
         if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) {
@@ -499,30 +506,29 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
         return this.personality;
     }
 
+    @SuppressWarnings("VariableUseSideOnly") // todo
     @Override
     public void setPersonality(Personality newPersonality) {
         //Check if there is an existing one
-        if (this.getPersonality() != null) {
-            Personality oldPersonality = this.getPersonality();
-            String stat = "";
-            //Loop through the new personalities
-            for (Map.Entry<String, MoodVariable> entry : newPersonality.moodVariables.entrySet()) {
-                int newValue = entry.getValue().getCurrentValue();
-                int oldValue = oldPersonality.getMoodVariableValue(entry.getKey());
-                //If greater, show that's increased
-                if (newValue > oldValue) {
-                    stat += ChatFormatting.DARK_GREEN + I18n.format("mood.variable." + entry.getKey() + ".name") + "+;";
-                }
-                //If less, show that's decreased
-                else if (newValue < oldValue) {
-                    stat += ChatFormatting.DARK_RED + I18n.format("mood.variable." + entry.getKey() + ".name") + "-;";
-                }
+        Personality oldPersonality = this.getPersonality();
+        StringBuilder stat = new StringBuilder();
+        //Loop through the new personalities
+        for (Map.Entry<String, MoodVariable> entry : newPersonality.moodVariables.entrySet()) {
+            int newValue = entry.getValue().getCurrentValue();
+            int oldValue = oldPersonality.getMoodVariableValue(entry.getKey());
+            //If greater, show that's increased
+            if (newValue > oldValue) {
+                stat.append(ChatFormatting.DARK_GREEN).append(I18n.format("mood.variable." + entry.getKey() + ".name")).append("+;");
             }
-            //If any stats have changed, show them
-            if (!stat.isEmpty()) {
-                this.statMessage = stat;
-                this.statMessageTime = 0;
+            //If less, show that's decreased
+            else if (newValue < oldValue) {
+                stat.append(ChatFormatting.DARK_RED).append(I18n.format("mood.variable." + entry.getKey() + ".name")).append("-;");
             }
+        }
+        //If any stats have changed, show them
+        if (stat.length() > 0) {
+            this.statMessage = stat.toString();
+            this.statMessageTime = 0;
         }
 
         this.personality = newPersonality;

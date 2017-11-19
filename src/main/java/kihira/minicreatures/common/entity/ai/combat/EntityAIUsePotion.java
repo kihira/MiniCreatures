@@ -8,6 +8,7 @@
 
 package kihira.minicreatures.common.entity.ai.combat;
 
+import kihira.minicreatures.common.EntityHelper;
 import kihira.minicreatures.common.entity.EntityMiniPlayer;
 import kihira.minicreatures.common.entity.ai.IRole;
 import net.minecraft.entity.EntityLiving;

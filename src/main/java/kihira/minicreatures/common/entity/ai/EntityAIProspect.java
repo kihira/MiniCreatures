@@ -9,6 +9,7 @@
 package kihira.minicreatures.common.entity.ai;
 
 import kihira.minicreatures.MiniCreatures;
+import kihira.minicreatures.common.EntityHelper;
 import kihira.minicreatures.common.OreFinder;
 import kihira.minicreatures.common.network.ProspectBlocksMessage;
 import net.minecraft.entity.ai.EntityAIBase;

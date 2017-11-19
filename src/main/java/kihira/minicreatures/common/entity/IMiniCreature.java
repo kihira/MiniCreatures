@@ -18,9 +18,12 @@ import kihira.minicreatures.common.entity.ai.EnumRole;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.inventory.IInventory;
 
+import javax.annotation.Nullable;
+
 public interface IMiniCreature {
 
     //TODO this should be in its own interface?
+    @Nullable
     IInventory getInventory();
 
     EntityLiving getEntity();

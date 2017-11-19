@@ -54,11 +54,10 @@ public class EntityAICollect<T extends EntityTameable & IMiniCreature> extends E
         List<EntityItem> entityItems = getEntityItemsInRadius(collectRadius, 1);
         for (EntityItem entityItem : entityItems) {
             ItemStack itemStack = entityItem.getItem();
-            int stackSize = itemStack.stackSize;
             //Collect
             if (addItemStackToInventory(itemStack)) {
                 entity.playSound(SoundEvents.ENTITY_CHICKEN_EGG, 0.2F, ((entity.getRNG().nextFloat() - entity.getRNG().nextFloat()) * 0.7F + 1.0F) * 2.0F);
-                entity.onItemPickup(entityItem, stackSize);
+                entity.onItemPickup(entityItem, itemStack.getCount());
             }
         }
         if (searchRadius > 0 && entity.getNavigator().noPath() && entity.world.getTotalWorldTime() % 20 == 0) {
@@ -113,30 +112,30 @@ public class EntityAICollect<T extends EntityTameable & IMiniCreature> extends E
             for (int i = 0; i < inventory.getSizeInventory(); i++) {
                 ItemStack itemStack = inventory.getStackInSlot(i);
                 if (itemStack.isEmpty() && inventory.isItemValidForSlot(i, itemStackToAdd)) {
-                    inventory.setInventorySlotContents(i, ItemStack.copyItemStack(itemStackToAdd));
-                    itemStackToAdd.stackSize = 0;
+                    inventory.setInventorySlotContents(i, itemStackToAdd.copy());
+                    itemStackToAdd.setCount(0);
                     return true;
                 }
-                else if (itemStack != null) {
-                    int stackSize = itemStackToAdd.stackSize;
+                else if (!itemStack.isEmpty()) {
+                    int stackSize = itemStackToAdd.getCount();
 
                     //Check if itemstacks can merge
-                    if (itemStack.isItemEqual(itemStackToAdd) && itemStack.stackSize < itemStack.getMaxStackSize() && itemStack.stackSize < inventory.getInventoryStackLimit() && ItemStack.areItemStackTagsEqual(itemStack, itemStackToAdd)) {
+                    if (itemStack.isItemEqual(itemStackToAdd) && itemStack.getCount() < itemStack.getMaxStackSize() && itemStack.getCount() < inventory.getInventoryStackLimit() && ItemStack.areItemStackTagsEqual(itemStack, itemStackToAdd)) {
                         int k = stackSize;
 
-                        if (i > itemStack.getMaxStackSize() - itemStack.stackSize) {
-                            k = itemStack.getMaxStackSize() - itemStack.stackSize;
+                        if (i > itemStack.getMaxStackSize() - itemStack.getCount()) {
+                            k = itemStack.getMaxStackSize() - itemStack.getCount();
                         }
 
-                        if (k > inventory.getInventoryStackLimit() - itemStack.stackSize) {
-                            k = inventory.getInventoryStackLimit() - itemStack.stackSize;
+                        if (k > inventory.getInventoryStackLimit() - itemStack.getCount()) {
+                            k = inventory.getInventoryStackLimit() - itemStack.getCount();
                         }
 
                         if (k > 0) {
                             stackSize -= k;
                             itemStack.grow(k);
                         }
-                        itemStackToAdd.stackSize = stackSize;
+                        itemStackToAdd.setCount(stackSize);
 
                         return true;
                     }
