@@ -31,7 +31,6 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class GuiHandler implements IGuiHandler {
 
-    @SideOnly(Side.SERVER)
     @Override
     public Object getServerGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
         //Get Entity ID as x coord. Inspired by OpenBlocks

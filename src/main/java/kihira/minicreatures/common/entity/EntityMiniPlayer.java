@@ -183,14 +183,14 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
                 //If armour, equip it
                 if (stack.getItem() instanceof ItemArmor && !player.isSneaking()) {
                     EntityEquipmentSlot slot = EntityLiving.getSlotForItemStack(stack);
-                    if (this.getItemStackFromSlot(slot) == null) {
+                    if (this.getItemStackFromSlot(slot).isEmpty()) {
                         this.setItemStackToSlot(slot, stack.copy());
                         stack.shrink(1);
                     }
                     else {
                         EntityItem entityItem = new EntityItem(this.world, this.posX, this.posY, this.posZ, this.getItemStackFromSlot(slot));
                         this.world.spawnEntity(entityItem);
-                        this.setItemStackToSlot(slot, null);
+                        this.setItemStackToSlot(slot, ItemStack.EMPTY);
                     }
                     return true;
                 }
@@ -223,7 +223,7 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
                 else if (this.getHeldItem(EnumHand.MAIN_HAND).isEmpty()) {
                     ItemStack newItemStack = stack.copy();
                     newItemStack.setCount(1);
-                    stack.shrink(1);
+                    if (!player.isCreative()) stack.shrink(1);
                     this.setCarrying(newItemStack);
                     playSound(SoundEvents.ENTITY_CHICKEN_EGG, 1.0F, (this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F + 1.0F);
                 }

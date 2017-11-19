@@ -132,7 +132,7 @@ public class EntityFox extends EntityMiniCreature implements IMiniCreature {
 
     @Override
     public double getMountedYOffset() {
-        return isSitting() ? -0.3d : -0.2d ;
+        return isSitting() ? -0.2d : -0.1d ;
     }
 
     // todo mini player rotations are being very very weird. This method probably isn't the place to solve it, must be caused by something
