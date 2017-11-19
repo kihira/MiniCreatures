@@ -94,39 +94,39 @@ public class ModelFox extends ModelBase {
         tailBase.addChild(tailMid);
     }
 
-    public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
-        this.setRotationAngles(f, f1, f2, f3, f4, f5, entity);
+    public void render(Entity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
+        this.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale, entityIn);
 
-        EntityFox entityFox = (EntityFox)entity;
+        EntityFox entityFox = (EntityFox)entityIn;
         GlStateManager.pushMatrix();
         if (entityFox.isSitting()) {
-            GlStateManager.translate(0f, f5 + 0.06f, 0f);
+            GlStateManager.translate(0f, scale + 0.06f, 0f);
         }
 
-        LBLeg.render(f5);
-        head.renderWithRotation(f5);
-        RBLeg.render(f5);
-        RFLeg.render(f5);
-        LFLeg.render(f5);
-        Body.render(f5);
-        tailBase.render(f5);
+        LBLeg.render(scale);
+        head.renderWithRotation(scale);
+        RBLeg.render(scale);
+        RFLeg.render(scale);
+        LFLeg.render(scale);
+        Body.render(scale);
+        tailBase.render(scale);
         if (entityFox.hasChest()) {
             GlStateManager.pushMatrix();
             GlStateManager.scale(1f, 0.5f, 0.5f);
             if (entityFox.isSitting()) {
-                GlStateManager.translate(0.0f, 16F * f5,  f5 - 0.3f);
+                GlStateManager.translate(0.0f, 16F * scale,  scale - 0.3f);
             }
             else {
-                GlStateManager.translate(0.0f, 18F * f5,  f5 - 0.15f);
+                GlStateManager.translate(0.0f, 18F * scale,  scale - 0.15f);
             }
-            chest.render(f5);
+            chest.render(scale);
             GlStateManager.popMatrix();
         }
         GlStateManager.popMatrix();
     }
 
-    public void setLivingAnimations(EntityLivingBase entityLivingBase, float par2, float par3, float par4) {
-        EntityFox entityFox = (EntityFox)entityLivingBase;
+    public void setLivingAnimations(EntityLivingBase entitylivingbaseIn, float limbSwing, float limbSwingAmount, float partialTickTime) {
+        EntityFox entityFox = (EntityFox)entitylivingbaseIn;
 
         if (entityFox.isSitting()) {
             this.Body.setRotationPoint(0F, 19F, -1F);
@@ -152,10 +152,10 @@ public class ModelFox extends ModelBase {
             this.RFLeg.setRotationPoint(-1.5F, 21F, -1.5F);
             this.LBLeg.setRotationPoint(1.5F, 21F, 2.5F);
             this.RBLeg.setRotationPoint(-1.5F, 21F, 2.5F);
-            this.LFLeg.rotateAngleX = MathHelper.cos(par2 * 1.5F) * 1.4F * par3;
-            this.RFLeg.rotateAngleX = MathHelper.cos(par2 * 1.5F + (float)Math.PI) * 1.4F * par3;
-            this.LBLeg.rotateAngleX = MathHelper.cos(par2 * 1.5F + (float)Math.PI) * 1.4F * par3;
-            this.RBLeg.rotateAngleX = MathHelper.cos(par2 * 1.5F) * 1.4F * par3;
+            this.LFLeg.rotateAngleX = MathHelper.cos(limbSwing * 1.5F) * 1.4F * limbSwingAmount;
+            this.RFLeg.rotateAngleX = MathHelper.cos(limbSwing * 1.5F + (float)Math.PI) * 1.4F * limbSwingAmount;
+            this.LBLeg.rotateAngleX = MathHelper.cos(limbSwing * 1.5F + (float)Math.PI) * 1.4F * limbSwingAmount;
+            this.RBLeg.rotateAngleX = MathHelper.cos(limbSwing * 1.5F) * 1.4F * limbSwingAmount;
             this.tailBase.setRotationPoint(0F, 18F, 2F);
         }
     }
@@ -174,20 +174,20 @@ public class ModelFox extends ModelBase {
     }
 
     @Override
-    public void setRotationAngles(float par1, float par2, float par3, float par4, float par5, float par6, Entity entity) {
-        super.setRotationAngles(par1, par2, par3, par4, par5, par6, entity);
-        EntityFox entityLiving = (EntityFox) entity;
+    public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn) {
+        super.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scaleFactor, entityIn);
+        EntityFox entityLiving = (EntityFox) entityIn;
         EntityPlayer owner = (EntityPlayer) entityLiving.getOwner();
         float health = entityLiving.getHealth() / entityLiving.getMaxHealth(); //Grab this here to reduce data watcher calls
 
-        this.head.rotateAngleX = par5 / (180F / (float)Math.PI);
-        this.head.rotateAngleY = par4 / (180F / (float)Math.PI);
+        this.head.rotateAngleX = headPitch / (180F / (float)Math.PI);
+        this.head.rotateAngleY = netHeadYaw / (180F / (float)Math.PI);
         this.tailBase.rotateAngleX = health / 3F;
         this.tailMid.rotateAngleX = health / 1.5F;
 
         //Tail
         //We can't use a number / distanceToOwner cause sometimes owner returns null even though the owner is there
         double speedModifier = health * (owner != null && entityLiving.getDistance(owner) < 28D ? 1.5D : 0.5D);
-        this.tailBase.rotateAngleY = (float) Math.cos((par3 / 2F) * speedModifier) / (2.5F / health);
+        this.tailBase.rotateAngleY = (float) Math.cos((ageInTicks / 2F) * speedModifier) / (2.5F / health);
     }
 }

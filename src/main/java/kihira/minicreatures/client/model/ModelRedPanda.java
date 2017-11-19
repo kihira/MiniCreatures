@@ -103,28 +103,28 @@ public class ModelRedPanda extends ModelBase {
     }
 
     @Override
-    public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
-        super.render(entity, f, f1, f2, f3, f4, f5);
-        this.setRotationAngles(f, f1, f2, f3, f4, f5, entity);
-        this.body.render(f5);
-        this.frontLeftLeg.render(f5);
-        this.frontRightLeg.render(f5);
-        this.backRightLeg.render(f5);
-        this.backLeftLeg.render(f5);
-        this.tail.render(f5);
-        this.head.render(f5);
-        this.nose.render(f5);
-        this.leftEar.render(f5);
-        this.leftEarTip.render(f5);
-        this.rightEar.render(f5);
-        this.rightEarTip.render(f5);
-        this.backRightLeg.render(f5);
+    public void render(Entity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
+        super.render(entity, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale);
+        this.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale, entity);
+        this.body.render(scale);
+        this.frontLeftLeg.render(scale);
+        this.frontRightLeg.render(scale);
+        this.backRightLeg.render(scale);
+        this.backLeftLeg.render(scale);
+        this.tail.render(scale);
+        this.head.render(scale);
+        this.nose.render(scale);
+        this.leftEar.render(scale);
+        this.leftEarTip.render(scale);
+        this.rightEar.render(scale);
+        this.rightEarTip.render(scale);
+        this.backRightLeg.render(scale);
 
         if (((EntityRedPanda) entity).hasChest()) {
             GlStateManager.pushMatrix();
             GlStateManager.scale(1F, 0.5F, 0.5F);
-            GlStateManager.translate(0.0f, 18F * f5,  f5 - 0.3f);
-            this.chest.render(f5);
+            GlStateManager.translate(0.0f, 18F * scale,  scale - 0.3f);
+            this.chest.render(scale);
             GlStateManager.popMatrix();
         }
     }
@@ -141,7 +141,7 @@ public class ModelRedPanda extends ModelBase {
      * @param entityLivingBase The entity
      */
     @Override
-    public void setLivingAnimations(EntityLivingBase entityLivingBase, float par2, float par3, float par4) {
+    public void setLivingAnimations(EntityLivingBase entityLivingBase, float limbSwing, float limbSwingAmount, float partialTickTime) {
         EntityRedPanda entityRedPanda = (EntityRedPanda) entityLivingBase;
 
         if (entityRedPanda.isSitting()) {
@@ -169,17 +169,17 @@ public class ModelRedPanda extends ModelBase {
             this.backLeftLeg.setRotationPoint(1.6F, 22F, 2.4F);
             this.tail.setRotationPoint(0F, 20F, 3F);
             this.setRotation(this.tail, -0.2617994F, 0F, 0F);
-            this.frontLeftLeg.rotateAngleX = MathHelper.cos(par2 * 1.5F) * 1.4F * par3;
-            this.frontRightLeg.rotateAngleX = MathHelper.cos(par2 * 1.5F + (float)Math.PI) * 1.4F * par3;
-            this.backLeftLeg.rotateAngleX = MathHelper.cos(par2 * 1.5F + (float)Math.PI) * 1.4F * par3;
-            this.backRightLeg.rotateAngleX = MathHelper.cos(par2 * 1.5F) * 1.4F * par3;
+            this.frontLeftLeg.rotateAngleX = MathHelper.cos(limbSwing * 1.5F) * 1.4F * limbSwingAmount;
+            this.frontRightLeg.rotateAngleX = MathHelper.cos(limbSwing * 1.5F + (float)Math.PI) * 1.4F * limbSwingAmount;
+            this.backLeftLeg.rotateAngleX = MathHelper.cos(limbSwing * 1.5F + (float)Math.PI) * 1.4F * limbSwingAmount;
+            this.backRightLeg.rotateAngleX = MathHelper.cos(limbSwing * 1.5F) * 1.4F * limbSwingAmount;
         }
     }
 
     @Override
-    public void setRotationAngles(float par1, float par2, float par3, float par4, float par5, float par6, Entity entity) {
-        super.setRotationAngles(par1, par2, par3, par4, par5, par6, entity);
-        this.head.rotateAngleX = this.nose.rotateAngleX = this.leftEar.rotateAngleX = this.leftEarTip.rotateAngleX = this.rightEar.rotateAngleX = this.rightEarTip.rotateAngleX = par5 / (180F / (float)Math.PI);
-        this.head.rotateAngleY = this.nose.rotateAngleY = this.leftEar.rotateAngleY = this.leftEarTip.rotateAngleY = this.rightEar.rotateAngleY = this.rightEarTip.rotateAngleY = par4 / (180F / (float)Math.PI);
+    public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn) {
+        super.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scaleFactor, entityIn);
+        this.head.rotateAngleX = this.nose.rotateAngleX = this.leftEar.rotateAngleX = this.leftEarTip.rotateAngleX = this.rightEar.rotateAngleX = this.rightEarTip.rotateAngleX = headPitch / (180F / (float)Math.PI);
+        this.head.rotateAngleY = this.nose.rotateAngleY = this.leftEar.rotateAngleY = this.leftEarTip.rotateAngleY = this.rightEar.rotateAngleY = this.rightEarTip.rotateAngleY = netHeadYaw / (180F / (float)Math.PI);
     }
 }
