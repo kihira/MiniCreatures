@@ -10,8 +10,6 @@ package kihira.minicreatures.client.gui;
 
 import com.google.common.base.Strings;
 import com.mojang.realmsclient.gui.ChatFormatting;
-import kihira.foxlib.client.gui.GuiBaseScreen;
-import kihira.foxlib.client.gui.ITooltip;
 import kihira.minicreatures.MiniCreatures;
 import kihira.minicreatures.common.entity.EntityMiniPlayer;
 import kihira.minicreatures.common.entity.ai.EnumRole;
@@ -19,11 +17,11 @@ import kihira.minicreatures.common.network.RoleMessage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiInventory;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import org.lwjgl.opengl.GL11;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -93,7 +91,7 @@ public class GuiRoleSelect extends GuiBaseScreen {
         @Override
         public void drawButton(Minecraft minecraft, int mouseX, int mouseY) {
             if (this.visible) {
-                GL11.glColor3f(1F, 1F, 1F);
+                GlStateManager.color(1F, 1F, 1F);
                 mc.renderEngine.bindTexture(guiTextures);
                 hovered = mouseX >= this.xPosition && mouseY >= this.yPosition && mouseX < this.xPosition + this.width && mouseY < this.yPosition + this.height;
                 int colour = selected ? 0x2200ff00 : 0x22000000;

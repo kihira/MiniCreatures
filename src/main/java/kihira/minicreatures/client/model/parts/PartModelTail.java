@@ -21,10 +21,10 @@ import kihira.minicreatures.proxy.ClientProxy;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import org.lwjgl.opengl.GL11;
 
 @SideOnly(Side.CLIENT)
 public class PartModelTail extends ModelBase implements ICustomizerPartClient {
@@ -61,13 +61,14 @@ public class PartModelTail extends ModelBase implements ICustomizerPartClient {
     @Override
     public void render(Entity entity, ModelBase modelMiniPlayer, float par2, float par3, float par4, float par5, float par6, float par7) {
         Minecraft.getMinecraft().renderEngine.bindTexture(ClientProxy.specialTextures);
-        GL11.glPushMatrix();
-        GL11.glScalef(1.0F / 2F, 1.0F / 2F, 1.0F / 2F);
-        GL11.glTranslatef(0.0F, 24.0F * par7, 0.0F);
+
+        GlStateManager.pushMatrix();
+        GlStateManager.scale(1.0F / 2F, 1.0F / 2F, 1.0F / 2F);
+        GlStateManager.translate(0.0F, 24.0F * par7, 0.0F);
         this.tailBase.render(par7);
         this.tailPart1.render(par7);
         this.tailPart2.render(par7);
         this.tailTip.render(par7);
-        GL11.glPopMatrix();
+        GlStateManager.popMatrix();
     }
 }

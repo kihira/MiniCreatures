@@ -17,13 +17,13 @@ package kihira.minicreatures.client.model;
 import kihira.minicreatures.common.entity.EntityFox;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import org.lwjgl.opengl.GL11;
 
 /**
  * The model for {@link kihira.minicreatures.common.entity.EntityFox}
@@ -98,9 +98,9 @@ public class ModelFox extends ModelBase {
         this.setRotationAngles(f, f1, f2, f3, f4, f5, entity);
 
         EntityFox entityFox = (EntityFox)entity;
-        GL11.glPushMatrix();
+        GlStateManager.pushMatrix();
         if (entityFox.isSitting()) {
-            GL11.glTranslatef(0.0f, f5 + 0.06f, 0f);
+            GlStateManager.translate(0f, f5 + 0.06f, 0f);
         }
 
         LBLeg.render(f5);
@@ -111,18 +111,18 @@ public class ModelFox extends ModelBase {
         Body.render(f5);
         tailBase.render(f5);
         if (entityFox.hasChest()) {
-            GL11.glPushMatrix();
-            GL11.glScalef(1f, 0.5f, 0.5f);
+            GlStateManager.pushMatrix();
+            GlStateManager.scale(1f, 0.5f, 0.5f);
             if (entityFox.isSitting()) {
-                GL11.glTranslatef(0.0f, 16F * f5,  f5 - 0.3f);
+                GlStateManager.translate(0.0f, 16F * f5,  f5 - 0.3f);
             }
             else {
-                GL11.glTranslatef(0.0f, 18F * f5,  f5 - 0.15f);
+                GlStateManager.translate(0.0f, 18F * f5,  f5 - 0.15f);
             }
             chest.render(f5);
-            GL11.glPopMatrix();
+            GlStateManager.popMatrix();
         }
-        GL11.glPopMatrix();
+        GlStateManager.popMatrix();
     }
 
     public void setLivingAnimations(EntityLivingBase entityLivingBase, float par2, float par3, float par4) {

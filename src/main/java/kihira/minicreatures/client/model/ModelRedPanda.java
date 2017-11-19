@@ -17,12 +17,12 @@ package kihira.minicreatures.client.model;
 import kihira.minicreatures.common.entity.EntityRedPanda;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import org.lwjgl.opengl.GL11;
 
 /**
  * The model for {@link kihira.minicreatures.common.entity.EntityRedPanda}
@@ -121,11 +121,11 @@ public class ModelRedPanda extends ModelBase {
         this.backRightLeg.render(f5);
 
         if (((EntityRedPanda) entity).hasChest()) {
-            GL11.glPushMatrix();
-            GL11.glScalef(1F, 0.5F, 0.5F);
-            GL11.glTranslatef(0.0f, 18F * f5,  f5 - 0.3f);
+            GlStateManager.pushMatrix();
+            GlStateManager.scale(1F, 0.5F, 0.5F);
+            GlStateManager.translate(0.0f, 18F * f5,  f5 - 0.3f);
             this.chest.render(f5);
-            GL11.glPopMatrix();
+            GlStateManager.popMatrix();
         }
     }
 
