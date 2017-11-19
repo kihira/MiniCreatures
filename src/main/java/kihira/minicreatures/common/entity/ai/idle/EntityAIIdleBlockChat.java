@@ -51,10 +51,10 @@ public class EntityAIIdleBlockChat extends EntityAIChat {
             for (int i = 0; i < 5; i++) {
                 BlockPos pos = new BlockPos(
                         (int) (miniPlayer.posX + random.nextInt(2 * searchRadius) - searchRadius),
-                        (int) MathHelper.clamp_double(miniPlayer.posY + random.nextInt(2 * 3) - 3, 1, 256),
+                        (int) MathHelper.clamp(miniPlayer.posY + random.nextInt(2 * 3) - 3, 1, 256),
                         (int) (miniPlayer.posZ + random.nextInt(2 * searchRadius) - searchRadius));
                 //Check it's not an air block cause we don't want to talk hot air :D
-                if (!miniPlayer.worldObj.isAirBlock(pos)) {
+                if (!miniPlayer.world.isAirBlock(pos)) {
                     this.target = pos;
 
                     return true;
@@ -65,13 +65,13 @@ public class EntityAIIdleBlockChat extends EntityAIChat {
     }
 
     @Override
-    public boolean continueExecuting() {
-        return !this.miniPlayer.worldObj.isAirBlock(target) && super.continueExecuting();
+    public boolean shouldContinueExecuting() {
+        return !this.miniPlayer.world.isAirBlock(target) && super.shouldContinueExecuting();
     }
 
     @Override
     public void startExecuting() {
-        Block targetBlock = this.miniPlayer.worldObj.getBlockState(target).getBlock();
+        Block targetBlock = this.miniPlayer.world.getBlockState(target).getBlock();
 
         //Look for some valid chat lines to say about this block
         String blockName = targetBlock.getUnlocalizedName();

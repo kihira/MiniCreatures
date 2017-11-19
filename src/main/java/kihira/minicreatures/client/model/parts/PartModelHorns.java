@@ -22,9 +22,12 @@ import kihira.minicreatures.proxy.ClientProxy;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
-import org.lwjgl.opengl.GL11;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
+@SideOnly(Side.CLIENT)
 public class PartModelHorns extends ModelBase implements ICustomizerPartClient {
 
     ModelRenderer hornLeftBase;
@@ -96,11 +99,11 @@ public class PartModelHorns extends ModelBase implements ICustomizerPartClient {
         this.hornRightBase.rotateAngleY = modelMiniPlayer.bipedHead.rotateAngleY;
         this.hornRightBase.rotateAngleX = modelMiniPlayer.bipedHead.rotateAngleX;
 
-        GL11.glPushMatrix();
-        GL11.glScalef(1.5F / 2F, 1.5F / 2F, 1.5F / 2F);
-        GL11.glTranslatef(0.0F, 16.0F * par7, 0.0F);
+        GlStateManager.pushMatrix();
+        GlStateManager.scale(1.5f / 2f, 1.5f / 2f, 1.5f / 2f);
+        GlStateManager.translate(0f, 16f * par7, 0f);
         this.hornLeftBase.render(par7);
         this.hornRightBase.render(par7);
-        GL11.glPopMatrix();
+        GlStateManager.popMatrix();
     }
 }

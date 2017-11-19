@@ -40,11 +40,11 @@ public class ModelMiniPlayer extends ModelBiped {
     public boolean isSitting;
 
     public ModelMiniPlayer() {
-        this(0.0F, false);
+        this(0f, false);
     }
 
     public ModelMiniPlayer(float modelSize, boolean smallTexture) {
-        super(modelSize, 0.0F, 64, smallTexture ? 32 : 64);
+        super(modelSize, 0f, 64, smallTexture ? 32 : 64);
     }
 
     @Override
@@ -80,7 +80,7 @@ public class ModelMiniPlayer extends ModelBiped {
 
     // armour rendering only calls setLivingAnimations
     @Override
-    public void setLivingAnimations(EntityLivingBase entity, float p_78086_2_, float p_78086_3_, float partialTickTime) {
+    public void setLivingAnimations(EntityLivingBase entity, float limbSwing, float limbSwingAmount, float partialTickTime) {
         setAnimations((EntityMiniPlayer) entity);
     }
 

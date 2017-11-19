@@ -45,7 +45,7 @@ public class EntityAIIdleEntityChat extends EntityAIChat {
         }
         //Find nearby entity
         else {
-            List list = this.miniPlayer.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, this.miniPlayer.getEntityBoundingBox().expand(this.searchRadius, 3, this.searchRadius));
+            List list = this.miniPlayer.world.getEntitiesWithinAABB(EntityLivingBase.class, this.miniPlayer.getEntityBoundingBox().expand(this.searchRadius, 3, this.searchRadius));
 
             if (list != null && !list.isEmpty()) {
                 int i = 0;
@@ -99,8 +99,8 @@ public class EntityAIIdleEntityChat extends EntityAIChat {
     }
 
     @Override
-    public boolean continueExecuting() {
-        return this.target != null && this.target.isEntityAlive() && super.continueExecuting();
+    public boolean shouldContinueExecuting() {
+        return this.target != null && this.target.isEntityAlive() && super.shouldContinueExecuting();
     }
 
     @Override

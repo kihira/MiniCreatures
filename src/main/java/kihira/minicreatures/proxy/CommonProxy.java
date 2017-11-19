@@ -14,7 +14,6 @@
 
 package kihira.minicreatures.proxy;
 
-import kihira.minicreatures.MiniCreatures;
 import kihira.minicreatures.client.model.parts.PartModelFairy;
 import kihira.minicreatures.client.model.parts.PartModelHorns;
 import kihira.minicreatures.client.model.parts.PartModelTail;
@@ -24,7 +23,6 @@ import kihira.minicreatures.common.network.SetAttackTargetMessage;
 import kihira.minicreatures.common.network.UpdateEntityMessage;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 
 public class CommonProxy {
@@ -44,10 +42,5 @@ public class CommonProxy {
         this.simpleNetworkWrapper.registerMessage(UpdateEntityMessage.UpdateEntityMessageHandler.class, UpdateEntityMessage.class, 1, Side.SERVER);
         this.simpleNetworkWrapper.registerMessage(SetAttackTargetMessage.SetAttackTargetMessageHandler.class, SetAttackTargetMessage.class, 2, Side.SERVER);
         this.simpleNetworkWrapper.registerMessage(RoleMessage.RoleMessageHandler.class, RoleMessage.class, 3, Side.SERVER);
-    }
-
-    public void registerItems() {
-        if (MiniCreatures.enableCustomizer) GameRegistry.register(MiniCreatures.itemCustomizer);
-        //GameRegistry.registerItem(itemMindControlHelmet, "mindControlHelmet");
     }
 }

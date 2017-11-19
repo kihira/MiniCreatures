@@ -40,8 +40,8 @@ public class MoodVariable implements Serializable {
      *
      * @param change The amount to change the current value by
      */
-    public void changeValue(float change) {
-        MathHelper.clamp_int(this.currentValue += change, this.minValue, this.maxValue);
+    public void changeValue(int change) {
+        this.currentValue = MathHelper.clamp(this.currentValue + change, this.minValue, this.maxValue);
     }
 
     /**
@@ -60,7 +60,7 @@ public class MoodVariable implements Serializable {
      * @return the current instance
      */
     public MoodVariable setCurrentValue(int value) {
-        MathHelper.clamp_int(this.currentValue = value, this.minValue, this.maxValue);
+        this.currentValue = MathHelper.clamp(value, this.minValue, this.maxValue);
         return this;
     }
 

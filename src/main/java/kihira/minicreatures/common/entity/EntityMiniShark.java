@@ -15,6 +15,7 @@
 package kihira.minicreatures.common.entity;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.MoverType;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.passive.EntityWaterMob;
@@ -54,9 +55,9 @@ public class EntityMiniShark extends EntityWaterMob {
 
     @Override
     public boolean attackEntityAsMob(Entity entity) {
-        boolean attack = entity.attackEntityFrom(DamageSource.causeMobDamage(this), worldObj.getDifficulty().getDifficultyId() * 2);
+        boolean attack = entity.attackEntityFrom(DamageSource.causeMobDamage(this), world.getDifficulty().getDifficultyId() * 2);
         if (attack && healCooldown <= 0) {
-            heal(worldObj.getDifficulty().getDifficultyId());
+            heal(world.getDifficulty().getDifficultyId());
             healCooldown = 60;
         }
         return attack;
@@ -79,7 +80,7 @@ public class EntityMiniShark extends EntityWaterMob {
                 if (d3 > 0) {
                     d3 = Math.sqrt(d3);
 
-                    if (!worldObj.isRemote) {
+                    if (!world.isRemote) {
                         double speed = (this.targetedEntity != null ? 0.02D : 0.01D) * getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).getAttributeValue();
                         this.motionX += xDist / d3 * speed;
                         this.motionY += yDist / d3 * speed * 1.5f;
@@ -88,7 +89,7 @@ public class EntityMiniShark extends EntityWaterMob {
                 }
             }
             else {
-                if (!worldObj.isRemote) {
+                if (!world.isRemote) {
                     this.motionX = 0D;
                     this.motionY -= 0.08D;
                     this.motionY *= 0.9800000190734863D;
@@ -130,9 +131,9 @@ public class EntityMiniShark extends EntityWaterMob {
                     double targetY = Math.floor(posY + MathHelper.getRandomDoubleInRange(rand, -1F, 2F));
                     double targetZ = Math.floor(posZ + MathHelper.getRandomDoubleInRange(rand, -8F, 8F));
 
-                    if ((worldObj.getBlock((int) targetX, (int) targetY, (int) targetZ).getMaterial() == Material.water) && isCourseTraversable(MathHelper.sqrt_double(d3))) {
+                    if ((world.getBlock((int) targetX, (int) targetY, (int) targetZ).getMaterial() == Material.water) && isCourseTraversable(MathHelper.sqrt_double(d3))) {
                         waypointX = targetX;
-                        waypointY = targetY + (worldObj.getBlock((int) targetX, (int) targetY + 1, (int) targetZ) instanceof BlockAir ? height : 0);
+                        waypointY = targetY + (world.getBlock((int) targetX, (int) targetY + 1, (int) targetZ) instanceof BlockAir ? height : 0);
                         waypointZ = targetZ;
                         break;
                     }
@@ -143,7 +144,7 @@ public class EntityMiniShark extends EntityWaterMob {
             }
         }
 
-        if (targetedEntity == null) targetedEntity = worldObj.getClosestPlayerToEntity(this, 64D);
+        if (targetedEntity == null) targetedEntity = world.getClosestPlayerToEntity(this, 64D);
         checkTargetValid();
         if (targetedEntity != null) {
             this.waypointX = this.targetedEntity.posX;
@@ -155,7 +156,7 @@ public class EntityMiniShark extends EntityWaterMob {
     }*/
 
     private void checkTargetValid() {
-        if (targetedEntity != null && (targetedEntity.isDead || !targetedEntity.isInWater() || this.targetedEntity.getDistanceSqToEntity(this) > 3600D || !canEntityBeSeen(this.targetedEntity))) {
+        if (targetedEntity != null && (targetedEntity.isDead || !targetedEntity.isInWater() || this.targetedEntity.getDistanceSq(this) > 3600D || !canEntityBeSeen(this.targetedEntity))) {
             targetedEntity = null;
         }
     }
@@ -173,7 +174,7 @@ public class EntityMiniShark extends EntityWaterMob {
         AxisAlignedBB axisalignedbb = this.getEntityBoundingBox().offset(x, y, z);
 
         for (int i = 1; (double)i < dist; ++i) {
-            if (!this.worldObj.getCollisionBoxes(this, axisalignedbb).isEmpty()) {
+            if (!this.world.getCollisionBoxes(this, axisalignedbb).isEmpty()) {
                 return false;
             }
         }
@@ -182,16 +183,16 @@ public class EntityMiniShark extends EntityWaterMob {
     }
 
     @Override
-    public void moveEntityWithHeading(float p_70612_1_, float p_70612_2_) {
+    public void travel(float strafe, float vertical, float forward) {
         if (waypointY > posY && waypointY - posY > 1) motionY += 0.05f;
-        this.moveEntity(this.motionX, this.motionY, this.motionZ);
+        this.move(MoverType.SELF, this.motionX, this.motionY, this.motionZ);
     }
 
     @Override
     public boolean isInWater() {
         // todo port to 1.9.4
-        // this.inWater = this.worldObj.getBlock(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.getEntityBoundingBox().minY + 0.25), MathHelper.floor_double(this.posZ)).getMaterial() == Material.WATER;
-        //this.inWater = this.worldObj.getBlock(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.boundingBox.minY + 0.25), MathHelper.floor_double(this.posZ)).getMaterial() == Material.water;
+        // this.inWater = this.world.getBlock(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.getEntityBoundingBox().minY + 0.25), MathHelper.floor_double(this.posZ)).getMaterial() == Material.WATER;
+        //this.inWater = this.world.getBlock(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.boundingBox.minY + 0.25), MathHelper.floor_double(this.posZ)).getMaterial() == Material.water;
         return this.inWater;
     }
 
@@ -206,7 +207,7 @@ public class EntityMiniShark extends EntityWaterMob {
 
     @Override
     protected void despawnEntity() {
-        if (worldObj.getDifficulty() == EnumDifficulty.PEACEFUL) setDead();
+        if (world.getDifficulty() == EnumDifficulty.PEACEFUL) setDead();
         else super.despawnEntity();
     }
 

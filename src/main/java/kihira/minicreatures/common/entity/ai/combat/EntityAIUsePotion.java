@@ -8,7 +8,7 @@
 
 package kihira.minicreatures.common.entity.ai.combat;
 
-import kihira.foxlib.common.EntityHelper;
+import kihira.minicreatures.common.EntityHelper;
 import kihira.minicreatures.common.entity.EntityMiniPlayer;
 import kihira.minicreatures.common.entity.ai.IRole;
 import net.minecraft.entity.EntityLiving;
@@ -57,16 +57,16 @@ public class EntityAIUsePotion extends EntityAIBase implements IRole {
         if (ticksToNextPotion == 0) {
             // todo support off hand
             ItemStack heldItemStack = miniPlayer.getHeldItem(EnumHand.MAIN_HAND);
-            if (heldItemStack != null && heldItemStack.getItem() instanceof ItemPotion) {
+            if (heldItemStack.getItem() instanceof ItemPotion) {
                 //Throw splashes
                 if (heldItemStack.getItem() == Items.SPLASH_POTION) {
                     miniPlayer.playSound(SoundEvents.ENTITY_SPLASH_POTION_THROW, 0.5F, 0.4F / (miniPlayer.getRNG().nextFloat() * 0.4F + 0.8F));
 
-                    if (!miniPlayer.worldObj.isRemote) {
+                    if (!miniPlayer.world.isRemote) {
                         float prevPitch = miniPlayer.rotationPitch;
                         float prevYaw = miniPlayer.rotationYaw;
                         //If owner is nearby, try to hit us both with potion
-                        if (miniPlayer.getDistanceSqToEntity(miniPlayer.getOwner()) < 16F) {
+                        if (miniPlayer.getDistanceSq(miniPlayer.getOwner()) < 16F) {
                             float[] pitchYaw = EntityHelper.getPitchYawToEntity(miniPlayer, miniPlayer.getOwner());
                             miniPlayer.rotationPitch = pitchYaw[0];
                             miniPlayer.rotationYaw = pitchYaw[1];
@@ -76,16 +76,13 @@ public class EntityAIUsePotion extends EntityAIBase implements IRole {
                             miniPlayer.rotationPitch = 90F;
                         }
 
-                        miniPlayer.worldObj.spawnEntityInWorld(new EntityPotion(miniPlayer.worldObj, miniPlayer, heldItemStack));
+                        miniPlayer.world.spawnEntity(new EntityPotion(miniPlayer.world, miniPlayer, heldItemStack));
 
                         miniPlayer.rotationPitch = prevPitch;
                         miniPlayer.rotationYaw = prevYaw;
                     }
 
-                    if (heldItemStack.stackSize-- <= 0) {
-                        miniPlayer.setCarrying(null);
-                    }
-                    else miniPlayer.setCarrying(heldItemStack);
+                    heldItemStack.shrink(1);
                 }
                 else {
                     miniPlayer.setActiveHand(EnumHand.MAIN_HAND);
@@ -115,7 +112,7 @@ public class EntityAIUsePotion extends EntityAIBase implements IRole {
                 applyPotionEffectIfFound(inventory, miniPlayer, MobEffects.WATER_BREATHING);
             }
             //Only apply resistance if attack attacked within the last second and has lost more then one heart of damage . Should prevent accidental casting.
-            if ((miniPlayer.getLastAttackerTime() < 20) && (miniPlayer.getMaxHealth() - miniPlayer.getHealth() >= damageThreshold) && !miniPlayer.isPotionActive(MobEffects.RESISTANCE)) {
+            if ((miniPlayer.getLastAttackedEntityTime() < 20) && (miniPlayer.getMaxHealth() - miniPlayer.getHealth() >= damageThreshold) && !miniPlayer.isPotionActive(MobEffects.RESISTANCE)) {
                 applyPotionEffectIfFound(inventory, miniPlayer, MobEffects.RESISTANCE);
             }
             //TODO sprint potion for fleeing?
@@ -139,7 +136,7 @@ public class EntityAIUsePotion extends EntityAIBase implements IRole {
         Arrays.sort(potions);
         for (int i = 0; i < inventory.getSizeInventory(); i++) {
             ItemStack itemStack = inventory.getStackInSlot(i);
-            if (itemStack != null && itemStack.getItem() instanceof ItemPotion) {
+            if (itemStack.getItem() instanceof ItemPotion) {
                 List<PotionEffect> potionEffects = PotionUtils.getEffectsFromStack(itemStack);
                 for (PotionEffect effect : potionEffects) {
                     if (ArrayUtils.contains(potions, effect.getPotion())) {

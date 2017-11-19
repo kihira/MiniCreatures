@@ -44,7 +44,7 @@ public class RoleMessage implements IMessage {
 
         @Override
         public IMessage onMessage(RoleMessage message, MessageContext ctx) {
-            Entity entity = ctx.getServerHandler().playerEntity.worldObj.getEntityByID(message.entityID);
+            Entity entity = ctx.getServerHandler().player.world.getEntityByID(message.entityID);
             if (entity instanceof EntityMiniPlayer) {
                 ((EntityMiniPlayer) entity).setRole(EnumRole.values()[message.roleID]);
             }

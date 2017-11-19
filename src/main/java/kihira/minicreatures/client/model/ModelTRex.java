@@ -20,10 +20,13 @@ import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.math.MathHelper;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
  * The model for {@link EntityMiniTRex}
  */
+@SideOnly(Side.CLIENT)
 public class ModelTRex extends ModelBase {
 
     ModelRenderer leftLegLower;
@@ -122,29 +125,29 @@ public class ModelTRex extends ModelBase {
     }
 
     @Override
-    public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
-        super.render(entity, f, f1, f2, f3, f4, f5);
-        setRotationAngles(f, f1, f2, f3, f4, f5, entity);
-        leftLegLower.render(f5);
-        neck.render(f5);
-        tailTip.render(f5);
-        leftLegUpper.render(f5);
-        rightLegUpper.render(f5);
-        leftLegFoot.render(f5);
-        leftArm.render(f5);
-        tailBase.render(f5);
-        tailMid.render(f5);
-        body.render(f5);
-        rightArm.render(f5);
-        rightLegLower.render(f5);
-        rightLegFoot.render(f5);
-        head.render(f5);
+    public void render(Entity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
+        super.render(entityIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale);
+        setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale, entityIn);
+        leftLegLower.render(scale);
+        neck.render(scale);
+        tailTip.render(scale);
+        leftLegUpper.render(scale);
+        rightLegUpper.render(scale);
+        leftLegFoot.render(scale);
+        leftArm.render(scale);
+        tailBase.render(scale);
+        tailMid.render(scale);
+        body.render(scale);
+        rightArm.render(scale);
+        rightLegLower.render(scale);
+        rightLegFoot.render(scale);
+        head.render(scale);
     }
 
 
-    public void setLivingAnimations(EntityLivingBase entityLivingBase, float par2, float par3, float par4) {
-        this.leftLegUpper.rotateAngleX = MathHelper.cos(par2 * 0.6F) * 1.4F * par3 + 0.9599311F;
-        this.rightLegUpper.rotateAngleX = MathHelper.cos(par2 * 0.6F + (float) Math.PI) * 1.4F * par3  + 0.9599311F;
+    public void setLivingAnimations(EntityLivingBase entityLivingBase, float limbSwing, float limbSwingAmount, float partialTickTime) {
+        this.leftLegUpper.rotateAngleX = MathHelper.cos(limbSwing * 0.6F) * 1.4F * limbSwingAmount + 0.9599311F;
+        this.rightLegUpper.rotateAngleX = MathHelper.cos(limbSwing * 0.6F + (float) Math.PI) * 1.4F * limbSwingAmount  + 0.9599311F;
 
         //TODO Make this work
         float x = (float)((5 * Math.sin(this.leftLegUpper.rotateAngleX)) + 15.4F);
@@ -155,8 +158,8 @@ public class ModelTRex extends ModelBase {
         //this.leftLegLower.setRotationPoint(this.leftLegUpper.rotationPointX, this.leftLegUpper.rotationPointY, this.leftLegUpper.rotationPointZ);
         this.leftLegLower.rotateAngleX = 0F;
 
-        //this.leftLegLower.rotateAngleX = -MathHelper.cos(par2 * 0.6F + (float)Math.PI) * 1.4F * par3 + 0.5759587F;
-        //this.rightLegLower.rotateAngleX = -MathHelper.cos(par2 * 0.6F) * 1.4F * par3 + 0.5759587F;
+        //this.leftLegLower.rotateAngleX = -MathHelper.cos(limbSwing * 0.6F + (float)Math.PI) * 1.4F * limbSwingAmount + 0.5759587F;
+        //this.rightLegLower.rotateAngleX = -MathHelper.cos(limbSwing * 0.6F) * 1.4F * limbSwingAmount + 0.5759587F;
     }
 
     private void setRotation(ModelRenderer model, float x, float y, float z) {
@@ -166,16 +169,16 @@ public class ModelTRex extends ModelBase {
     }
 
     @Override
-    public void setRotationAngles(float par1, float par2, float par3, float par4, float par5, float par6, Entity entity) {
-        super.setRotationAngles(par1, par2, par3, par4, par5, par6, entity);
-        this.head.rotateAngleX = par5 / (180F / (float)Math.PI);
-        this.head.rotateAngleY = par4 / (180F / (float)Math.PI);
+    public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn) {
+        super.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scaleFactor, entityIn);
+        this.head.rotateAngleX = headPitch / (180F / (float)Math.PI);
+        this.head.rotateAngleY = netHeadYaw / (180F / (float)Math.PI);
 
-/*        this.leftLegUpper.rotateAngleX = (MathHelper.cos(par1 * 0.6F) * 1F * par2) / 2 + 0.9599311F;
-        this.leftLegLower.rotateAngleX = (MathHelper.cos(par1 * 0.6F) * 1F * par2) / 2 + 0.5759587F;
-        this.leftLegFoot.rotateAngleX = (MathHelper.cos(par1 * 0.6F) * 1F * par2) / 2;
-        this.rightLegUpper.rotateAngleX = (MathHelper.cos(par1 * 0.6F + (float) Math.PI) * 1.4F * par2) / 2 + 0.9599311F;
-        this.rightLegLower.rotateAngleX = (MathHelper.cos(par1 * 0.6F + (float) Math.PI) * 1.4F * par2) / 2 + 0.5759587F;
-        this.rightLegFoot.rotateAngleX = (MathHelper.cos(par1 * 0.6F + (float) Math.PI) * 1.4F * par2) / 2;*/
+/*        this.leftLegUpper.rotateAngleX = (MathHelper.cos(limbSwing * 0.6F) * 1F * limbSwingAmount) / 2 + 0.9599311F;
+        this.leftLegLower.rotateAngleX = (MathHelper.cos(limbSwing * 0.6F) * 1F * limbSwingAmount) / 2 + 0.5759587F;
+        this.leftLegFoot.rotateAngleX = (MathHelper.cos(limbSwing * 0.6F) * 1F * limbSwingAmount) / 2;
+        this.rightLegUpper.rotateAngleX = (MathHelper.cos(limbSwing * 0.6F + (float) Math.PI) * 1.4F * limbSwingAmount) / 2 + 0.9599311F;
+        this.rightLegLower.rotateAngleX = (MathHelper.cos(limbSwing * 0.6F + (float) Math.PI) * 1.4F * limbSwingAmount) / 2 + 0.5759587F;
+        this.rightLegFoot.rotateAngleX = (MathHelper.cos(limbSwing * 0.6F + (float) Math.PI) * 1.4F * limbSwingAmount) / 2;*/
     }
 }

@@ -35,6 +35,7 @@ import net.minecraft.nbt.NBTTagString;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
@@ -46,7 +47,7 @@ import java.util.UUID;
 
 public class EntityFox extends EntityMiniCreature implements IMiniCreature {
 
-    protected static final DataParameter<String> PARTS_LIST = EntityDataManager.createKey(EntityMiniCreature.class, DataSerializers.STRING);
+    private static final DataParameter<String> PARTS_LIST = EntityDataManager.createKey(EntityMiniCreature.class, DataSerializers.STRING);
 
     public EntityFox(World par1World) {
         super(par1World, Items.BONE);
@@ -91,11 +92,11 @@ public class EntityFox extends EntityMiniCreature implements IMiniCreature {
         super.onLivingUpdate();
 
         //Happy
-        if (this.worldObj.isRemote && this.getDataManager().get(IS_HAPPY) && this.rand.nextInt(5) == 0) {
+        if (this.world.isRemote && this.getDataManager().get(IS_HAPPY) && this.rand.nextInt(5) == 0) {
             double x = this.posX + (double) (this.rand.nextFloat() * this.width * 2.0F) - (double) this.width;
             double y = this.posY + 0.5D + (double) (this.rand.nextFloat() * this.height);
             double z = this.posZ + (double) (this.rand.nextFloat() * this.width * 2.0F) - (double)this.width;
-            this.worldObj.spawnParticle(EnumParticleTypes.HEART, x, y, z, this.rand.nextGaussian() * 0.02D, this.rand.nextGaussian() * 0.02D, this.rand.nextGaussian() * 0.02D);
+            this.world.spawnParticle(EnumParticleTypes.HEART, x, y, z, this.rand.nextGaussian() * 0.02D, this.rand.nextGaussian() * 0.02D, this.rand.nextGaussian() * 0.02D);
         }
     }
 
@@ -131,7 +132,7 @@ public class EntityFox extends EntityMiniCreature implements IMiniCreature {
 
     @Override
     public double getMountedYOffset() {
-        return isSitting() ? -0.3d : -0.2d ;
+        return isSitting() ? -0.2d : -0.1d ;
     }
 
     // todo mini player rotations are being very very weird. This method probably isn't the place to solve it, must be caused by something
@@ -171,8 +172,9 @@ public class EntityFox extends EntityMiniCreature implements IMiniCreature {
         return SoundEvents.ENTITY_WOLF_AMBIENT;
     }
 
+    @Nullable
     @Override
-    protected SoundEvent getHurtSound() {
+    protected SoundEvent getHurtSound(DamageSource damageSource) {
         return SoundEvents.ENTITY_WOLF_HURT;
     }
 
@@ -207,7 +209,7 @@ public class EntityFox extends EntityMiniCreature implements IMiniCreature {
 
     @Override
     public EntityFox createChild(EntityAgeable entityageable) {
-        EntityFox entityFox = new EntityFox(this.worldObj);
+        EntityFox entityFox = new EntityFox(this.world);
         UUID uuid = this.getOwnerId(); //Get owner UUID
 
         if (uuid != null) {

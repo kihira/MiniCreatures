@@ -15,7 +15,7 @@
 package kihira.minicreatures.client.render;
 
 import com.google.common.base.Strings;
-import kihira.foxlib.client.TextHelper;
+import kihira.minicreatures.client.TextHelper;
 import kihira.minicreatures.client.model.ModelMiniPlayer;
 import kihira.minicreatures.common.entity.EntityMiniPlayer;
 import net.minecraft.client.entity.AbstractClientPlayer;
@@ -37,7 +37,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class RenderMiniPlayer extends RenderBiped<EntityMiniPlayer> {
 
     public RenderMiniPlayer(RenderManager manager) {
-        super(manager, new ModelMiniPlayer(), 0.3F, 1F);
+        super(manager, new ModelMiniPlayer(), 0.3F);
         this.addLayer(new LayerHeldItem(this));
         this.addLayer(new LayerBipedArmor(this)
         {
@@ -50,9 +50,14 @@ public class RenderMiniPlayer extends RenderBiped<EntityMiniPlayer> {
     }
 
     @Override
+    public ModelMiniPlayer getMainModel() {
+        return (ModelMiniPlayer) super.getMainModel();
+    }
+
+    @Override
     public void doRender(EntityMiniPlayer entity, double x, double y, double z, float entityYaw, float partialTicks) {
         setPoses(entity);
-        ((ModelMiniPlayer)modelBipedMain).isSitting = entity.isSitting();
+        getMainModel().isSitting = entity.isSitting();
 
         GlStateManager.enableBlendProfile(GlStateManager.Profile.PLAYER_SKIN);
         super.doRender(entity, x, y, z, entityYaw, partialTicks);
@@ -61,7 +66,7 @@ public class RenderMiniPlayer extends RenderBiped<EntityMiniPlayer> {
         //Draw the chat messages
         String chat = entity.getChat();
         if (!Strings.isNullOrEmpty(chat)) {
-            TextHelper.drawWrappedMessageFacingPlayer(x, y + entity.height + 0.67F, z, 0.016666668F * 1.1F, 100, 20, chat, -1);
+            TextHelper.drawWrappedMessageFacingPlayer(x, y + entity.height + 0.67F, z, 100, 20, chat, 0.016666668F * 1.1F);
         }
 
         //Draw stat changes
@@ -72,7 +77,7 @@ public class RenderMiniPlayer extends RenderBiped<EntityMiniPlayer> {
             //Loop through any changes
             for (String statChange : entity.statMessage.split(";")) {
                 if (!statChange.isEmpty()) {
-                    TextHelper.drawMultiLineMessageFacingPlayer(x, y + yOffset, z, 0.016666668F, new String[]{statChange}, (int) (-(entity.statMessageTime / 60F) * 255) << 24, true, false);
+                    TextHelper.drawMultiLineMessageFacingPlayer(x, y + yOffset, z, new String[]{statChange}, 0.016666668F, (int) (-(entity.statMessageTime / 60F) * 255) << 24, true, false);
                     yOffset += 0.4;
                 }
             }
@@ -91,7 +96,7 @@ public class RenderMiniPlayer extends RenderBiped<EntityMiniPlayer> {
         ModelBiped.ArmPose mainhandPose = ModelBiped.ArmPose.EMPTY;
         ModelBiped.ArmPose offhandPose = ModelBiped.ArmPose.EMPTY;
 
-        if (itemMainhand != null) {
+        if (!itemMainhand.isEmpty()) {
             mainhandPose = ModelBiped.ArmPose.ITEM;
 
             if (miniPlayer.getItemInUseCount() > 0) {
@@ -106,7 +111,7 @@ public class RenderMiniPlayer extends RenderBiped<EntityMiniPlayer> {
                 }
             }
         }
-        if (itemOffhand != null) {
+        if (!itemOffhand.isEmpty()) {
             offhandPose = ModelBiped.ArmPose.ITEM;
 
             if (miniPlayer.getItemInUseCount() > 0) {
@@ -120,12 +125,12 @@ public class RenderMiniPlayer extends RenderBiped<EntityMiniPlayer> {
         }
 
         if (miniPlayer.getPrimaryHand() == EnumHandSide.RIGHT) {
-            modelBipedMain.rightArmPose = mainhandPose;
-            modelBipedMain.leftArmPose = offhandPose;
+            getMainModel().rightArmPose = mainhandPose;
+            getMainModel().leftArmPose = offhandPose;
         }
         else {
-            modelBipedMain.rightArmPose = offhandPose;
-            modelBipedMain.leftArmPose = mainhandPose;
+            getMainModel().rightArmPose = offhandPose;
+            getMainModel().leftArmPose = mainhandPose;
         }
     }
 

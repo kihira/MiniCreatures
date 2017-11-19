@@ -38,7 +38,7 @@ public class EntityAIBowAttack extends EntityAIBase {
     }
 
     private boolean hasBow() {
-        return this.entity.getHeldItemMainhand() != null && this.entity.getHeldItemMainhand().getItem() instanceof ItemBow;
+        return this.entity.getHeldItemMainhand().getItem() instanceof ItemBow;
     }
 
     @Override
@@ -67,7 +67,7 @@ public class EntityAIBowAttack extends EntityAIBase {
 
             // Can see target and within range
             if (dist <= (double)this.maxAttackDistance && this.trackTime >= 10) {
-                this.entity.getNavigator().clearPathEntity();
+                this.entity.getNavigator().clearPath();
                 ++this.strafingTime;
             }
             // Try to move to target if unseen or out of range

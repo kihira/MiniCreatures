@@ -21,7 +21,7 @@ public class EntityAIHappy extends EntityAIBase {
     public boolean shouldExecute() {
         if (this.theEntity.isTamed() && !this.theEntity.isSitting() && theEntity.getRNG().nextInt(250) == 0) {
             EntityPlayer player = (EntityPlayer) this.theEntity.getOwner();
-            if (player != null && this.theEntity.getDistanceSqToEntity(player) < 32 && !this.theEntity.hasPath()) return true;
+            return player != null && this.theEntity.getDistanceSq(player) < 32 && !this.theEntity.hasPath();
         }
         return false;
     }
@@ -38,7 +38,7 @@ public class EntityAIHappy extends EntityAIBase {
         this.theEntity.getLookHelper().setLookPositionWithEntity(this.theEntity.getOwner(), 10.0F, this.theEntity.getVerticalFaceSpeed());
 
         if (!this.theEntity.hasPath()) {
-            if (this.theEntity.getDistanceSqToEntity(this.theEntity.getOwner()) < 2 && this.theEntity.getRNG().nextInt(15) == 0) this.theEntity.getJumpHelper().setJumping();
+            if (this.theEntity.getDistanceSq(this.theEntity.getOwner()) < 2 && this.theEntity.getRNG().nextInt(15) == 0) this.theEntity.getJumpHelper().setJumping();
             this.timesRunAround++;
             this.findAndSetPath();
         }
@@ -51,7 +51,7 @@ public class EntityAIHappy extends EntityAIBase {
     }
 
     @Override
-    public boolean continueExecuting() {
+    public boolean shouldContinueExecuting() {
         return this.timesRunAround < 10;
     }
 
@@ -61,7 +61,7 @@ public class EntityAIHappy extends EntityAIBase {
 
         if (player != null) {
             this.theEntity.getNavigator().setPath(this.theEntity.getNavigator().getPathToXYZ(player.posX +
-                   MathHelper.getRandomIntegerInRange(random, -1, 1), player.getEntityBoundingBox().minY, player.posZ + MathHelper.getRandomIntegerInRange(random, -1, 1)), 1.2D);
+                   MathHelper.getInt(random, -1, 1), player.getEntityBoundingBox().minY, player.posZ + MathHelper.getInt(random, -1, 1)), 1.2D);
         }
     }
 }

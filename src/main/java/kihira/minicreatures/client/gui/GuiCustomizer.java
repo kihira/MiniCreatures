@@ -23,12 +23,15 @@ import kihira.minicreatures.common.network.UpdateEntityMessage;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiInventory;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
-import org.lwjgl.opengl.GL11;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.ArrayList;
 
+@SideOnly(Side.CLIENT)
 public class GuiCustomizer extends GuiScreen {
 
     private final ICustomisable miniCreature;
@@ -174,7 +177,7 @@ public class GuiCustomizer extends GuiScreen {
     }
 
     private void drawBackground(int p_146976_2_, int p_146976_3_) {
-        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+        GlStateManager.color(1f, 1f, 1f, 1f);
         this.mc.getTextureManager().bindTexture(this.guiTextures);
         this.drawTexturedModalRect(this.guiLeft, this.guiTop, 0, 0, this.xSize, this.ySize);
         GuiInventory.drawEntityOnScreen(this.guiLeft + 42, this.guiTop + 82, 45, (float) (this.guiLeft + 51) - p_146976_2_, (float) (this.guiTop + 75 - 50) - p_146976_3_, this.miniCreature.getEntity());

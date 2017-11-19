@@ -1,7 +1,7 @@
 package kihira.minicreatures.common.personality;
 
-import kihira.foxlib.common.gson.GsonHelper;
 import kihira.minicreatures.MiniCreatures;
+import kihira.minicreatures.common.GsonHelper;
 import kihira.minicreatures.common.network.PersonalityMessage;
 
 import java.io.Serializable;
@@ -83,7 +83,7 @@ public class Personality implements Serializable {
 
 
         //Minute
-        if (theEntity.theEntity().worldObj.getTotalWorldTime() % 1200 == 0) {
+        if (theEntity.theEntity().world.getTotalWorldTime() % 1200 == 0) {
             for (MoodVariable moodVariable : this.moodVariables.values()) {
                 if (moodVariable.getCurrentValue() > moodVariable.getRestingValue()) {
                     moodVariable.changeValue(-1);

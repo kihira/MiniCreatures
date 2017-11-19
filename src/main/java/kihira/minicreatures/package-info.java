@@ -1,0 +1,4 @@
+@ParametersAreNonnullByDefault
+package kihira.minicreatures;
+
+import javax.annotation.ParametersAreNonnullByDefault;

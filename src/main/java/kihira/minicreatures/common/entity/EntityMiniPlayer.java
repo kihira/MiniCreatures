@@ -16,9 +16,7 @@ package kihira.minicreatures.common.entity;
 
 import com.google.common.base.Strings;
 import com.mojang.realmsclient.gui.ChatFormatting;
-import kihira.foxlib.common.gson.GsonHelper;
-import kihira.minicreatures.MiniCreatures;
-import kihira.minicreatures.common.Utils;
+import kihira.minicreatures.common.GsonHelper;
 import kihira.minicreatures.common.customizer.EnumPartCategory;
 import kihira.minicreatures.common.entity.ai.EntityAIHeal;
 import kihira.minicreatures.common.entity.ai.EntityAIProspect;
@@ -32,7 +30,6 @@ import kihira.minicreatures.common.personality.IPersonality;
 import kihira.minicreatures.common.personality.Mood;
 import kihira.minicreatures.common.personality.MoodVariable;
 import kihira.minicreatures.common.personality.Personality;
-import net.minecraft.block.Block;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.*;
@@ -42,7 +39,6 @@ import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.entity.projectile.EntityTippedArrow;
-import net.minecraft.init.Blocks;
 import net.minecraft.init.Enchantments;
 import net.minecraft.init.Items;
 import net.minecraft.init.SoundEvents;
@@ -150,7 +146,7 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
         super.readEntityFromNBT(tagCompound);
 
         //Load Personality
-        Personality personality = GsonHelper.createGson(Mood.class).fromJson(tagCompound.getString("Personality"), Personality.class);
+        Personality personality = GsonHelper.fromJson(tagCompound.getString("Personality"), Personality.class);
         if (personality != null) {
             this.personality = personality;
             System.out.println(this.personality);
@@ -158,11 +154,11 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
 
         //Load parts list
         NBTTagList tagList = tagCompound.getTagList("Parts", 8);
-        String s = "";
+        StringBuilder s = new StringBuilder();
         for (int i = 0; i < tagList.tagCount(); i++) {
-            s += tagList.getStringTagAt(i) + ",";
+            s.append(tagList.getStringTagAt(i)).append(",");
         }
-        this.getDataManager().set(PARTS, s);
+        this.getDataManager().set(PARTS, s.toString());
 
         //Role
         setRole(EnumRole.values()[tagCompound.getInteger("Role")]);
@@ -172,8 +168,9 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
     }
 
     @Override
-    public boolean processInteract(EntityPlayer player, EnumHand hand, @Nullable ItemStack stack) {
-        if (!this.worldObj.isRemote && hand == EnumHand.MAIN_HAND) { // todo hand check is fix to prevent double activation
+    public boolean processInteract(EntityPlayer player, EnumHand hand) {
+        ItemStack stack = player.getHeldItem(hand);
+        if (!this.world.isRemote && hand == EnumHand.MAIN_HAND) { // todo hand check is fix to prevent double activation
             //MiniCreatures.proxy.simpleNetworkWrapper.sendTo(new ProspectBlocksMessage(this.getEntityId(), 5, 10), (EntityPlayerMP) this.getOwner());
             //Allow taming in creative mode without items
             if (!this.isTamed() && player.capabilities.isCreativeMode) {
@@ -183,80 +180,57 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
             //If tamed
             if (this.isTamed()) {
                 //If player has item
-                if (stack != null) {
-                    //If armour, equip it
-                    if (stack.getItem() instanceof ItemArmor && !player.isSneaking()) {
-                        EntityEquipmentSlot slot = EntityLiving.getSlotForItemStack(stack);
-                        if (this.getItemStackFromSlot(slot) == null) {
-                            this.setItemStackToSlot(slot, stack.copy());
-                            Utils.decreaseCurrentStack(player, stack);
-                        }
-                        else {
-                            EntityItem entityItem = new EntityItem(this.worldObj, this.posX, this.posY, this.posZ, this.getItemStackFromSlot(slot));
-                            this.worldObj.spawnEntityInWorld(entityItem);
-                            this.setItemStackToSlot(slot, null);
-                        }
-                        return true;
-                    }
-                    // If shield, equip it
-                    else if (stack.getItem() == Items.SHIELD) {
-                        setItemStackToSlot(EntityEquipmentSlot.OFFHAND, stack.copy());
-                        Utils.decreaseCurrentStack(player, stack);
-                    }
-                    //If lead and mounted, unmount
-                    else if (stack.getItem() == Items.LEAD && this.isRiding() && !player.isSneaking()) this.dismountRidingEntity();
-                    //If entity is holding something and player is holding a stick, drop current item
-                    else if (stack.getItem() == Items.STICK && this.getHeldItem(EnumHand.MAIN_HAND) != null) {
-                        EntityItem entityItem = new EntityItem(player.worldObj, this.posX, this.posY, this.posZ, this.getHeldItem(EnumHand.MAIN_HAND).copy());
-                        player.worldObj.spawnEntityInWorld(entityItem);
-                        this.setCarrying(null);
-                        //Drop chest contents
-                        for (int i = 0; i < inventory.getSizeInventory(); i++) {
-                            ItemStack itemStackToDrop = inventory.getStackInSlot(i);
-                            if (itemStackToDrop != null) {
-                                entityItem = new EntityItem(player.worldObj, this.posX, this.posY, this.posZ, itemStackToDrop);
-                                player.worldObj.spawnEntityInWorld(entityItem);
-                            }
-                            inventory.setInventorySlotContents(i, null);
-                        }
-                    }
-                    else if (stack.getItem() == Items.DIAMOND) {
-                        personality.changeMoodVariableLevel(this, "happiness", 5);
-                    }
-                    else if (this.getHeldItem(EnumHand.MAIN_HAND) == null) {
-                        ItemStack newItemStack = stack.copy();
-                        newItemStack.stackSize = 1;
-                        this.setCarrying(newItemStack);
-                        playSound(SoundEvents.ENTITY_CHICKEN_EGG, 1.0F, (this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F + 1.0F);
-                        Utils.decreaseCurrentStack(player, stack);
-                    }
-                }
-                //If entity is holding something and player isn't, open GUI
-                else if (this.getHeldItem(EnumHand.MAIN_HAND) != null && !player.isSneaking()) {
-                    if (Block.getBlockFromItem(this.getHeldItem(EnumHand.MAIN_HAND).getItem()) == Blocks.CHEST) player.openGui(MiniCreatures.instance, 0, player.worldObj, this.getEntityId(), 0, 0);
-                    else if (Block.getBlockFromItem(this.getHeldItem(EnumHand.MAIN_HAND).getItem()) == Blocks.ANVIL) player.openGui(MiniCreatures.instance, 1, player.worldObj, (int) this.posX, (int) this.posY, (int) this.posZ);
-                }
-                else if (player.isEntityEqual(this.getOwner()) && !this.worldObj.isRemote) {
-                    if (this.isRiding()) {
-                        EntityTameable ridingEntity = (EntityTameable) this.getRidingEntity();
-                        ridingEntity.getAISit().setSitting(!ridingEntity.isSitting());
-                        ridingEntity.setJumping(false);
-                        this.getNavigator().clearPathEntity();
-                        this.setRevengeTarget(null);
-                        this.setAttackTarget(null);
+                //If armour, equip it
+                if (stack.getItem() instanceof ItemArmor && !player.isSneaking()) {
+                    EntityEquipmentSlot slot = EntityLiving.getSlotForItemStack(stack);
+                    if (this.getItemStackFromSlot(slot).isEmpty()) {
+                        this.setItemStackToSlot(slot, stack.copy());
+                        stack.shrink(1);
                     }
                     else {
-                        this.getAISit().setSitting(!this.isSitting());
-                        this.isJumping = false;
-                        this.getNavigator().clearPathEntity();
-                        this.setRevengeTarget(null);
-                        this.setAttackTarget(null);
+                        EntityItem entityItem = new EntityItem(this.world, this.posX, this.posY, this.posZ, this.getItemStackFromSlot(slot));
+                        this.world.spawnEntity(entityItem);
+                        this.setItemStackToSlot(slot, ItemStack.EMPTY);
                     }
+                    return true;
+                }
+                // If shield, equip it
+                else if (stack.getItem() == Items.SHIELD) {
+                    setItemStackToSlot(EntityEquipmentSlot.OFFHAND, stack.copy());
+                    stack.shrink(1);
+                }
+                //If lead and mounted, unmount
+                else if (stack.getItem() == Items.LEAD && this.isRiding() && !player.isSneaking()) this.dismountRidingEntity();
+                //If entity is holding something and player is holding a stick, drop current item
+                else if (stack.getItem() == Items.STICK) {
+                    EntityItem entityItem = new EntityItem(player.world, this.posX, this.posY, this.posZ, this.getHeldItem(EnumHand.MAIN_HAND).copy());
+                    player.world.spawnEntity(entityItem);
+                    this.setCarrying(ItemStack.EMPTY);
+                    //Drop chest contents
+                    for (int i = 0; i < inventory.getSizeInventory(); i++) {
+                        ItemStack itemStackToDrop = inventory.getStackInSlot(i);
+                        if (!itemStackToDrop.isEmpty()) {
+                            entityItem = new EntityItem(player.world, this.posX, this.posY, this.posZ, itemStackToDrop);
+                            player.world.spawnEntity(entityItem);
+                        }
+                        inventory.setInventorySlotContents(i, ItemStack.EMPTY);
+                    }
+                }
+                else if (stack.getItem() == Items.DIAMOND) {
+                    personality.changeMoodVariableLevel(this, "happiness", 5);
+                }
+                // Giving entity currently held item
+                else if (this.getHeldItem(EnumHand.MAIN_HAND).isEmpty()) {
+                    ItemStack newItemStack = stack.copy();
+                    newItemStack.setCount(1);
+                    if (!player.isCreative()) stack.shrink(1);
+                    this.setCarrying(newItemStack);
+                    playSound(SoundEvents.ENTITY_CHICKEN_EGG, 1.0F, (this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F + 1.0F);
                 }
             }
         }
         //setCarrying(new ItemStack(Items.potionitem, 1, 16457));
-        return super.processInteract(player, hand, stack);
+        return super.processInteract(player, hand);
     }
 
     @Override
@@ -267,11 +241,12 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
         this.personality.onUpdate(this);
     }
 
+    @SuppressWarnings("VariableUseSideOnly")
     @Override
     public void onLivingUpdate() {
         super.onLivingUpdate();
         this.updateArmSwingProgress();
-        if (this.worldObj.isRemote && this.statMessageTime < 60) {
+        if (this.world.isRemote && this.statMessageTime < 60) {
             this.statMessageTime++;
         }
 
@@ -296,7 +271,7 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
     }
 
     @Override
-    public void setAttackTarget(EntityLivingBase attackTarget) {
+    public void setAttackTarget(@Nullable EntityLivingBase attackTarget) {
         if (this.isRiding() && this.getRidingEntity() instanceof EntityFox) {
             EntityFox entityFox = (EntityFox) this.getRidingEntity();
             entityFox.setAttackTarget(attackTarget);
@@ -315,7 +290,7 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
         }
 
         boolean damaged = target.attackEntityFrom(DamageSource.causeMobDamage(this), attackDamage);
-        this.setLastAttacker(target);
+        this.setLastAttackedEntity(target);
 
         if (damaged) {
             if (knockback > 0) {
@@ -332,12 +307,12 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
                 ItemStack itemMainhand = this.getHeldItemMainhand();
                 ItemStack itemActive = entityplayer.isHandActive() ? entityplayer.getActiveItemStack() : null;
 
-                if (itemMainhand != null && itemActive != null && itemMainhand.getItem() instanceof ItemAxe && itemActive.getItem() == Items.SHIELD) {
+                if (itemActive != null && itemMainhand.getItem() instanceof ItemAxe && itemActive.getItem() == Items.SHIELD) {
                     float shieldChance = 0.25F + (float)EnchantmentHelper.getEfficiencyModifier(this) * 0.05F;
 
                     if (this.rand.nextFloat() < shieldChance) {
                         entityplayer.getCooldownTracker().setCooldown(Items.SHIELD, 100);
-                        this.worldObj.setEntityState(entityplayer, (byte)30);
+                        this.world.setEntityState(entityplayer, (byte)30);
                     }
                 }
             }
@@ -353,12 +328,12 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
 
     @Override
     public void attackEntityWithRangedAttack(EntityLivingBase target, float velocity) {
-        EntityArrow entityarrow = new EntityTippedArrow(this.worldObj, this);
+        EntityArrow entityarrow = new EntityTippedArrow(this.world, this);
         double xDist = target.posX - this.posX;
         double yDist = target.getEntityBoundingBox().minY + (double)(target.height / 3.0F) - entityarrow.posY;
         double zDist = target.posZ - this.posZ;
-        double d3 = (double)MathHelper.sqrt_double(xDist * xDist + zDist * zDist);
-        entityarrow.setThrowableHeading(xDist, yDist + d3 * 0.20000000298023224D, zDist, 1.6F, (float)(14 - this.worldObj.getDifficulty().getDifficultyId() * 4));
+        double d3 = (double)MathHelper.sqrt(xDist * xDist + zDist * zDist);
+        entityarrow.shoot(xDist, yDist + d3 * 0.20000000298023224D, zDist, 1.6F, (float)(14 - this.world.getDifficulty().getDifficultyId() * 4));
 
         int power = EnchantmentHelper.getEnchantmentLevel(Enchantments.POWER, this.getHeldItem(EnumHand.MAIN_HAND));
         int punch = EnchantmentHelper.getEnchantmentLevel(Enchantments.PUNCH, this.getHeldItem(EnumHand.MAIN_HAND));
@@ -371,8 +346,11 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
         if (EnchantmentHelper.getEnchantmentLevel(Enchantments.FLAME, this.getHeldItem(EnumHand.MAIN_HAND)) > 0) entityarrow.setFire(100);
 
         this.playSound(SoundEvents.ENTITY_ARROW_SHOOT, 1.0F, 1.0F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
-        this.worldObj.spawnEntityInWorld(entityarrow);
+        this.world.spawnEntity(entityarrow);
     }
+
+    @Override
+    public void setSwingingArms(boolean swingingArms) { }
 
     // todo?
 /*    @Override
@@ -383,25 +361,22 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
     @Override
     protected void damageShield(float damage) {
         System.out.println(damage);
-        if (damage >= 3.0F && this.activeItemStack != null && this.activeItemStack.getItem() == Items.SHIELD) {
-            int totalDam = 1 + MathHelper.floor_float(damage);
+        if (damage >= 3.0F && !this.activeItemStack.isEmpty() && this.activeItemStack.getItem() == Items.SHIELD) {
+            int totalDam = 1 + MathHelper.floor(damage);
             this.activeItemStack.damageItem(totalDam, this);
 
-            if (this.activeItemStack.stackSize <= 0) {
-                this.setItemStackToSlot(this.getActiveHand() == EnumHand.MAIN_HAND ? EntityEquipmentSlot.MAINHAND : EntityEquipmentSlot.OFFHAND, null);
-
-                this.activeItemStack = null;
-                this.playSound(SoundEvents.ITEM_SHIELD_BREAK, 0.8F, 0.8F + this.worldObj.rand.nextFloat() * 0.4F);
+            if (this.activeItemStack.isEmpty()) {
+                this.playSound(SoundEvents.ITEM_SHIELD_BREAK, 0.8F, 0.8F + this.world.rand.nextFloat() * 0.4F);
             }
         }
     }
 
-    public void setCombatAI() {
+    private void setCombatAI() {
         this.tasks.removeTask(this.aiAttackOnCollide);
         this.tasks.removeTask(this.aiArrowAttack);
         ItemStack itemstack = this.getHeldItem(EnumHand.MAIN_HAND);
 
-        if (itemstack != null && itemstack.getItem() == Items.BOW) this.tasks.addTask(3, this.aiArrowAttack);
+        if (itemstack.getItem() == Items.BOW) this.tasks.addTask(3, this.aiArrowAttack);
         else this.tasks.addTask(3, this.aiAttackOnCollide);
     }
 
@@ -461,6 +436,7 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
         return EnumSet.allOf(EnumPartCategory.class);
     }
 
+    @SideOnly(Side.CLIENT)
     @Override
     public ArrayList<String> getCurrentParts(boolean isPreview) {
         if (isPreview) return this.previewParts;
@@ -473,6 +449,7 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
         }
     }
 
+    @SideOnly(Side.CLIENT)
     @Override
     public void setParts(ArrayList<String> parts, boolean isPreview) {
         if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) {
@@ -529,30 +506,29 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
         return this.personality;
     }
 
+    @SuppressWarnings("VariableUseSideOnly") // todo
     @Override
     public void setPersonality(Personality newPersonality) {
         //Check if there is an existing one
-        if (this.getPersonality() != null) {
-            Personality oldPersonality = this.getPersonality();
-            String stat = "";
-            //Loop through the new personalities
-            for (Map.Entry<String, MoodVariable> entry : newPersonality.moodVariables.entrySet()) {
-                int newValue = entry.getValue().getCurrentValue();
-                int oldValue = oldPersonality.getMoodVariableValue(entry.getKey());
-                //If greater, show that's increased
-                if (newValue > oldValue) {
-                    stat += ChatFormatting.DARK_GREEN + I18n.format("mood.variable." + entry.getKey() + ".name") + "+;";
-                }
-                //If less, show that's decreased
-                else if (newValue < oldValue) {
-                    stat += ChatFormatting.DARK_RED + I18n.format("mood.variable." + entry.getKey() + ".name") + "-;";
-                }
+        Personality oldPersonality = this.getPersonality();
+        StringBuilder stat = new StringBuilder();
+        //Loop through the new personalities
+        for (Map.Entry<String, MoodVariable> entry : newPersonality.moodVariables.entrySet()) {
+            int newValue = entry.getValue().getCurrentValue();
+            int oldValue = oldPersonality.getMoodVariableValue(entry.getKey());
+            //If greater, show that's increased
+            if (newValue > oldValue) {
+                stat.append(ChatFormatting.DARK_GREEN).append(I18n.format("mood.variable." + entry.getKey() + ".name")).append("+;");
             }
-            //If any stats have changed, show them
-            if (!stat.isEmpty()) {
-                this.statMessage = stat;
-                this.statMessageTime = 0;
+            //If less, show that's decreased
+            else if (newValue < oldValue) {
+                stat.append(ChatFormatting.DARK_RED).append(I18n.format("mood.variable." + entry.getKey() + ".name")).append("-;");
             }
+        }
+        //If any stats have changed, show them
+        if (stat.length() > 0) {
+            this.statMessage = stat.toString();
+            this.statMessageTime = 0;
         }
 
         this.personality = newPersonality;

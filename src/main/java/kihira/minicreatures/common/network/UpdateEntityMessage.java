@@ -55,7 +55,7 @@ public class UpdateEntityMessage implements IMessage {
             for (String part : message.partsList) {
                 if (!Strings.isNullOrEmpty(part)) MiniCreatures.logger.info("Part: " + part);
             }
-            Entity entity = ctx.getServerHandler().playerEntity.worldObj.getEntityByID(message.entityID);
+            Entity entity = ctx.getServerHandler().player.world.getEntityByID(message.entityID);
             if (entity instanceof ICustomisable) {
                 ((ICustomisable) entity).setParts(message.partsList, false);
             }

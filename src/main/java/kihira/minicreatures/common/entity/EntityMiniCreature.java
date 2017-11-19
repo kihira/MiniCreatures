@@ -1,7 +1,6 @@
 package kihira.minicreatures.common.entity;
 
 import kihira.minicreatures.MiniCreatures;
-import kihira.minicreatures.common.Utils;
 import kihira.minicreatures.common.entity.ai.EnumRole;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
@@ -85,75 +84,74 @@ public abstract class EntityMiniCreature extends EntityTameable implements IMini
             for (int i = 0; i < nbttaglist.tagCount(); i++) {
                 NBTTagCompound stacktag = nbttaglist.getCompoundTagAt(i);
                 int j = stacktag.getByte("Slot");
-                if (j >= 0 && j < this.inventory.getSizeInventory()) this.inventory.setInventorySlotContents(j, ItemStack.loadItemStackFromNBT(stacktag));
+                if (j >= 0 && j < this.inventory.getSizeInventory()) this.inventory.setInventorySlotContents(j, new ItemStack(stacktag));
             }
         }
     }
 
     @Override
-    public boolean processInteract(EntityPlayer player, EnumHand hand, @Nullable ItemStack stack) {
+    public boolean processInteract(EntityPlayer player, EnumHand hand) {
+        ItemStack stack = player.getHeldItem(hand);
         if (this.isTamed()) {
-            if (stack != null) {
-                // Heal
-                if (stack.getItem() instanceof ItemFood) {
-                    ItemFood itemfood = (ItemFood)stack.getItem();
-                    if (itemfood.isWolfsFavoriteMeat() && this.getHealth() < this.getMaxHealth()) {
-                        this.heal((float) itemfood.getHealAmount(stack));
-                        Utils.decreaseCurrentStack(player, stack);
-                        return true;
-                    }
-                }
-                // Add chest
-                else if (Block.getBlockFromItem(stack.getItem()) == Blocks.CHEST && !this.hasChest()) {
-                    this.setHasChest(true);
-                    this.playSound(SoundEvents.ENTITY_CHICKEN_EGG, 1.0F, (this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F + 1.0F);
-                    Utils.decreaseCurrentStack(player, stack);
+            // Heal
+            if (stack.getItem() instanceof ItemFood) {
+                ItemFood itemfood = (ItemFood)stack.getItem();
+                if (itemfood.isWolfsFavoriteMeat() && this.getHealth() < this.getMaxHealth()) {
+                    this.heal((float) itemfood.getHealAmount(stack));
+                    stack.shrink(1);
                     return true;
                 }
-                // Dye collar
-                else if (stack.getItem() == Items.DYE) {
-                    EnumDyeColor i = EnumDyeColor.byDyeDamage(stack.getMetadata());
-                    if (i != this.getCollarColour()) {
-                        this.setCollarColour(i);
-                        Utils.decreaseCurrentStack(player, stack);
-                        return true;
-                    }
+            }
+            // Add chest
+            else if (Block.getBlockFromItem(stack.getItem()) == Blocks.CHEST && !this.hasChest()) {
+                this.setHasChest(true);
+                this.playSound(SoundEvents.ENTITY_CHICKEN_EGG, 1.0F, (this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F + 1.0F);
+                stack.shrink(1);
+                return true;
+            }
+            // Dye collar
+            else if (stack.getItem() == Items.DYE) {
+                EnumDyeColor i = EnumDyeColor.byDyeDamage(stack.getMetadata());
+                if (i != this.getCollarColour()) {
+                    this.setCollarColour(i);
+                    stack.shrink(1);
+                    return true;
                 }
             }
             // Open chest
             if (!player.isSneaking() && this.hasChest()) {
                 //Send Entity ID as x coord. Inspired by OpenBlocks
-                player.openGui(MiniCreatures.instance, 0, player.worldObj, this.getEntityId(), 0, 0);
+                player.openGui(MiniCreatures.instance, 0, player.world, this.getEntityId(), 0, 0);
             }
-            else if (player.isEntityEqual(this.getOwner()) && !this.worldObj.isRemote && !this.isBreedingItem(stack)) {
+            else if (player.isEntityEqual(this.getOwner()) && !this.world.isRemote && !this.isBreedingItem(stack)) {
                 this.getAISit().setSitting(!this.isSitting());
                 this.isJumping = false;
-                this.getNavigator().clearPathEntity();
+                this.getNavigator().clearPath();
                 this.setAttackTarget(null);
                 this.setRevengeTarget(null);
             }
         }
-        else if (stack != null && stack.getItem() == tamingItem) {
-            Utils.decreaseCurrentStack(player, stack);
-            if (!this.worldObj.isRemote) {
+        else if (stack.getItem() == tamingItem) {
+            stack.shrink(1);
+            if (!this.world.isRemote) {
                 if (this.rand.nextInt(3) == 0) {
                     this.setTamed(true);
-                    this.getNavigator().clearPathEntity();
+                    this.getNavigator().clearPath();
                     this.setAttackTarget(null);
                     this.getAISit().setSitting(true);
                     this.setHealth(20.0F);
                     this.setOwnerId(player.getPersistentID());
                     this.playTameEffect(true);
-                    this.worldObj.setEntityState(this, (byte)7);
+                    this.world.setEntityState(this, (byte)7);
                 }
                 else {
                     this.playTameEffect(false);
-                    this.worldObj.setEntityState(this, (byte)6);
+                    this.world.setEntityState(this, (byte)6);
                 }
             }
             return true;
         }
-        return super.processInteract(player, hand, stack);
+        return super.processInteract(player, hand);
     }
 
     @Override
@@ -161,7 +159,7 @@ public abstract class EntityMiniCreature extends EntityTameable implements IMini
         super.onDeath(damageSource);
 
         //Drop chest contents on death
-        if (!this.worldObj.isRemote && hasChest()) {
+        if (!this.world.isRemote && hasChest()) {
             for (int i = 0; i < inventory.getSizeInventory(); ++i) {
                 ItemStack itemstack = inventory.getStackInSlot(i);
                 if (itemstack != null) this.entityDropItem(itemstack, 0.0F);

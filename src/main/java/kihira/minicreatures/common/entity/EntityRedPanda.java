@@ -19,6 +19,7 @@ import kihira.minicreatures.common.entity.ai.EntityAIHappy;
 import kihira.minicreatures.common.entity.ai.EntityAIHeal;
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityAgeable;
+import net.minecraft.entity.MoverType;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.*;
 import net.minecraft.entity.passive.EntityChicken;
@@ -26,6 +27,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -73,20 +75,20 @@ public class EntityRedPanda extends EntityMiniCreature implements IMiniCreature 
     @Override
     public boolean isOnLadder() {
         if (this.aiEscapePlayer.isClimbing) {
-            this.isCollidedHorizontally = true;
+            this.collidedHorizontally = true;
         }
         return this.aiEscapePlayer.isClimbing;
     }
 
     @Override
-    public void moveEntity(double x, double y, double z) {
+    public void move(MoverType type, double x, double y, double z) {
         if (this.noClip) {
             this.getEntityBoundingBox().offset(x, y, z);
             this.posX = (this.getEntityBoundingBox().minX + this.getEntityBoundingBox().maxX) / 2.0D;
             this.posY = this.getEntityBoundingBox().minY + this.getYOffset() - (double) this.height;
             this.posZ = (this.getEntityBoundingBox().minZ + this.getEntityBoundingBox().maxZ) / 2.0D;
         }
-        else super.moveEntity(x, y, z);
+        else super.move(type, x, y, z);
     }
 
     @Override
@@ -110,11 +112,13 @@ public class EntityRedPanda extends EntityMiniCreature implements IMiniCreature 
         return SoundEvents.ENTITY_WOLF_AMBIENT;
     }
 
+    @Nullable
     @Override
-    protected SoundEvent getHurtSound() {
+    protected SoundEvent getHurtSound(DamageSource damageSource) {
         return SoundEvents.ENTITY_WOLF_HURT;
     }
 
+    @Nullable
     @Override
     protected SoundEvent getDeathSound() {
         return SoundEvents.ENTITY_WOLF_DEATH;
@@ -132,7 +136,7 @@ public class EntityRedPanda extends EntityMiniCreature implements IMiniCreature 
 
     @Override
     public EntityRedPanda createChild(EntityAgeable entityageable) {
-        EntityRedPanda entityRedPanda = new EntityRedPanda(this.worldObj);
+        EntityRedPanda entityRedPanda = new EntityRedPanda(this.world);
         UUID s = this.getOwnerId();
 
         if (s != null) {

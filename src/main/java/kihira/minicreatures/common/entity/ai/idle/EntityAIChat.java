@@ -23,8 +23,8 @@ public class EntityAIChat extends EntityAIBase {
 
     protected final EntityMiniPlayer miniPlayer;
 
-    protected Iterator<String> chatLines;
-    protected int chatCooldown = 0;
+    Iterator<String> chatLines;
+    private int chatCooldown = 0;
 
     EntityAIChat(EntityMiniPlayer miniPlayer) {
         this.miniPlayer = miniPlayer;
@@ -37,7 +37,7 @@ public class EntityAIChat extends EntityAIBase {
     }
 
     @Override
-    public boolean continueExecuting() {
+    public boolean shouldContinueExecuting() {
         return this.chatCooldown > 0 || (this.chatLines != null && this.chatLines.hasNext());
     }
 
