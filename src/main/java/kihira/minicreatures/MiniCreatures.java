@@ -17,9 +17,9 @@ package kihira.minicreatures;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import kihira.foxlib.common.gson.GsonHelper;
 import kihira.minicreatures.client.TailsCompatHandler;
 import kihira.minicreatures.common.CommandSpawnEntity;
+import kihira.minicreatures.common.GsonHelper;
 import kihira.minicreatures.common.entity.*;
 import kihira.minicreatures.common.handler.EventHandler;
 import kihira.minicreatures.common.handler.GuiHandler;
@@ -99,13 +99,13 @@ public class MiniCreatures {
 
         if (!hasGottenNames) {
             Runnable getNamesRunnable = new Runnable() {
-                private String namesLoc = "https://raw.github.com/kihira/MiniCreatures/master/src/main/resources/assets/minicreatures/text/names.json";
+                private static final String namesLoc = "https://raw.github.com/kihira/MiniCreatures/master/src/main/resources/assets/minicreatures/text/names.json";
 
                 @Override
                 public void run() {
                     try {
-                        Gson gson = GsonHelper.createGson();
-                        Reader reader = new InputStreamReader(new URL(this.namesLoc).openStream());
+                        Gson gson = GsonHelper.getInstance();
+                        Reader reader = new InputStreamReader(new URL(namesLoc).openStream());
                         //Reader reader = new InputStreamReader(MiniCreatures.class.getResourceAsStream("/assets/minicreatures/text/names.json"));
                         String[] names = gson.fromJson(reader, String[].class);
                         reader.close();
@@ -146,7 +146,7 @@ public class MiniCreatures {
         File personalityTypesFile = new File(configDir, File.separator + "MiniCreatures" + File.separator + "PersonalityTypes.json");
 
         try {
-            Gson gson = GsonHelper.createGson(Mood.class);
+            Gson gson = GsonHelper.getInstance();
             if (!personalityTypesFile.exists()) {
                 //Create files/directories
                 new File(configDir, File.separator + "MiniCreatures").mkdirs();

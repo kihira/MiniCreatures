@@ -1,7 +1,7 @@
 package kihira.minicreatures.common.personality;
 
-import kihira.foxlib.common.gson.GsonHelper;
 import kihira.minicreatures.MiniCreatures;
+import kihira.minicreatures.common.GsonHelper;
 import kihira.minicreatures.common.network.PersonalityMessage;
 
 import java.io.Serializable;

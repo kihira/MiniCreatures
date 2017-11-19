@@ -16,7 +16,7 @@ package kihira.minicreatures.common.entity;
 
 import com.google.common.base.Strings;
 import com.mojang.realmsclient.gui.ChatFormatting;
-import kihira.minicreatures.MiniCreatures;
+import kihira.minicreatures.common.GsonHelper;
 import kihira.minicreatures.common.customizer.EnumPartCategory;
 import kihira.minicreatures.common.entity.ai.EntityAIHeal;
 import kihira.minicreatures.common.entity.ai.EntityAIProspect;
@@ -30,7 +30,6 @@ import kihira.minicreatures.common.personality.IPersonality;
 import kihira.minicreatures.common.personality.Mood;
 import kihira.minicreatures.common.personality.MoodVariable;
 import kihira.minicreatures.common.personality.Personality;
-import net.minecraft.block.Block;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.*;
@@ -40,7 +39,6 @@ import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.entity.projectile.EntityTippedArrow;
-import net.minecraft.init.Blocks;
 import net.minecraft.init.Enchantments;
 import net.minecraft.init.Items;
 import net.minecraft.init.SoundEvents;
@@ -148,7 +146,7 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
         super.readEntityFromNBT(tagCompound);
 
         //Load Personality
-        Personality personality = GsonHelper.createGson(Mood.class).fromJson(tagCompound.getString("Personality"), Personality.class);
+        Personality personality = GsonHelper.fromJson(tagCompound.getString("Personality"), Personality.class);
         if (personality != null) {
             this.personality = personality;
             System.out.println(this.personality);
