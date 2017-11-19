@@ -22,9 +22,9 @@ import kihira.minicreatures.common.entity.ai.EntityAIProspect;
 import kihira.minicreatures.common.entity.ai.EnumRole;
 import kihira.minicreatures.common.network.SetAttackTargetMessage;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.ai.EntityAITasks;
-import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.monster.EntityZombieVillager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -37,7 +37,9 @@ import net.minecraft.potion.PotionUtils;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.event.MouseEvent;
+import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.EntityEvent;
@@ -45,7 +47,6 @@ import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -63,6 +64,13 @@ public class EventHandler {
     public void registerItems(RegistryEvent.Register<Item> event) {
         if (MiniCreatures.enableCustomizer) event.getRegistry().register(MiniCreatures.itemCustomizer);
         if (MiniCreatures.enableMindControl) event.getRegistry().register(MiniCreatures.itemMindControlHelmet);
+        event.getRegistry().register(MiniCreatures.itemBackpack);
+    }
+
+    @SideOnly(Side.CLIENT)
+    @SubscribeEvent
+    public void registerModels(ModelRegistryEvent event) {
+        ModelLoader.setCustomModelResourceLocation(MiniCreatures.itemBackpack, 0, new ModelResourceLocation(MiniCreatures.itemBackpack.getRegistryName().toString()));
     }
 
     //TODO Overhaul this? Make it so it can be calculated server side

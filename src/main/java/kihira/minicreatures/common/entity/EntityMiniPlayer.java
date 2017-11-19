@@ -225,7 +225,7 @@ public class EntityMiniPlayer extends EntityTameable implements IMiniCreature, I
                     newItemStack.setCount(1);
                     if (!player.isCreative()) stack.shrink(1);
                     this.setCarrying(newItemStack);
-                    playSound(SoundEvents.ENTITY_CHICKEN_EGG, 1.0F, (this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F + 1.0F);
+                    playSound(SoundEvents.ENTITY_CHICKEN_EGG, 1f, (this.rand.nextFloat() - this.rand.nextFloat()) * .2f + 1f);
                 }
             }
         }

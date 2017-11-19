@@ -23,6 +23,7 @@ import kihira.minicreatures.common.GsonHelper;
 import kihira.minicreatures.common.entity.*;
 import kihira.minicreatures.common.handler.EventHandler;
 import kihira.minicreatures.common.handler.GuiHandler;
+import kihira.minicreatures.common.item.ItemBackpack;
 import kihira.minicreatures.common.item.ItemCustomizer;
 import kihira.minicreatures.common.item.ItemMindControlHelmet;
 import kihira.minicreatures.common.personality.Mood;
@@ -64,6 +65,7 @@ public class MiniCreatures {
 
     public static final ItemCustomizer itemCustomizer = new ItemCustomizer();
     public static final ItemMindControlHelmet itemMindControlHelmet = new ItemMindControlHelmet();
+    public static final ItemBackpack itemBackpack = new ItemBackpack();
 
     public static boolean enableMiniFoxes;
     public static boolean enableMiniTRex;
