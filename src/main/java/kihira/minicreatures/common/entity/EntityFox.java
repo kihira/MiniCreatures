@@ -91,11 +91,11 @@ public class EntityFox extends EntityMiniCreature implements IMiniCreature {
         super.onLivingUpdate();
 
         //Happy
-        if (this.worldObj.isRemote && this.getDataManager().get(IS_HAPPY) && this.rand.nextInt(5) == 0) {
+        if (this.world.isRemote && this.getDataManager().get(IS_HAPPY) && this.rand.nextInt(5) == 0) {
             double x = this.posX + (double) (this.rand.nextFloat() * this.width * 2.0F) - (double) this.width;
             double y = this.posY + 0.5D + (double) (this.rand.nextFloat() * this.height);
             double z = this.posZ + (double) (this.rand.nextFloat() * this.width * 2.0F) - (double)this.width;
-            this.worldObj.spawnParticle(EnumParticleTypes.HEART, x, y, z, this.rand.nextGaussian() * 0.02D, this.rand.nextGaussian() * 0.02D, this.rand.nextGaussian() * 0.02D);
+            this.world.spawnParticle(EnumParticleTypes.HEART, x, y, z, this.rand.nextGaussian() * 0.02D, this.rand.nextGaussian() * 0.02D, this.rand.nextGaussian() * 0.02D);
         }
     }
 
@@ -207,7 +207,7 @@ public class EntityFox extends EntityMiniCreature implements IMiniCreature {
 
     @Override
     public EntityFox createChild(EntityAgeable entityageable) {
-        EntityFox entityFox = new EntityFox(this.worldObj);
+        EntityFox entityFox = new EntityFox(this.world);
         UUID uuid = this.getOwnerId(); //Get owner UUID
 
         if (uuid != null) {

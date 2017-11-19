@@ -59,19 +59,15 @@ public class EntityAICollect<T extends EntityTameable & IMiniCreature> extends E
             if (addItemStackToInventory(itemStack)) {
                 entity.playSound(SoundEvents.ENTITY_CHICKEN_EGG, 0.2F, ((entity.getRNG().nextFloat() - entity.getRNG().nextFloat()) * 0.7F + 1.0F) * 2.0F);
                 entity.onItemPickup(entityItem, stackSize);
-
-                if (itemStack.stackSize <= 0) {
-                    entityItem.setDead();
-                }
             }
         }
-        if (searchRadius > 0 && entity.getNavigator().noPath() && entity.worldObj.getTotalWorldTime() % 20 == 0) {
+        if (searchRadius > 0 && entity.getNavigator().noPath() && entity.world.getTotalWorldTime() % 20 == 0) {
             entityItems = getEntityItemsInRadius(searchRadius, 1);
             EntityItem nearestItem = null;
             for (EntityItem entityItem : entityItems) {
                 //We want the closest item to the mini creature
-                if (nearestItem == null || (nearestItem.getDistanceSqToEntity(entity) > entityItem.getDistanceSqToEntity(entity) &&
-                        entityItem.getDistanceSqToEntity(entity.getOwner()) < (searchRadius * 2F))) {
+                if (nearestItem == null || (nearestItem.getDistanceSq(entity) > entityItem.getDistanceSq(entity) &&
+                        entityItem.getDistanceSq(entity.getOwner()) < (searchRadius * 2F))) {
                     nearestItem = entityItem;
                 }
             }
@@ -93,7 +89,7 @@ public class EntityAICollect<T extends EntityTameable & IMiniCreature> extends E
 
     @SuppressWarnings("unchecked")
     private List<EntityItem> getEntityItemsInRadius(float radius, float yRadius) {
-        List<EntityItem> items = entity.worldObj.getEntitiesWithinAABB(EntityItem.class, entity.getEntityBoundingBox().expand(radius, yRadius, radius), CAN_BE_PICKED::test);
+        List<EntityItem> items = entity.world.getEntitiesWithinAABB(EntityItem.class, entity.getEntityBoundingBox().expand(radius, yRadius, radius), CAN_BE_PICKED::test);
         List<EntityItem> validItems = new ArrayList<>();
         if (items.size() > 0) {
             for (Entity entity : items) {
@@ -113,11 +109,11 @@ public class EntityAICollect<T extends EntityTameable & IMiniCreature> extends E
     }
 
     private boolean addItemStackToInventory(ItemStack itemStackToAdd) {
-        if (itemStackToAdd != null && itemStackToAdd.stackSize != 0) {
+        if (!itemStackToAdd.isEmpty()) {
             IInventory inventory = entity.getInventory();
             for (int i = 0; i < inventory.getSizeInventory(); i++) {
                 ItemStack itemStack = inventory.getStackInSlot(i);
-                if (itemStack == null && inventory.isItemValidForSlot(i, itemStackToAdd)) {
+                if (itemStack.isEmpty() && inventory.isItemValidForSlot(i, itemStackToAdd)) {
                     inventory.setInventorySlotContents(i, ItemStack.copyItemStack(itemStackToAdd));
                     itemStackToAdd.stackSize = 0;
                     return true;
@@ -139,7 +135,7 @@ public class EntityAICollect<T extends EntityTameable & IMiniCreature> extends E
 
                         if (k > 0) {
                             stackSize -= k;
-                            itemStack.stackSize += k;
+                            itemStack.grow(k);
                         }
                         itemStackToAdd.stackSize = stackSize;
 

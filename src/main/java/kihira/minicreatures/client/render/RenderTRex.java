@@ -19,7 +19,10 @@ import kihira.minicreatures.common.entity.EntityMiniTRex;
 import net.minecraft.client.renderer.entity.RenderLiving;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
+@SideOnly(Side.CLIENT)
 public class RenderTRex extends RenderLiving<EntityMiniTRex> {
     private static final ResourceLocation TREX_TEXTURE = new ResourceLocation("minicreatures", "textures/entity/trex.png");
 

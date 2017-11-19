@@ -187,7 +187,7 @@ public class ModelFox extends ModelBase {
 
         //Tail
         //We can't use a number / distanceToOwner cause sometimes owner returns null even though the owner is there
-        double speedModifier = health * (owner != null && entityLiving.getDistanceToEntity(owner) < 28D ? 1.5D : 0.5D);
+        double speedModifier = health * (owner != null && entityLiving.getDistance(owner) < 28D ? 1.5D : 0.5D);
         this.tailBase.rotateAngleY = (float) Math.cos((par3 / 2F) * speedModifier) / (2.5F / health);
     }
 }

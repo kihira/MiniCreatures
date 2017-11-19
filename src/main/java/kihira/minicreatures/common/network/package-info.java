@@ -1,0 +1,4 @@
+@ParametersAreNonnullByDefault
+package kihira.minicreatures.common.network;
+
+import javax.annotation.ParametersAreNonnullByDefault;

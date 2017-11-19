@@ -30,13 +30,12 @@ public class ItemMindControlHelmet extends Item {
     }
 
     public boolean onLeftClickEntity(ItemStack stack, EntityPlayer player, Entity entity) {
-        if (!player.worldObj.isRemote) {
+        if (!player.world.isRemote) {
             if (entity instanceof EntityMiniPlayer) {
                 EntityMiniPlayer miniPlayer = (EntityMiniPlayer) entity;
                 if (miniPlayer.getOwner() == player && !miniPlayer.isMindControlled()) {
                     miniPlayer.setMindControlled(true);
-                    //todo check
-                    player.addChatComponentMessage(new TextComponentString(miniPlayer.getDisplayName() + ": I will do anything you command of me Master..."));
+                    player.sendMessage(new TextComponentString(miniPlayer.getDisplayName() + ": I will do anything you command of me Master..."));
                 }
             }
             return true;

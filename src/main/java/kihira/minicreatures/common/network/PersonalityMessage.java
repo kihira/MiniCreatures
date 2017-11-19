@@ -43,7 +43,7 @@ public class PersonalityMessage implements IMessage {
 
         @Override
         public IMessage onMessage(PersonalityMessage message, MessageContext ctx) {
-            Entity entity = Minecraft.getMinecraft().theWorld.getEntityByID(message.entityID);
+            Entity entity = Minecraft.getMinecraft().world.getEntityByID(message.entityID);
             if (entity instanceof IPersonality) {
                 try {
                     Personality newPersonality = GsonHelper.createGson(Mood.class).fromJson(message.personalityJson, Personality.class);

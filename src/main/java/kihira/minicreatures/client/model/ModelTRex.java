@@ -20,10 +20,13 @@ import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.math.MathHelper;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
  * The model for {@link EntityMiniTRex}
  */
+@SideOnly(Side.CLIENT)
 public class ModelTRex extends ModelBase {
 
     ModelRenderer leftLegLower;

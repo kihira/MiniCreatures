@@ -46,9 +46,7 @@ public class ClientProxy extends CommonProxy {
     @Override
     public void registerRenderers() {
         if (MiniCreatures.enableMiniFoxes) {
-            RenderingRegistry.registerEntityRenderingHandler(EntityFox.class, manager -> {
-                return new RenderMiniCreature<>(manager, 0.4f, FOX_TEXTURE, FOX_COLLAR_TEXTURE);
-            });
+            RenderingRegistry.registerEntityRenderingHandler(EntityFox.class, manager -> new RenderMiniCreature<>(manager, 0.4f, FOX_TEXTURE, FOX_COLLAR_TEXTURE));
         }
         if (MiniCreatures.enableMiniTRex) {
             RenderingRegistry.registerEntityRenderingHandler(EntityMiniTRex.class, RenderTRex::new);
@@ -60,9 +58,7 @@ public class ClientProxy extends CommonProxy {
             RenderingRegistry.registerEntityRenderingHandler(EntityMiniShark.class, RenderMiniShark::new);
         }
         if (MiniCreatures.enableMiniRedPandas) {
-            RenderingRegistry.registerEntityRenderingHandler(EntityRedPanda.class, manager -> {
-                return new RenderMiniCreature<>(manager, 0.4f, RED_PANDA_TEXTURE, RED_PANDA_COLLAR_TEXTURE);
-            });
+            RenderingRegistry.registerEntityRenderingHandler(EntityRedPanda.class, manager -> new RenderMiniCreature<>(manager, 0.4f, RED_PANDA_TEXTURE, RED_PANDA_COLLAR_TEXTURE));
         }
     }
 

@@ -8,7 +8,6 @@
 
 package kihira.minicreatures.common.entity.ai;
 
-import kihira.foxlib.common.EntityHelper;
 import kihira.minicreatures.MiniCreatures;
 import kihira.minicreatures.common.OreFinder;
 import kihira.minicreatures.common.network.ProspectBlocksMessage;
@@ -52,7 +51,7 @@ public class EntityAIProspect extends EntityAIBase implements IRole {
     }
 
     @Override
-    public boolean continueExecuting() {
+    public boolean shouldContinueExecuting() {
         if (oreFinder != null && !oreFinder.hasNext()) {
             //Send packet on finish
             MiniCreatures.proxy.simpleNetworkWrapper.sendTo(new ProspectBlocksMessage(oreFinder.orePositions.toArray(new int[][]{})), (EntityPlayerMP) entity.getOwner());
@@ -71,7 +70,7 @@ public class EntityAIProspect extends EntityAIBase implements IRole {
                 entity.getNavigator().setPath(entity.getNavigator().getPathToXYZ(target.getX() + 0.5, target.getY() + 0.5, target.getZ() + 0.5), 1D);
             }
             else if (entity.getDistanceSq(target) < 4D) {
-                oreFinder = new OreFinder(entity.worldObj, MathHelper.floor_double(entity.posX), MathHelper.floor_double(entity.posY), MathHelper.floor_double(entity.posZ), radius, yRadius);
+                oreFinder = new OreFinder(entity.world, MathHelper.floor(entity.posX), MathHelper.floor(entity.posY), MathHelper.floor(entity.posZ), radius, yRadius);
             }
         }
         else if (oreFinder.hasNext()) {

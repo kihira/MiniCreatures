@@ -20,6 +20,7 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 
 import javax.annotation.Nullable;
@@ -32,12 +33,12 @@ import java.util.List;
 public class CommandSpawnEntity extends CommandBase {
 
     @Override
-    public String getCommandName() {
+    public String getName() {
         return "spawnentity";
     }
 
     @Override
-    public String getCommandUsage(ICommandSender var1) {
+    public String getUsage(ICommandSender sender) {
         return "/spawnentity <entityname> [amount]";
     }
 
@@ -45,23 +46,23 @@ public class CommandSpawnEntity extends CommandBase {
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
         if (args.length > 0) {
             String entityName = args[0];
-            Entity entity = EntityList.createEntityByName(entityName, sender.getEntityWorld());
+            Entity entity = EntityList.createEntityByIDFromName(new ResourceLocation(entityName), sender.getEntityWorld());
             if (entity == null) throw new CommandException("Failed to create entity!");
 
             BlockPos senderPos = sender.getPosition();
             entity.setPosition(senderPos.getX(), senderPos.getY(), senderPos.getZ());
             if (args.length == 2) {
                 for (int i = 0; i < Integer.parseInt(args[1]); i++) {
-                    sender.getEntityWorld().spawnEntityInWorld(entity);
+                    sender.getEntityWorld().spawnEntity(entity);
                 }
             }
-            else sender.getEntityWorld().spawnEntityInWorld(entity);
+            else sender.getEntityWorld().spawnEntity(entity);
         }
     }
 
     @Override
-    public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos pos) {
+    public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos) {
         //Gather a list of the entity names
-        return args.length > 0 ? getListOfStringsMatchingLastWord(args, Collections.singletonList(EntityList.NAME_TO_CLASS.keySet())) : null;
+        return args.length > 0 ? getListOfStringsMatchingLastWord(args, EntityList.getEntityNameList()) : Collections.emptyList();
     }
 }

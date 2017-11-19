@@ -8,15 +8,17 @@
 
 package kihira.minicreatures.client;
 
-import kihira.foxlib.client.TextHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
 
+@SideOnly(Side.CLIENT)
 public class ProspectingHandler {
 
     public static final ProspectingHandler INSTANCE = new ProspectingHandler();
@@ -43,7 +45,7 @@ public class ProspectingHandler {
     public void onRenderWorldLast(RenderWorldLastEvent event) {
         if (blocks != null) {
             GL11.glPushMatrix();
-            Entity entity = Minecraft.getMinecraft().thePlayer;
+            Entity entity = Minecraft.getMinecraft().player;
             double interpPosX = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * event.getPartialTicks();
             double interpPosY = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * event.getPartialTicks();
             double interpPosZ = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * event.getPartialTicks();

@@ -25,15 +25,13 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.ai.EntityAITasks;
 import net.minecraft.entity.monster.EntityZombie;
+import net.minecraft.entity.monster.EntityZombieVillager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.init.MobEffects;
 import net.minecraft.inventory.EntityEquipmentSlot;
-import net.minecraft.item.ItemPickaxe;
-import net.minecraft.item.ItemPotion;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemSword;
+import net.minecraft.item.*;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.potion.PotionUtils;
 import net.minecraft.util.EnumHand;
@@ -41,11 +39,13 @@ import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.client.event.MouseEvent;
 import net.minecraftforge.common.util.FakePlayer;
+import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -59,6 +59,12 @@ public class EventHandler {
 
     private long lastTrigger = 0;
 
+    @SubscribeEvent
+    public void registerItems(RegistryEvent.Register<Item> event) {
+        if (MiniCreatures.enableCustomizer) event.getRegistry().register(MiniCreatures.itemCustomizer);
+        if (MiniCreatures.enableMindControl) event.getRegistry().register(MiniCreatures.itemMindControlHelmet);
+    }
+
     //TODO Overhaul this? Make it so it can be calculated server side
     @SubscribeEvent
     @SideOnly(Side.CLIENT)
@@ -66,7 +72,7 @@ public class EventHandler {
         //Only trigger if it has been more then 5 seconds
         if ((System.currentTimeMillis() - this.lastTrigger > 5000) && Minecraft.getMinecraft().gameSettings.keyBindAttack.isKeyDown()) {
             //Only if it's a sword
-            if (Minecraft.getMinecraft().thePlayer.getHeldItemMainhand() != null && Minecraft.getMinecraft().thePlayer.getHeldItemMainhand().getItem() instanceof ItemSword) {
+            if (Minecraft.getMinecraft().player.getHeldItemMainhand().getItem() instanceof ItemSword) {
                 Minecraft.getMinecraft().entityRenderer.getMouseOver(1);
                 if (Minecraft.getMinecraft().pointedEntity != null) {
                     this.lastTrigger = System.currentTimeMillis();
@@ -78,8 +84,8 @@ public class EventHandler {
 
     @SubscribeEvent
     public void onEntitySpawn(EntityEvent.EntityConstructing event) {
-        if (event.getEntity().worldObj != null) {
-            Random random = event.getEntity().worldObj.rand;
+        if (event.getEntity().world != null) {
+            Random random = event.getEntity().world.rand;
             if (names != null && MiniCreatures.randomNameChance != 0 && event.getEntity() instanceof IMiniCreature && random.nextInt(MiniCreatures.randomNameChance) == 0) {
                 EntityLiving entityLiving = ((IMiniCreature) event.getEntity()).getEntity();
                 entityLiving.setCustomNameTag(names[random.nextInt(names.length - 1)]);
@@ -90,7 +96,7 @@ public class EventHandler {
     @SubscribeEvent
     public void onRightClickBlock(PlayerInteractEvent.RightClickBlock event) {
         //Used to start making nearby mini players prospect
-        if (!(event.getEntityPlayer() instanceof FakePlayer) && event.getEntityPlayer().getHeldItem(EnumHand.MAIN_HAND) != null
+        if (!(event.getEntityPlayer() instanceof FakePlayer)
                 && event.getEntityPlayer().getHeldItem(EnumHand.MAIN_HAND).getItem() instanceof ItemPickaxe &&
                 event.getWorld().getBlockState(event.getPos()).getBlock() == Blocks.STONE && event.getEntityPlayer().isSneaking()) {
             int radius = 5;
@@ -117,17 +123,17 @@ public class EventHandler {
     @SubscribeEvent
     public void onInteract(PlayerInteractEvent.EntityInteractSpecific event) {
         //We do this render here as if the player right clicks with a lead, entity.interact never fires
-        if (event.getEntityPlayer().getHeldItemMainhand() != null && event.getEntityPlayer().getHeldItemMainhand().getItem() == Items.LEAD) {
+        if (event.getEntityPlayer().getHeldItemMainhand().getItem() == Items.LEAD) {
             //Mount the fox
             if (event.getTarget() instanceof EntityFox) {
                 EntityFox entityFox = (EntityFox) event.getTarget();
                 if (!entityFox.isBeingRidden() && !entityFox.isRiding() && entityFox.getOwner() == event.getEntityPlayer()) {
                     double dist = 7.0D;
-                    List list = entityFox.worldObj.getEntitiesWithinAABB(EntityMiniPlayer.class, entityFox.getEntityBoundingBox().expandXyz(dist));
+                    List list = entityFox.world.getEntitiesWithinAABB(EntityMiniPlayer.class, entityFox.getEntityBoundingBox().grow(dist));
 
                     for (Object aList : list) {
                         EntityLiving entityliving = (EntityLiving) aList;
-                        if (entityliving instanceof EntityMiniPlayer && entityliving.getLeashed() && entityliving.getLeashedToEntity() == event.getEntityPlayer()) {
+                        if (entityliving instanceof EntityMiniPlayer && entityliving.getLeashed() && entityliving.getLeashHolder() == event.getEntityPlayer()) {
                             entityliving.clearLeashed(true, true);
                             entityliving.startRiding(entityFox);
                             event.setCanceled(true);
@@ -152,24 +158,23 @@ public class EventHandler {
      * @param event the currentEvent
      */
     @SubscribeEvent
-    @SuppressWarnings("unchecked")
     public void onAttack(AttackEntityEvent event) {
-        if (event.getTarget() instanceof EntityZombie) {
-            EntityZombie entityZombie = (EntityZombie) event.getTarget();
+        if (event.getTarget() instanceof EntityZombieVillager) {
+            EntityZombieVillager entityZombie = (EntityZombieVillager) event.getTarget();
             EntityPlayer player = event.getEntityPlayer();
             ItemStack heldItem = player.getHeldItem(EnumHand.MAIN_HAND);
             //Is target viable
             if (entityZombie.isChild() && !entityZombie.isConverting() && entityZombie.isPotionActive(MobEffects.WEAKNESS)
-                    && heldItem != null && heldItem.getItem() instanceof ItemPotion) {
+                    && heldItem.getItem() instanceof ItemPotion) {
                 List<PotionEffect> potionEffects = PotionUtils.getEffectsFromStack(heldItem);
                 // todo optimise. do we need to loop here?
                 for (PotionEffect effect : potionEffects) {
                     if (effect.getPotion() == MobEffects.INSTANT_HEALTH) {
                         event.setCanceled(true);
-                        event.getEntityPlayer().setHeldItem(EnumHand.MAIN_HAND, null);
+                        heldItem.shrink(1);
 
                         //Create the mini player and copy some data
-                        EntityMiniPlayer miniPlayer = new EntityMiniPlayer(player.worldObj);
+                        EntityMiniPlayer miniPlayer = new EntityMiniPlayer(player.world);
                         miniPlayer.copyLocationAndAnglesFrom(entityZombie);
                         miniPlayer.setCustomNameTag(entityZombie.getCustomNameTag());
                         miniPlayer.setOwnerId(player.getUniqueID());
@@ -180,10 +185,10 @@ public class EventHandler {
                         }
 
                         //Spawn them in
-                        player.worldObj.removeEntity(entityZombie);
-                        player.worldObj.spawnEntityInWorld(miniPlayer);
+                        player.world.removeEntity(entityZombie);
+                        player.world.spawnEntity(miniPlayer);
 
-                        FMLCommonHandler.instance().getMinecraftServerInstance().worldServerForDimension(event.getEntityPlayer().worldObj.provider.getDimension())
+                        FMLCommonHandler.instance().getMinecraftServerInstance().getWorld(event.getEntityPlayer().world.provider.getDimension())
                                 .spawnParticle(EnumParticleTypes.HEART, miniPlayer.posX + (miniPlayer.width / 2), miniPlayer.posY + miniPlayer.height, miniPlayer.posZ + (miniPlayer.width / 2) - miniPlayer.width, 10, 0.5, 1, 0.5, 0);
                     }
                 }

@@ -24,6 +24,7 @@ import kihira.minicreatures.common.entity.*;
 import kihira.minicreatures.common.handler.EventHandler;
 import kihira.minicreatures.common.handler.GuiHandler;
 import kihira.minicreatures.common.item.ItemCustomizer;
+import kihira.minicreatures.common.item.ItemMindControlHelmet;
 import kihira.minicreatures.common.personality.Mood;
 import kihira.minicreatures.common.personality.MoodTest;
 import kihira.minicreatures.common.personality.MoodVariable;
@@ -31,6 +32,7 @@ import kihira.minicreatures.common.personality.Personality;
 import kihira.minicreatures.proxy.CommonProxy;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.init.Biomes;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.Loader;
@@ -61,7 +63,7 @@ public class MiniCreatures {
     public static final Logger logger = LogManager.getLogger("MiniCreatues");
 
     public static final ItemCustomizer itemCustomizer = new ItemCustomizer();
-    //public static final ItemMindControlHelmet itemMindControlHelmet = new ItemMindControlHelmet();
+    public static final ItemMindControlHelmet itemMindControlHelmet = new ItemMindControlHelmet();
 
     public static boolean enableMiniFoxes;
     public static boolean enableMiniTRex;
@@ -69,6 +71,7 @@ public class MiniCreatures {
     public static boolean enableMiniShark;
     public static boolean enableMiniRedPandas;
     public static boolean enableCustomizer;
+    public static boolean enableMindControl;
     public static int randomNameChance;
 
     private static boolean hasGottenNames = false;
@@ -78,7 +81,6 @@ public class MiniCreatures {
         loadConfig(e.getSuggestedConfigurationFile());
         proxy.registerRenderers();
         registerEntities();
-        proxy.registerItems();
         proxy.registerCustomizerParts();
         proxy.registerMessages();
         NetworkRegistry.INSTANCE.registerGuiHandler(instance, new GuiHandler());
@@ -193,22 +195,22 @@ public class MiniCreatures {
         }
     }
 
-    public void registerEntities() {
+    private void registerEntities() {
         if (enableMiniFoxes) {
-            EntityRegistry.registerModEntity(EntityFox.class, "MiniFox", 0, this, 64, 1, true);
+            EntityRegistry.registerModEntity(new ResourceLocation(MiniCreatures.MODID, "MiniFox"), EntityFox.class, "MiniFox", 0, this, 64, 1, true);
             EntityRegistry.addSpawn(EntityFox.class, 6, 2, 4, EnumCreatureType.CREATURE, Biomes.PLAINS, Biomes.FOREST, Biomes.FOREST_HILLS);
         }
         if (enableMiniTRex) {
-            EntityRegistry.registerModEntity(EntityMiniTRex.class, "MiniTRex", 1, this, 64, 1, true);
+            EntityRegistry.registerModEntity(new ResourceLocation(MiniCreatures.MODID, "MiniTRex"), EntityMiniTRex.class, "MiniTRex", 1, this, 64, 1, true);
             EntityRegistry.addSpawn(EntityMiniTRex.class, 2, 1, 2, EnumCreatureType.CREATURE, Biomes.JUNGLE, Biomes.JUNGLE_HILLS);
         }
-        if (enableMiniPlayers) EntityRegistry.registerModEntity(EntityMiniPlayer.class, "MiniPlayer", 2, this, 64, 1, true);
+        if (enableMiniPlayers) EntityRegistry.registerModEntity(new ResourceLocation(MiniCreatures.MODID, "MiniPlayer"), EntityMiniPlayer.class, "MiniPlayer", 2, this, 64, 1, true);
         if (enableMiniShark) {
-            EntityRegistry.registerModEntity(EntityMiniShark.class, "MiniShark", 3, this, 64, 1, true);
+            EntityRegistry.registerModEntity(new ResourceLocation(MiniCreatures.MODID, "MiniShark"), EntityMiniShark.class, "MiniShark", 3, this, 64, 1, true);
             EntityRegistry.addSpawn(EntityMiniTRex.class, 10, 2, 4, EnumCreatureType.WATER_CREATURE, Biomes.OCEAN, Biomes.DEEP_OCEAN);
         }
         if (enableMiniRedPandas) {
-            EntityRegistry.registerModEntity(EntityRedPanda.class, "MiniRedPanda", 4, this, 64, 1, true);
+            EntityRegistry.registerModEntity(new ResourceLocation(MiniCreatures.MODID, "MiniRedPanda"), EntityRedPanda.class, "MiniRedPanda", 4, this, 64, 1, true);
             EntityRegistry.addSpawn(EntityRedPanda.class, 6, 2, 4, EnumCreatureType.CREATURE, Biomes.FOREST, Biomes.FOREST_HILLS, Biomes.BIRCH_FOREST, Biomes.BIRCH_FOREST_HILLS);
         }
     }

@@ -21,12 +21,12 @@ public class EntityAIShieldBlock extends EntityAIBase {
     @Override
     public boolean shouldExecute() {
         shieldHand = getShield();
-        return shieldHand != null && entity.getAttackTarget() != null && entity.getDistanceToEntity(entity.getAttackTarget()) <= dist && shieldHand != entity.getActiveHand() && !entity.isSwingInProgress;
+        return shieldHand != null && entity.getAttackTarget() != null && entity.getDistance(entity.getAttackTarget()) <= dist && shieldHand != entity.getActiveHand() && !entity.isSwingInProgress;
     }
 
     @Override
-    public boolean continueExecuting() {
-        return shieldHand != null && entity.getAttackTarget() != null && entity.getDistanceToEntity(entity.getAttackTarget()) <= dist;
+    public boolean shouldContinueExecuting() {
+        return shieldHand != null && entity.getAttackTarget() != null && entity.getDistance(entity.getAttackTarget()) <= dist;
     }
 
     @Override
@@ -41,8 +41,8 @@ public class EntityAIShieldBlock extends EntityAIBase {
 
     @Nullable
     private EnumHand getShield() {
-        if (entity.getHeldItemMainhand() != null && entity.getHeldItemMainhand().getItem() == Items.SHIELD) return EnumHand.MAIN_HAND;
-        else if (entity.getHeldItemOffhand() != null && entity.getHeldItemOffhand().getItem() == Items.SHIELD) return EnumHand.OFF_HAND;
+        if (entity.getHeldItemMainhand().getItem() == Items.SHIELD) return EnumHand.MAIN_HAND;
+        else if (entity.getHeldItemOffhand().getItem() == Items.SHIELD) return EnumHand.OFF_HAND;
         return null;
     }
 }
