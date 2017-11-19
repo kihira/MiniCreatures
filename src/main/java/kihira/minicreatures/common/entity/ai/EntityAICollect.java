@@ -53,7 +53,7 @@ public class EntityAICollect<T extends EntityTameable & IMiniCreature> extends E
     public void updateTask() {
         List<EntityItem> entityItems = getEntityItemsInRadius(collectRadius, 1);
         for (EntityItem entityItem : entityItems) {
-            ItemStack itemStack = entityItem.getEntityItem();
+            ItemStack itemStack = entityItem.getItem();
             int stackSize = itemStack.stackSize;
             //Collect
             if (addItemStackToInventory(itemStack)) {
@@ -87,14 +87,13 @@ public class EntityAICollect<T extends EntityTameable & IMiniCreature> extends E
         remove = true;
     }
 
-    @SuppressWarnings("unchecked")
     private List<EntityItem> getEntityItemsInRadius(float radius, float yRadius) {
         List<EntityItem> items = entity.world.getEntitiesWithinAABB(EntityItem.class, entity.getEntityBoundingBox().expand(radius, yRadius, radius), CAN_BE_PICKED::test);
         List<EntityItem> validItems = new ArrayList<>();
         if (items.size() > 0) {
             for (Entity entity : items) {
                 EntityItem entityItem = (EntityItem) entity;
-                int[] oreIDs = OreDictionary.getOreIDs(entityItem.getEntityItem());
+                int[] oreIDs = OreDictionary.getOreIDs(entityItem.getItem());
                 if (oreIDs.length > 0) {
                     for (int oreID : oreIDs) {
                         String oreName = OreDictionary.getOreName(oreID);

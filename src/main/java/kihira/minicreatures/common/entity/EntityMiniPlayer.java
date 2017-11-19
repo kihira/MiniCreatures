@@ -16,9 +16,7 @@ package kihira.minicreatures.common.entity;
 
 import com.google.common.base.Strings;
 import com.mojang.realmsclient.gui.ChatFormatting;
-import kihira.foxlib.common.gson.GsonHelper;
 import kihira.minicreatures.MiniCreatures;
-import kihira.minicreatures.common.Utils;
 import kihira.minicreatures.common.customizer.EnumPartCategory;
 import kihira.minicreatures.common.entity.ai.EntityAIHeal;
 import kihira.minicreatures.common.entity.ai.EntityAIProspect;

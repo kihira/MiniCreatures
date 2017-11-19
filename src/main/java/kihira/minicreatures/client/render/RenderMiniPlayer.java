@@ -15,11 +15,10 @@
 package kihira.minicreatures.client.render;
 
 import com.google.common.base.Strings;
-import kihira.foxlib.client.TextHelper;
+import kihira.minicreatures.client.TextHelper;
 import kihira.minicreatures.client.model.ModelMiniPlayer;
 import kihira.minicreatures.common.entity.EntityMiniPlayer;
 import net.minecraft.client.entity.AbstractClientPlayer;
-import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderBiped;
@@ -67,7 +66,7 @@ public class RenderMiniPlayer extends RenderBiped<EntityMiniPlayer> {
         //Draw the chat messages
         String chat = entity.getChat();
         if (!Strings.isNullOrEmpty(chat)) {
-            TextHelper.drawWrappedMessageFacingPlayer(x, y + entity.height + 0.67F, z, 0.016666668F * 1.1F, 100, 20, chat, -1);
+            TextHelper.drawWrappedMessageFacingPlayer(x, y + entity.height + 0.67F, z, 100, 20, chat, 0.016666668F * 1.1F);
         }
 
         //Draw stat changes
@@ -78,7 +77,7 @@ public class RenderMiniPlayer extends RenderBiped<EntityMiniPlayer> {
             //Loop through any changes
             for (String statChange : entity.statMessage.split(";")) {
                 if (!statChange.isEmpty()) {
-                    TextHelper.drawMultiLineMessageFacingPlayer(x, y + yOffset, z, 0.016666668F, new String[]{statChange}, (int) (-(entity.statMessageTime / 60F) * 255) << 24, true, false);
+                    TextHelper.drawMultiLineMessageFacingPlayer(x, y + yOffset, z, new String[]{statChange}, 0.016666668F, (int) (-(entity.statMessageTime / 60F) * 255) << 24, true, false);
                     yOffset += 0.4;
                 }
             }
